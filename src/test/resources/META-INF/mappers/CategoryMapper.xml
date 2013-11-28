@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.downfy.persistence.repositories.CategoryRepository">
+
+    <cache type="org.mybatis.caches.ehcache.EhcacheCache"/>
+
+    <select id="findAll" resultType="CategoryDomain" flushCache="false" useCache="true">
+        SELECT ID, NAME, URL, ENABLED, SORT 
+        FROM categories
+        WHERE ENABLED = true
+        ORDER BY URL
+    </select>
+    
+    <select id="findById" resultType="CategoryDomain" flushCache="false" useCache="true">
+        SELECT ID, NAME, URL, ENABLED, SORT 
+        FROM categories
+        WHERE ID = #{id}
+    </select>
+    
+    <select id="findByUrl" resultType="CategoryDomain" flushCache="false" useCache="true">
+        SELECT ID, NAME, URL, ENABLED, SORT 
+        FROM categories
+        WHERE URL = #{url}
+    </select>
+    
+    <insert id="save" parameterType="CategoryDomain" flushCache="true">
+        INSERT INTO categories
+        (NAME, URL)
+        VALUES
+        (#{name},#{url})
+    </insert>
+    
+    <update id="update" flushCache="true">
+        UPDATE categories
+        SET 
+        NAME = #{name},
+        URL = #{url},
+        SORT = #{sort},
+        ENABLED = #{enabled}
+        WHERE ID = #{id}
+    </update>
+    
+    <delete id="delete" flushCache="true">
+        DELETE FROM categories
+        WHERE URL = #{url}
+    </delete>
+</mapper>
