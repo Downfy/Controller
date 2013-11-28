@@ -37,7 +37,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
  */
 @RequestMapping({"/"})
 @Controller
-public class HomeController {
+public class HomeController extends AbstractController {
 
     private Logger logger = LoggerFactory.getLogger(HomeController.class);
     @Autowired
@@ -45,16 +45,14 @@ public class HomeController {
 
     @RequestMapping(method = RequestMethod.GET)
     public String index(Device device, Model model) {
-        if (device == null) {
-            logger.info("no device detected");
-        } else if (device.isNormal()) {
-            logger.info("Device is normal");
-        } else if (device.isMobile()) {
-            logger.info("Device is mobile");
-            return "mobile/index";
-        } else if (device.isTablet()) {
-            logger.info("Device is tablet");
+        try {
+            if (isMobile(device)) {
+                return "mobile/login";
+            }
+            return "home/login";
+        } catch (Exception ex) {
+            logger.error("Cannot get data." + ex.toString(), ex);
         }
-        return "home/index";
+        return "mobile/maintenance";
     }
 }

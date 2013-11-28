@@ -15,6 +15,7 @@
  */
 package com.downfy.controller;
 
+import org.springframework.mobile.device.Device;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -37,6 +38,19 @@ public abstract class AbstractController {
 
     public boolean isAuthenticated() {
         if ((SecurityContextHolder.getContext().getAuthentication() != null) && (SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) && (!getUserId().equals("anonymousUser"))) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Check device User-Agent
+     *
+     * @param device
+     * @return
+     */
+    public boolean isMobile(Device device) {
+        if (device != null && (device.isMobile() || device.isTablet())) {
             return true;
         }
         return false;

@@ -37,7 +37,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
  */
 @RequestMapping("/login")
 @Controller
-public class LoginController {
+public class LoginController extends AbstractController {
 
     private Logger logger = LoggerFactory.getLogger(LoginController.class);
     @Autowired
@@ -46,7 +46,7 @@ public class LoginController {
     @RequestMapping(method = RequestMethod.GET)
     public String index(Device device, Model model) {
         try {
-            if (device != null && device.isMobile()) {
+            if (isMobile(device)) {
                 return "mobile/login";
             }
             return "home/login";
@@ -59,7 +59,7 @@ public class LoginController {
     @RequestMapping(value = "/failure", method = RequestMethod.GET)
     public String failure(Device device, Model model) {
         try {
-            if (device != null && device.isMobile()) {
+            if (isMobile(device)) {
                 return "mobile/login";
             }
             return "home/login";
