@@ -21,6 +21,16 @@ import java.util.Date;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
+/*
+ * AccountRepository.java
+ * 
+ * Account repository
+ * 
+ * Modification Logs:
+ *  DATE            AUTHOR      DESCRIPTION
+ *  --------------------------------------------------------
+ *  1-Dec-2013     tuanta      Create first time
+ */
 public interface AccountRepository {
 
     public List<AccountDomain> findAll();

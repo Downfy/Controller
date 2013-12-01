@@ -47,9 +47,9 @@ public class HomeController extends AbstractController {
     public String index(Device device, Model model) {
         try {
             if (isMobile(device)) {
-                return "mobile/login";
+                return "mobile/index";
             }
-            return "home/login";
+            return "home/index";
         } catch (Exception ex) {
             logger.error("Cannot get data." + ex.toString(), ex);
         }

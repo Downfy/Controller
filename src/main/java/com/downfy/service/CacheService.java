@@ -32,9 +32,9 @@ public interface CacheService<V extends DomainObject> {
     void removeCacheObject(String key);
 
     List<V> getCacheObjects();
-    
+
     List<V> getCacheLimitObjects(int start, int end);
-            
+
     long countCacheObject();
 
     void setCacheObjects(List<V> objects);

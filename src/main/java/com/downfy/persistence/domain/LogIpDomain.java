@@ -14,33 +14,50 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.downfy.persistence.repositories;
+package com.downfy.persistence.domain;
 
-import com.downfy.persistence.domain.CategoryDomain;
+import com.downfy.common.ObjectKey;
 import java.util.List;
-import org.apache.ibatis.annotations.Param;
 
 /*
- * CategoryRepository.java
+ * LogIpDomain.java
  * 
- * Category repository
+ * Log ip domain
  * 
  * Modification Logs:
  *  DATE            AUTHOR      DESCRIPTION
  *  --------------------------------------------------------
- *  1-Dec-2013     tuanta      Create first time
+ *  29-Nov-2013     tuanta      Create first time
  */
-public interface CategoryRepository {
+public class LogIpDomain implements DomainObject {
 
-    List<CategoryDomain> findAll();
+    public static final String OBJECT_KEY = ObjectKey.LOG_IP;
+    private String ip;
+    private List<Long> times;
 
-    CategoryDomain findById(int id);
+    public String getIp() {
+        return ip;
+    }
 
-    CategoryDomain findByUrl(@Param(value = "url") String url);
+    public void setIp(String ip) {
+        this.ip = ip;
+    }
 
-    void save(CategoryDomain domain);
+    public List<Long> getTimes() {
+        return times;
+    }
 
-    void update(CategoryDomain domain);
-    
-    void delete(@Param(value = "url") String url);
+    public void setTimes(List<Long> times) {
+        this.times = times;
+    }
+
+    @Override
+    public String getKey() {
+        return getIp();
+    }
+
+    @Override
+    public String getObjectKey() {
+        return OBJECT_KEY;
+    }
 }

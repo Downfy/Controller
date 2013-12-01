@@ -16,6 +16,7 @@
  */
 package com.downfy.persistence.domain;
 
+import com.downfy.common.ObjectKey;
 import java.sql.Timestamp;
 
 /*
@@ -30,7 +31,7 @@ import java.sql.Timestamp;
  */
 public class CategoryDomain implements DomainObject {
 
-    public static final String OBJECT_KEY = "CATEGORY";
+    public static final String OBJECT_KEY = ObjectKey.CATEGORY;
     private int id;
     private int parent;
     private String name;

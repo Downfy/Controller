@@ -14,33 +14,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.downfy.persistence.repositories;
 
-import com.downfy.persistence.domain.CategoryDomain;
-import java.util.List;
-import org.apache.ibatis.annotations.Param;
-
 /*
- * CategoryRepository.java
+ * AppNewRepository.java
  * 
- * Category repository
+ * App new repository
  * 
  * Modification Logs:
  *  DATE            AUTHOR      DESCRIPTION
  *  --------------------------------------------------------
  *  1-Dec-2013     tuanta      Create first time
  */
-public interface CategoryRepository {
+public interface AppNewRepository {
 
-    List<CategoryDomain> findAll();
-
-    CategoryDomain findById(int id);
-
-    CategoryDomain findByUrl(@Param(value = "url") String url);
-
-    void save(CategoryDomain domain);
-
-    void update(CategoryDomain domain);
-    
-    void delete(@Param(value = "url") String url);
 }

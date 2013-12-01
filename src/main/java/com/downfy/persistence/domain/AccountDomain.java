@@ -16,8 +16,8 @@
  */
 package com.downfy.persistence.domain;
 
+import com.downfy.common.ObjectKey;
 import java.util.Date;
-import java.util.List;
 
 /*
  * AccountDomain.java
@@ -32,12 +32,11 @@ import java.util.List;
 public class AccountDomain
         implements DomainObject {
 
-    public static final String OBJECT_KEY = "USER";
+    public static final String OBJECT_KEY = ObjectKey.USER;
     private long id;
     private String password;
     private String email;
     private boolean enabled;
-    private String screenName;
     private int failedLoginCount;
     private Date lastFailedLoginTime;
     private String lastHostAddress;
@@ -47,8 +46,6 @@ public class AccountDomain
     private String activeKey;
     private String CSRFToken;
     private boolean isLogin;
-    private String firstName;
-    private String lastName;
     private Date created;
 
     public long getId() {
@@ -123,14 +120,6 @@ public class AccountDomain
         this.lastPasswordChangeTime = lastPasswordChangeTime;
     }
 
-    public String getScreenName() {
-        return this.screenName;
-    }
-
-    public void setScreenName(String screenName) {
-        this.screenName = screenName;
-    }
-
     public String getCSRFToken() {
         return this.CSRFToken;
     }
@@ -169,22 +158,6 @@ public class AccountDomain
 
     public void setExpirationDate(Date expirationTime) {
         this.expirationDate = expirationTime;
-    }
-
-    public String getFirstName() {
-        return this.firstName;
-    }
-
-    public String getLastName() {
-        return this.lastName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
     }
 
     public Date getCreated() {
