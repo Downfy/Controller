@@ -61,16 +61,15 @@ public class AccountService implements CacheService<AccountDomain> {
             if (account.isEmpty()) {
                 this.logger.debug("Find all account in database.");
                 account = this.repository.findAll();
-                setCacheObjects(account);
+                if (!account.isEmpty()) {
+                    setCacheObjects(account);
+                }
             }
         } catch (Exception ex) {
             this.logger.error("Find all account error: " + ex, ex);
         }
-        if (account != null && !account.isEmpty()) {
-            this.logger.debug("Total get " + account.size() + " accounts.");
-            return account;
-        }
-        return new ArrayList<AccountDomain>();
+        this.logger.debug("Total get " + account.size() + " accounts.");
+        return account;
     }
 
     public List<AccountDomain> findByLimit(int start, int end) {

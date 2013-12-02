@@ -18,12 +18,14 @@
         APP_PATH as appPath,
         APP_ICON as appIcon,
         APP_SCREEN_SHOOT as appScreenShoot,
-        STATUS,
+        DELETED,
+        PUBLISHED,
         CREATED,
         UPDATED,
         CREATER,
         UPDATER
         FROM apps
+        WHERE DELETED = 0
         ORDER BY CREATED DESC
     </select>
     
@@ -39,14 +41,15 @@
         APP_PATH as appPath,
         APP_ICON as appIcon,
         APP_SCREEN_SHOOT as appScreenShoot,
-        STATUS,
+        DELETED,
+        PUBLISHED,
         CREATED,
         UPDATED,
         CREATER,
         UPDATER
         FROM apps
         WHERE CREATER = #{developerId}
-        LIMIT 0, 1
+        AND DELETED = 0
     </select>
     
     <select id="findById" parameterType="long" resultType="AppDomain" flushCache="false" useCache="true">
@@ -61,7 +64,8 @@
         APP_PATH as appPath,
         APP_ICON as appIcon,
         APP_SCREEN_SHOOT as appScreenShoot,
-        STATUS,
+        DELETED,
+        PUBLISHED,
         CREATED,
         UPDATED,
         CREATER,
@@ -77,9 +81,9 @@
     
     <insert id="save" parameterType="AppDomain" flushCache="true">
         INSERT INTO apps
-        (APP_ID, APP_NAME, APP_CATEGORY)
+        (APP_ID, APP_NAME, APP_CATEGORY, CREATER)
         VALUES
-        (#{appId}, #{appName}, #{appCategory})
+        (#{appId}, #{appName}, #{appCategory}, #{creater})
     </insert>
     
     <update id="updateApp" parameterType="AppDomain" flushCache="true">
@@ -91,6 +95,7 @@
         APP_PATH = ${appPath},
         APP_SIZE = #{appSize}
         WHERE APP_ID = #{appId}
+        AND DELETED = 0
     </update>
     
     <update id="updateAppView" parameterType="AppDomain" flushCache="true">
@@ -98,6 +103,7 @@
         SET
         APP_VIEW = #{appView}
         WHERE APP_ID = #{appId}
+        AND DELETED = 0
     </update>
     
     <update id="updateAppDownload" parameterType="AppDomain" flushCache="true">
@@ -105,6 +111,7 @@
         SET
         APP_DOWNLOAD = #{appDownload}
         WHERE APP_ID = #{appId}
+        AND DELETED = 0
     </update>
     
     <update id="active" parameterType="long" flushCache="true">
@@ -112,6 +119,7 @@
         SET 
         PUBLISHED = 1 
         WHERE APP_ID = #{appId}
+        AND DELETED = 0
     </update>
     
     <update id="block" parameterType="long" flushCache="true">
@@ -119,12 +127,13 @@
         SET 
         PUBLISHED = 0 
         WHERE APP_ID = #{appId}
+        AND DELETED = 0
     </update>
     
     <delete id="delete" parameterType="long" flushCache="true">
         UPDATE apps 
         SET 
-        DELETED = 0 
+        DELETED = 1 
         WHERE APP_ID = #{appId}
     </delete>
 </mapper>

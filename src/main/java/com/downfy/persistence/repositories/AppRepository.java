@@ -36,11 +36,17 @@ public interface AppRepository {
     
     public AppDomain findById(@Param("appId") long appId);
     
+    public List<AppDomain> findByDeveloper(@Param("developerId") long developerId);
+    
     public long count();
 
     public void save(AppDomain domain);
     
     public void updateApp(AppDomain domain);
+
+    public void updateAppVew(AppDomain domain);
+    
+    public void updateAppDownload(AppDomain domain);
     
     public void active(@Param("appId") long appId);
 

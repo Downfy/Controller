@@ -50,13 +50,34 @@ public class AppServiceTest {
 
     @Test
     public void testFindAll() {
-        List<AppDomain> accounts = service.findAll();
-        Assert.assertTrue(accounts.isEmpty());
+        List<AppDomain> apps = service.findAll();
+        Assert.assertTrue(apps.isEmpty());
     }
-    
+
+    @Test
+    public void testFindById() {
+        AppDomain app = service.findById(10000l);
+        Assert.assertEquals(null, app);
+    }
+
     @Test
     public void testRepository() {
-        AppDomain account = new AppDomain();
+        long time = System.currentTimeMillis() - 138600000000l;
+        AppDomain app = new AppDomain();
+        app.setAppId(time);
+        app.setAppName("test");
+        app.setAppCategory(1l);
+        app.setCreater(1234567890);
+        List<AppDomain> apps = service.findByDeveloper(1234567890);
+        Assert.assertTrue(apps.isEmpty());
+        Assert.assertTrue(service.save(app));
+        apps = service.findByDeveloper(1234567890);
+        Assert.assertTrue(!apps.isEmpty());
+        for (AppDomain appDomain : apps) {
+            Assert.assertTrue(service.delete(appDomain.getAppId()));
+        }
+        apps = service.findByDeveloper(1234567890);
+        Assert.assertTrue(apps.isEmpty());
     }
 
     @Test

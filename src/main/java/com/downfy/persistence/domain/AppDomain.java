@@ -35,7 +35,7 @@ public class AppDomain implements DomainObject {
     public static final String OBJECT_KEY = ObjectKey.APP;
     private long appId;
     private String appName;
-    private String appCategory;
+    private long appCategory;
     private int appView;
     private int appDownload;
     private String appCurrentVersion;
@@ -66,11 +66,11 @@ public class AppDomain implements DomainObject {
         this.appName = appName;
     }
 
-    public String getAppCategory() {
+    public long getAppCategory() {
         return appCategory;
     }
 
-    public void setAppCategory(String appCategory) {
+    public void setAppCategory(long appCategory) {
         this.appCategory = appCategory;
     }
 
@@ -178,6 +178,15 @@ public class AppDomain implements DomainObject {
         this.updater = updater;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[App:").append(getAppId()).append(",");
+        sb.append("Name:").append(getAppName()).append(",");
+        sb.append("Category:").append(getAppCategory()).append("]");
+        return sb.toString();
+    }
+    
     @Override
     public String getKey() {
         return getAppId() + "";

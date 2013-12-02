@@ -20,15 +20,18 @@ CREATE TABLE IF NOT EXISTS `apps` (
   `app_path` text,
   `app_screen_shoot` text,
   `app_icon` text,
+  `published` bit(1) NOT NULL DEFAULT b'0',
+  `deleted` bit(1) NOT NULL DEFAULT b'0',
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated` timestamp NULL DEFAULT NULL,
   `creater` bigint(20) unsigned NOT NULL,
   `updater` bigint(20) unsigned DEFAULT NULL,
   PRIMARY KEY (`app_id`),
-  KEY `app_name` (`app_name`,`app_category`,`app_view`,`app_download`,`app_size`,`created`,`updated`,`creater`,`updater`)
+  KEY `app_name` (`app_name`,`app_category`,`app_view`,`app_download`,`app_size`,`created`,`updated`,`creater`,`updater`),
+  KEY `published` (`published`),
+  KEY `deleted` (`deleted`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-ALTER TABLE apps ADD COLUMN status bit(1) NOT NULL DEFAULT VALUE 0;
 -- --------------------------------------------------------
 
 --

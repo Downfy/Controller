@@ -23,6 +23,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.redis.core.RedisTemplate;
 
 /*
@@ -70,17 +71,42 @@ public class AppService implements CacheService<AppDomain> {
         }
         return new ArrayList<AppDomain>();
     }
-    
+
+    public AppDomain findById(long appId) {
+        this.logger.debug("Find app " + appId + " in cache.");
+        return getCacheObject(appId + "");
+    }
+
+    public List<AppDomain> findByDeveloper(long developerId) {
+        List<AppDomain> apps = null;
+        try {
+            this.logger.debug("Find all apps of developer " + developerId + " in cache.");
+            apps = getCacheObjects();
+            if (apps.isEmpty()) {
+                this.logger.debug("Find all apps of developer " + developerId + " in database.");
+                apps = this.repository.findByDeveloper(developerId);
+                if (!apps.isEmpty()) {
+                    setCacheObjects(apps);
+                } else {
+                }
+            }
+        } catch (Exception ex) {
+            this.logger.error("Find all apps of developer " + developerId + " error: " + ex, ex);
+        }
+        this.logger.debug("Total get " + apps.size() + " apps of developer " + developerId + ".");
+        return apps;
+    }
+
     public void updateApp(AppDomain domain) {
         putCacheObject(domain);
     }
-    
+
     /**
-     * Step 1: Update status app in cache
-     * Step 2: Update information app in db
+     * Step 1: Update status app in cache Step 2: Update information app in db
      * Step 3: Move app in storage tmp version to origin version
+     *
      * @param appId Application ID
-     * @return 
+     * @return
      */
     public boolean publishApp(long appId) {
         return false;
@@ -99,6 +125,19 @@ public class AppService implements CacheService<AppDomain> {
             this.logger.error("Count total apps error.", ex);
         }
         return 0;
+    }
+    
+    public boolean save(AppDomain domain) {
+        try {
+            this.logger.debug("Save app " + domain.toString() + " to database");
+            this.repository.save(domain);
+            putCacheObject(domain);
+            this.logger.debug("Save app " + domain.toString() + " to cache");
+            return true;
+        } catch (Exception ex) {
+            this.logger.error("Can't save account " + domain.toString(), ex);
+        }
+        return false;
     }
 
     public boolean delete(long appId) {

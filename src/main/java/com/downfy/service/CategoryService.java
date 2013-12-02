@@ -60,16 +60,15 @@ public class CategoryService implements CacheService<CategoryDomain> {
             if (category.isEmpty()) {
                 this.logger.debug("Find all categories in database.");
                 category = this.repository.findAll();
-                setCacheObjects(category);
+                if (!category.isEmpty()) {
+                    setCacheObjects(category);
+                }
             }
         } catch (Exception ex) {
             this.logger.error("Find all categories error: " + ex, ex);
         }
-        if (category != null && !category.isEmpty()) {
-            this.logger.debug("Total get " + category.size() + " categories.");
-            return category;
-        }
-        return new ArrayList<CategoryDomain>();
+        this.logger.debug("Total get " + category.size() + " categories.");
+        return category;
     }
 
     public CategoryDomain findByURL(String url) {
@@ -109,7 +108,7 @@ public class CategoryService implements CacheService<CategoryDomain> {
         }
         return true;
     }
-    
+
     public long count() {
         try {
             long count = countCacheObject();
