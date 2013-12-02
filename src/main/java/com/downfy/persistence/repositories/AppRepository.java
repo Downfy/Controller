@@ -17,6 +17,10 @@
 
 package com.downfy.persistence.repositories;
 
+import com.downfy.persistence.domain.AppDomain;
+import java.util.List;
+import org.apache.ibatis.annotations.Param;
+
 /*
  * AppRepository.java
  * 
@@ -28,5 +32,19 @@ package com.downfy.persistence.repositories;
  *  1-Dec-2013     tuanta      Create first time
  */
 public interface AppRepository {
+    public List<AppDomain> findAll();
+    
+    public AppDomain findById(@Param("appId") long appId);
+    
+    public long count();
 
+    public void save(AppDomain domain);
+    
+    public void updateApp(AppDomain domain);
+    
+    public void active(@Param("appId") long appId);
+
+    public void block(@Param("appId") long appId);
+
+    public void delete(@Param("appId") long appId);
 }

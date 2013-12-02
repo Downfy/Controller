@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS `apps` (
   KEY `app_name` (`app_name`,`app_category`,`app_view`,`app_download`,`app_size`,`created`,`updated`,`creater`,`updater`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+ALTER TABLE apps ADD COLUMN status bit(1) NOT NULL DEFAULT VALUE 0;
 -- --------------------------------------------------------
 
 --

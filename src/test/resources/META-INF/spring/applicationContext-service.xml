@@ -13,4 +13,6 @@
     <bean id="accountService" class="com.downfy.service.AccountService"/>
     
     <bean id="categoryService" class="com.downfy.service.CategoryService"/>
+    
+    <bean id="appService" class="com.downfy.service.AppService"/>
 </beans>

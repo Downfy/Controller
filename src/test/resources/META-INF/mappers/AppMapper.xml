@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.downfy.persistence.repositories.AppRepository">
+
+    <cache type="org.mybatis.caches.ehcache.EhcacheCache"/>
+    
+    <select id="findAll" resultType="AppDomain" flushCache="false" useCache="true">
+        SELECT
+        APP_ID as appId,
+        APP_NAME as appName,
+        APP_CATEGORY as appCategory,
+        APP_VIEW as appView,
+        APP_DOWNLOAD as appDownload,
+        APP_CURRENT_VERSION as appCurrentVersion,
+        APP_SIZE as appSize,
+        APP_PATH as appPath,
+        APP_ICON as appIcon,
+        APP_SCREEN_SHOOT as appScreenShoot,
+        STATUS,
+        CREATED,
+        UPDATED,
+        CREATER,
+        UPDATER
+        FROM apps
+        ORDER BY CREATED DESC
+    </select>
+    
+    <select id="findByDeveloper" parameterType="long" resultType="AppDomain" flushCache="false" useCache="true">
+        SELECT
+        APP_ID as appId,
+        APP_NAME as appName,
+        APP_CATEGORY as appCategory,
+        APP_VIEW as appView,
+        APP_DOWNLOAD as appDownload,
+        APP_CURRENT_VERSION as appCurrentVersion,
+        APP_SIZE as appSize,
+        APP_PATH as appPath,
+        APP_ICON as appIcon,
+        APP_SCREEN_SHOOT as appScreenShoot,
+        STATUS,
+        CREATED,
+        UPDATED,
+        CREATER,
+        UPDATER
+        FROM apps
+        WHERE CREATER = #{developerId}
+        LIMIT 0, 1
+    </select>
+    
+    <select id="findById" parameterType="long" resultType="AppDomain" flushCache="false" useCache="true">
+        SELECT
+        APP_ID as appId,
+        APP_NAME as appName,
+        APP_CATEGORY as appCategory,
+        APP_VIEW as appView,
+        APP_DOWNLOAD as appDownload,
+        APP_CURRENT_VERSION as appCurrentVersion,
+        APP_SIZE as appSize,
+        APP_PATH as appPath,
+        APP_ICON as appIcon,
+        APP_SCREEN_SHOOT as appScreenShoot,
+        STATUS,
+        CREATED,
+        UPDATED,
+        CREATER,
+        UPDATER
+        FROM apps
+        WHERE APP_ID = #{appId}
+        LIMIT 0, 1
+    </select>
+    
+    <select id="count" resultType="long" flushCache="false" useCache="true">
+        SELECT count(*) FROM apps
+    </select>
+    
+    <insert id="save" parameterType="AppDomain" flushCache="true">
+        INSERT INTO apps
+        (APP_ID, APP_NAME, APP_CATEGORY)
+        VALUES
+        (#{appId}, #{appName}, #{appCategory})
+    </insert>
+    
+    <update id="updateApp" parameterType="AppDomain" flushCache="true">
+        UPDATE apps
+        SET
+        APP_ICON = #{appIcon},
+        APP_SCREEN_SHOOT = #{appScreenShoot},
+        APP_CURRENT_VERSION = #{appCurrentVersion},
+        APP_PATH = ${appPath},
+        APP_SIZE = #{appSize}
+        WHERE APP_ID = #{appId}
+    </update>
+    
+    <update id="updateAppView" parameterType="AppDomain" flushCache="true">
+        UPDATE apps
+        SET
+        APP_VIEW = #{appView}
+        WHERE APP_ID = #{appId}
+    </update>
+    
+    <update id="updateAppDownload" parameterType="AppDomain" flushCache="true">
+        UPDATE apps
+        SET
+        APP_DOWNLOAD = #{appDownload}
+        WHERE APP_ID = #{appId}
+    </update>
+    
+    <update id="active" parameterType="long" flushCache="true">
+        UPDATE apps 
+        SET 
+        PUBLISHED = 1 
+        WHERE APP_ID = #{appId}
+    </update>
+    
+    <update id="block" parameterType="long" flushCache="true">
+        UPDATE apps 
+        SET 
+        PUBLISHED = 0 
+        WHERE APP_ID = #{appId}
+    </update>
+    
+    <delete id="delete" parameterType="long" flushCache="true">
+        UPDATE apps 
+        SET 
+        DELETED = 0 
+        WHERE APP_ID = #{appId}
+    </delete>
+</mapper>
