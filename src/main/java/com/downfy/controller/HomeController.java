@@ -46,13 +46,15 @@ public class HomeController extends AbstractController {
     @RequestMapping(method = RequestMethod.GET)
     public String index(Device device, Model model) {
         try {
-            if (isMobile(device)) {
-                return "mobile/index";
-            }
-            return "home/index";
+            return view(device, "index");
         } catch (Exception ex) {
-            logger.error("Cannot get data." + ex.toString(), ex);
+            logger.error("Cannot get data.", ex);
         }
-        return "mobile/maintenance";
+        return view(device, "maintenance");
+    }
+
+    @RequestMapping(value = "/undermaintain", method = RequestMethod.GET)
+    public String undermaintain(Device device, Model model) {
+        return view(device, "maintenance");
     }
 }

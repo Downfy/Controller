@@ -37,21 +37,11 @@ public interface AccountRepository {
 
     public List<AccountDomain> findByLimit(@Param("orderBy") String orderBy, @Param("start") int start, @Param("end") int end);
 
-    public List<AccountDomain> findByEnable(@Param("orderBy") String orderBy, @Param("enabled") boolean enabled, @Param("start") int start, @Param("end") int end);
-
-    public AccountDomain findByUsernameAndPassword(@Param("username") String username, @Param("password") String password);
-
     public AccountDomain findById(@Param("id") long id);
-
-    public AccountDomain findByProfileId(@Param("profileId") long profileId);
 
     public AccountDomain findByUsername(@Param("username") String username);
 
     public AccountDomain findByEmail(@Param("email") String email);
-
-    public AccountDomain findByMobile(@Param("mobile") String mobile);
-
-    public AccountDomain findByUsernameOrEmail(@Param("username") String username, @Param("email") String email);
 
     public long count();
 
@@ -60,8 +50,6 @@ public interface AccountRepository {
     public void active(@Param("username") String username);
 
     public void block(@Param("username") String username);
-
-    public void mainProfile(@Param("mainProfile") long mainProfile, @Param("username") String username);
 
     public void login(@Param("username") String username, @Param("lastHostAddress") String lastHostAddress, @Param("lastLoginTime") Date lastLoginTime);
 

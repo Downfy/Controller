@@ -35,6 +35,7 @@ public class AppDomain implements DomainObject {
     public static final String OBJECT_KEY = ObjectKey.APP;
     private long appId;
     private String appName;
+    private String appDescription;
     private long appCategory;
     private int appView;
     private int appDownload;
@@ -60,6 +61,14 @@ public class AppDomain implements DomainObject {
 
     public String getAppName() {
         return appName;
+    }
+
+    public String getAppDescription() {
+        return appDescription;
+    }
+
+    public void setAppDescription(String appDescription) {
+        this.appDescription = appDescription;
     }
 
     public void setAppName(String appName) {

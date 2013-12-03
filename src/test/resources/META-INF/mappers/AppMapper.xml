@@ -10,6 +10,7 @@
         SELECT
         APP_ID as appId,
         APP_NAME as appName,
+        APP_DESCRIPTION as appDescription,
         APP_CATEGORY as appCategory,
         APP_VIEW as appView,
         APP_DOWNLOAD as appDownload,
@@ -33,6 +34,7 @@
         SELECT
         APP_ID as appId,
         APP_NAME as appName,
+        APP_DESCRIPTION as appDescription,
         APP_CATEGORY as appCategory,
         APP_VIEW as appView,
         APP_DOWNLOAD as appDownload,
@@ -56,6 +58,7 @@
         SELECT
         APP_ID as appId,
         APP_NAME as appName,
+        APP_DESCRIPTION as appDescription,
         APP_CATEGORY as appCategory,
         APP_VIEW as appView,
         APP_DOWNLOAD as appDownload,
@@ -81,19 +84,24 @@
     
     <insert id="save" parameterType="AppDomain" flushCache="true">
         INSERT INTO apps
-        (APP_ID, APP_NAME, APP_CATEGORY, CREATER)
+        (APP_ID, APP_NAME, APP_DESCRIPTION, APP_CATEGORY, CREATER)
         VALUES
-        (#{appId}, #{appName}, #{appCategory}, #{creater})
+        (#{appId}, #{appName}, #{appDescription}, #{appCategory}, #{creater})
     </insert>
     
-    <update id="updateApp" parameterType="AppDomain" flushCache="true">
+    <update id="updateAppInfo" parameterType="AppDomain" flushCache="true">
         UPDATE apps
         SET
+        APP_NAME = #{appName},
+        APP_DESCRIPTION = #{appDescription},
+        APP_CATEGORY = #{appCategory},
         APP_ICON = #{appIcon},
         APP_SCREEN_SHOOT = #{appScreenShoot},
         APP_CURRENT_VERSION = #{appCurrentVersion},
-        APP_PATH = ${appPath},
-        APP_SIZE = #{appSize}
+        APP_PATH = #{appPath},
+        APP_SIZE = #{appSize},
+        UPDATER = #{updater},
+        UPDATED = #{updated}
         WHERE APP_ID = #{appId}
         AND DELETED = 0
     </update>
@@ -114,7 +122,7 @@
         AND DELETED = 0
     </update>
     
-    <update id="active" parameterType="long" flushCache="true">
+    <update id="publish" parameterType="long" flushCache="true">
         UPDATE apps 
         SET 
         PUBLISHED = 1 

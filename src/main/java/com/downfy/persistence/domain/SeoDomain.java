@@ -17,52 +17,51 @@
 package com.downfy.persistence.domain;
 
 import com.downfy.common.ObjectKey;
-import java.util.List;
 
 /*
- * AppHotDomain.java
+ * SeoDomain.java
  * 
- * App hot domain
+ * Seo domain
  * 
  * Modification Logs:
  *  DATE            AUTHOR      DESCRIPTION
  *  --------------------------------------------------------
- *  29-Nov-2013     tuanta      Create first time
+ *  3-Dec-2013     tuanta      Create first time
  */
-public class AppHotDomain implements DomainObject {
+public class SeoDomain implements DomainObject {
 
-    public static final String OBJECT_KEY = ObjectKey.APP_HOT;
-    private long categoryId;
-    private String categoryName;
-    private List<Long> apps;
+    public static final String OBJECT_KEY = ObjectKey.SEO;
+    private long appId;
+    private String title;
+    private String description;
 
-    public long getCategoryId() {
-        return categoryId;
+    public long getAppId() {
+        return appId;
     }
 
-    public void setCategoryId(long categoryId) {
-        this.categoryId = categoryId;
+    public void setAppId(long appId) {
+        this.appId = appId;
     }
 
-    public String getCategoryName() {
-        return categoryName;
+    public String getTitle() {
+        return title;
     }
 
-    public void setCategoryName(String categoryName) {
-        this.categoryName = categoryName;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public List<Long> getApps() {
-        return apps;
+    public String getDescription() {
+        return description;
     }
 
-    public void setApps(List<Long> apps) {
-        this.apps = apps;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     @Override
     public String getKey() {
-        return getCategoryId() + "";
+        return getAppId()+ "";
     }
 
     @Override

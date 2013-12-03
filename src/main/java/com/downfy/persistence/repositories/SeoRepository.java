@@ -14,43 +14,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.downfy.persistence.repositories;
 
-import com.downfy.persistence.domain.AppDomain;
-import java.util.List;
+import com.downfy.persistence.domain.SeoDomain;
 import org.apache.ibatis.annotations.Param;
 
 /*
- * AppRepository.java
+ * SeoRepository.java
  * 
- * App repository
+ * Seo repository
  * 
  * Modification Logs:
  *  DATE            AUTHOR      DESCRIPTION
  *  --------------------------------------------------------
- *  1-Dec-2013     tuanta      Create first time
+ *  3-Dec-2013     tuanta      Create first time
  */
-public interface AppRepository {
-    public List<AppDomain> findAll();
-    
-    public AppDomain findById(@Param("appId") long appId);
-    
-    public List<AppDomain> findByDeveloper(@Param("developerId") long developerId);
-    
-    public long count();
+public interface SeoRepository {
 
-    public void save(AppDomain domain);
-    
-    public void update(AppDomain domain);
-    
-    public void updateAppView(AppDomain domain);
-    
-    public void updateAppDownload(AppDomain domain);
-    
-    public void publish(@Param("appId") long appId);
+    public SeoDomain findById(@Param("appId") long appId);
 
-    public void block(@Param("appId") long appId);
+    public void save(SeoDomain domain);
 
     public void delete(@Param("appId") long appId);
 }

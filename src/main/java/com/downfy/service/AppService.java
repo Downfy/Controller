@@ -23,7 +23,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.redis.core.RedisTemplate;
 
 /*
@@ -92,22 +91,64 @@ public class AppService implements CacheService<AppDomain> {
         } catch (Exception ex) {
             this.logger.error("Find all apps of developer " + developerId + " error: " + ex, ex);
         }
-        this.logger.debug("Total get " + apps.size() + " apps of developer " + developerId + ".");
+        if (apps != null) {
+            this.logger.debug("Total get " + apps.size() + " apps of developer " + developerId + ".");
+        }
         return apps;
     }
 
-    public void updateApp(AppDomain domain) {
-        putCacheObject(domain);
+    public boolean updateApp(AppDomain domain) {
+        try {
+            this.logger.debug("Update app " + domain.toString() + " to cache");
+            putCacheObject(domain);
+            return true;
+        } catch (Exception ex) {
+            this.logger.error("Can't update app " + domain.toString(), ex);
+        }
+        return false;
     }
 
     /**
-     * Step 1: Update status app in cache Step 2: Update information app in db
+     * Step 1: Update status app in cache
+     *
+     * Step 2: Update information app in db
+     *
      * Step 3: Move app in storage tmp version to origin version
      *
      * @param appId Application ID
      * @return
      */
     public boolean publishApp(long appId) {
+        try {
+            this.logger.debug("Publish app " + appId + " to cache");
+            AppDomain app = getCacheObject(appId + "");
+            if (app != null) {
+                app.setPublished(true);
+                putCacheObject(app);
+                this.logger.debug("Publish app " + appId + " to database");
+                this.repository.publish(appId);
+                return true;
+            }
+        } catch (Exception ex) {
+            this.logger.error("Can't publish app " + appId, ex);
+        }
+        return false;
+    }
+
+    public boolean blockApp(long appId) {
+        try {
+            this.logger.debug("Block app " + appId + " to cache");
+            AppDomain app = getCacheObject(appId + "");
+            if (app != null) {
+                app.setPublished(false);
+                putCacheObject(app);
+                this.logger.debug("Block app " + appId + " to database");
+                this.repository.block(appId);
+                return true;
+            }
+        } catch (Exception ex) {
+            this.logger.error("Can't block app " + appId, ex);
+        }
         return false;
     }
 
@@ -130,11 +171,11 @@ public class AppService implements CacheService<AppDomain> {
         try {
             this.logger.debug("Save app " + domain.toString() + " to database");
             this.repository.save(domain);
-            putCacheObject(domain);
             this.logger.debug("Save app " + domain.toString() + " to cache");
+            putCacheObject(domain);
             return true;
         } catch (Exception ex) {
-            this.logger.error("Can't save account " + domain.toString(), ex);
+            this.logger.error("Can't save app " + domain.toString(), ex);
         }
         return false;
     }

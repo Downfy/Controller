@@ -55,4 +55,18 @@ public abstract class AbstractController {
         }
         return false;
     }
+
+    /**
+     * Redirect view
+     *
+     * @param device Devices
+     * @param path Address view
+     * @return
+     */
+    public String view(Device device, String path) {
+        if (isMobile(device)) {
+            return "mobile/" + path;
+        }
+        return "home/" + path;
+    }
 }

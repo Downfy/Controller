@@ -14,14 +14,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.downfy.common;
 
-/**
- *
- * @author Tran Anh Tuan <tk1cntt@gmail.com>
+/*
+ * ObjectKey.java
+ * 
+ * Object key stored in Redis
+ * 
+ * Modification Logs:
+ *  DATE            AUTHOR      DESCRIPTION
+ *  --------------------------------------------------------
+ *  26-Nov-2013     tuanta      Create first time
  */
 public final class ObjectKey {
+
     public static String APP = "APP";
     public static String APP_CATEGORY = "APP-CATEGORY";
     public static String APP_HOT = "APP-HOT";
@@ -34,4 +40,5 @@ public final class ObjectKey {
     public static String USER_DEVELOPER = "USER-DEVELOPER";
     public static String LOG = "LOG";
     public static String LOG_IP = "LOG-IP";
+    public static String SEO = "SEO";
 }
