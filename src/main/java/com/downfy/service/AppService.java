@@ -65,11 +65,10 @@ public class AppService implements CacheService<AppDomain> {
         } catch (Exception ex) {
             this.logger.error("Find all apps error: " + ex, ex);
         }
-        if (apps != null && !apps.isEmpty()) {
+        if (apps != null) {
             this.logger.debug("Total get " + apps.size() + " apps.");
-            return apps;
         }
-        return new ArrayList<AppDomain>();
+        return apps;
     }
 
     public AppDomain findById(long appId) {
@@ -126,7 +125,7 @@ public class AppService implements CacheService<AppDomain> {
         }
         return 0;
     }
-    
+
     public boolean save(AppDomain domain) {
         try {
             this.logger.debug("Save app " + domain.toString() + " to database");

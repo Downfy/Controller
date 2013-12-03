@@ -67,7 +67,9 @@ public class CategoryService implements CacheService<CategoryDomain> {
         } catch (Exception ex) {
             this.logger.error("Find all categories error: " + ex, ex);
         }
-        this.logger.debug("Total get " + category.size() + " categories.");
+        if (category != null) {
+            this.logger.debug("Total get " + category.size() + " categories.");
+        }
         return category;
     }
 

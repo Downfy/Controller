@@ -68,7 +68,9 @@ public class AccountService implements CacheService<AccountDomain> {
         } catch (Exception ex) {
             this.logger.error("Find all account error: " + ex, ex);
         }
-        this.logger.debug("Total get " + account.size() + " accounts.");
+        if (account != null) {
+            this.logger.debug("Total get " + account.size() + " accounts.");
+        }
         return account;
     }
 
