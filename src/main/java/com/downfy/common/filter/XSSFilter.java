@@ -47,7 +47,18 @@ public class XSSFilter
 
     public class XSSRequestWrapper extends HttpServletRequestWrapper {
 
-        private Pattern[] patterns = {Pattern.compile("<script>(.*?)</script>", 2), Pattern.compile("src[\r\n]*=[\r\n]*\\'(.*?)\\'", 42), Pattern.compile("src[\r\n]*=[\r\n]*\\\"(.*?)\\\"", 42), Pattern.compile("</script>", 2), Pattern.compile("<script(.*?)>", 42), Pattern.compile("eval\\((.*?)\\)", 42), Pattern.compile("expression\\((.*?)\\)", 42), Pattern.compile("javascript:", 2), Pattern.compile("vbscript:", 2), Pattern.compile("onload(.*?)=", 42)};
+        private Pattern[] patterns = {
+            Pattern.compile("<script>(.*?)</script>", 2),
+            Pattern.compile("src[\r\n]*=[\r\n]*\\'(.*?)\\'", 42),
+            Pattern.compile("src[\r\n]*=[\r\n]*\\\"(.*?)\\\"", 42),
+            Pattern.compile("</script>", 2),
+            Pattern.compile("<script(.*?)>", 42),
+            Pattern.compile("eval\\((.*?)\\)", 42),
+            Pattern.compile("expression\\((.*?)\\)", 42),
+            Pattern.compile("javascript:", 2),
+            Pattern.compile("vbscript:", 2),
+            Pattern.compile("onload(.*?)=", 42)
+        };
 
         public XSSRequestWrapper(HttpServletRequest servletRequest) {
             super(servletRequest);

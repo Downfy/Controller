@@ -20,8 +20,6 @@ import com.downfy.service.AccountService;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
@@ -38,6 +36,8 @@ import com.downfy.controller.AbstractController;
 import com.downfy.controller.MyResourceMessage;
 import com.downfy.form.admin.ChangePasswordForm;
 import com.downfy.form.validator.admin.ChangePasswordValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /*
  * ChangePasswordController.java
@@ -53,7 +53,7 @@ import com.downfy.form.validator.admin.ChangePasswordValidator;
 @Controller
 public class ChangePasswordController extends AbstractController {
 
-    private static final Log logger = LogFactory.getLog(ChangePasswordController.class);
+    private final Logger logger = LoggerFactory.getLogger(ChangePasswordController.class);
     @Autowired
     ChangePasswordValidator validator;
     @Autowired
