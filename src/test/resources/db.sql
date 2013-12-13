@@ -12,6 +12,7 @@ DROP TABLE IF EXISTS `apps`;
 CREATE TABLE IF NOT EXISTS `apps` (
   `app_id` bigint(20) unsigned NOT NULL,
   `app_name` varchar(250) NOT NULL,
+  `app_description` text,
   `app_category` int(10) unsigned NOT NULL,
   `app_view` int(10) unsigned NOT NULL DEFAULT '0',
   `app_download` int(10) unsigned NOT NULL DEFAULT '0',
@@ -59,8 +60,8 @@ CREATE TABLE IF NOT EXISTS `app_category` (
 
 DROP TABLE IF EXISTS `app_download`;
 CREATE TABLE IF NOT EXISTS `app_download` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `app_id` bigint(20) NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `app_id` bigint(20) unsigned NOT NULL,
   `app_path` varchar(250) NOT NULL,
   `app_download_path` varchar(250) NOT NULL,
   `session_id` varchar(50) NOT NULL,
@@ -103,7 +104,7 @@ CREATE TABLE IF NOT EXISTS `app_version` (
 DROP TABLE IF EXISTS `app_view`;
 CREATE TABLE IF NOT EXISTS `app_view` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `app_id` bigint(20) NOT NULL,
+  `app_id` bigint(20) unsigned NOT NULL,
   `session_id` varchar(250) NOT NULL,
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
@@ -123,7 +124,7 @@ CREATE TABLE IF NOT EXISTS `categories` (
   `url` varchar(100) NOT NULL DEFAULT '',
   `parent` int(11) NOT NULL DEFAULT '0',
   `enabled` bit(1) NOT NULL DEFAULT b'1',
-  `sort` int(2) NOT NULL DEFAULT '0',
+  `sort` int(2) unsigned NOT NULL DEFAULT '0',
   `hot` bit(1) NOT NULL,
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
@@ -140,12 +141,12 @@ CREATE TABLE IF NOT EXISTS `categories` (
 DROP TABLE IF EXISTS `logs`;
 CREATE TABLE IF NOT EXISTS `logs` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `session_id` varchar(100) CHARACTER SET latin1 COLLATE latin1_general_ci NOT NULL,
+  `session_id` varchar(100) NOT NULL,
   `account_id` bigint(20) NOT NULL DEFAULT '0',
-  `device` int(11) NOT NULL,
-  `action` int(11) NOT NULL,
-  `ip` varchar(16) CHARACTER SET latin1 COLLATE latin1_general_ci DEFAULT NULL,
-  `user_agent` varchar(300) CHARACTER SET latin1 COLLATE latin1_general_ci DEFAULT NULL,
+  `device` int(11) unsigned NOT NULL,
+  `action` int(11) unsigned NOT NULL,
+  `ip` varchar(16),
+  `user_agent` varchar(300),
   `link` text,
   `reference` text,
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,

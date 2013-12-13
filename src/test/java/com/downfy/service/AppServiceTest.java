@@ -66,6 +66,7 @@ public class AppServiceTest {
         AppDomain app = new AppDomain();
         app.setAppId(time);
         app.setAppName("test");
+        app.setAppDescription("test");
         app.setAppCategory(1l);
         app.setCreater(1234567890);
         List<AppDomain> apps = service.findByDeveloper(1234567890);
@@ -83,5 +84,20 @@ public class AppServiceTest {
     @Test
     public void testExsit() {
         Assert.assertEquals(false, service.isExsit(1234567890l));
+    }
+
+    @Test
+    public void testPublish() {
+        Assert.assertEquals(false, service.publishApp(1234567890l));
+    }
+
+    @Test
+    public void testBlock() {
+        Assert.assertEquals(false, service.blockApp(1234567890l));
+    }
+
+    @Test
+    public void testDelete() {
+        Assert.assertEquals(true, service.delete(1234567890l));
     }
 }

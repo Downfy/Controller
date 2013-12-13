@@ -14,51 +14,47 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.downfy.controller;
+package com.downfy.controller.app;
 
+import com.downfy.controller.AbstractController;
+import com.downfy.controller.HomeController;
+import com.downfy.controller.MyResourceMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mobile.device.Device;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 /*
- * MobileLoginController.java
+ * HomeController.java
  * 
- * Mobile login controller
+ * Home controller
  * 
  * Modification Logs:
  *  DATE            AUTHOR      DESCRIPTION
  *  --------------------------------------------------------
- *  28-Nov-2013     tuanta      Create first time
+ *  3-Dec-2013     tuanta      Create first time
  */
-@RequestMapping("/login")
+@RequestMapping({"/member/create-app"})
 @Controller
-public class LoginController extends AbstractController {
+public class AppCreateController extends AbstractController {
 
-    private Logger logger = LoggerFactory.getLogger(LoginController.class);
+    private Logger logger = LoggerFactory.getLogger(AppCreateController.class);
     @Autowired
     MyResourceMessage resourceMessage;
 
+    @PreAuthorize("isAuthenticated()")
     @RequestMapping(method = RequestMethod.GET)
     public String index(Device device, Model model) {
         try {
-            return view(device, "login");
+            
+            return view(device, "create-app");
         } catch (Exception ex) {
-            logger.error("Cannot get data." + ex.toString(), ex);
-        }
-        return view(device, "maintenance");
-    }
-
-    @RequestMapping(value = "/failure", method = RequestMethod.GET)
-    public String failure(Device device, Model model) {
-        try {
-            return view(device, "login");
-        } catch (Exception ex) {
-            logger.error("Cannot get data." + ex.toString(), ex);
+            logger.error("Cannot create app.", ex);
         }
         return view(device, "maintenance");
     }
