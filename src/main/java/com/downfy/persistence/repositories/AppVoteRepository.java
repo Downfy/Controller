@@ -14,32 +14,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.downfy.common;
+
+package com.downfy.persistence.repositories;
 
 /*
- * ObjectKey.java
+ * AppVoteRepository.java
  * 
- * Object key stored in Redis
+ * App vote repository
  * 
  * Modification Logs:
  *  DATE            AUTHOR      DESCRIPTION
  *  --------------------------------------------------------
- *  26-Nov-2013     tuanta      Create first time
+ *  7-Dec-2013     tuanta      Create first time
  */
-public final class ObjectKey {
+public interface AppVoteRepository {
 
-    public static String APP = "APP";
-    public static String APP_CATEGORY = "APP-CATEGORY";
-    public static String APP_HOT = "APP-HOT";
-    public static String APP_NEW = "APP-NEW";
-    public static String APP_DOWNLOAD = "APP-DOWNLOAD";
-    public static String APP_VERSION = "APP-VERSION";
-    public static String APP_VIEW = "APP-VIEW";
-    public static String APP_VOTE = "APP-VOTE";
-    public static String CATEGORY = "CATEGORY";
-    public static String USER = "USER";
-    public static String USER_DEVELOPER = "USER-DEVELOPER";
-    public static String LOG = "LOG";
-    public static String LOG_IP = "LOG-IP";
-    public static String SEO = "SEO";
 }
