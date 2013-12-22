@@ -31,9 +31,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import com.downfy.common.ErrorMessage;
 import com.downfy.common.ValidationResponse;
+import com.downfy.controller.AbstractController;
 import com.downfy.controller.MyResourceMessage;
 import com.downfy.form.admin.LostPasswordForm;
 import com.downfy.form.validator.admin.LostPasswordValidator;
+import org.springframework.mobile.device.Device;
 
 /*
  * LostPasswordController.java
@@ -47,7 +49,7 @@ import com.downfy.form.validator.admin.LostPasswordValidator;
  */
 @RequestMapping({"/forgot-password"})
 @Controller
-public class LostPasswordController {
+public class LostPasswordController extends AbstractController {
 
     private final Logger logger = LoggerFactory.getLogger(LostPasswordController.class);
     @Autowired
@@ -56,11 +58,11 @@ public class LostPasswordController {
     MyResourceMessage resourceMessage;
 
     @RequestMapping(method = {org.springframework.web.bind.annotation.RequestMethod.GET})
-    public String lostPasswordForm(Model model) {
+    public String lostPasswordForm(Device device, Model model) {
         model.addAttribute("lostPasswordForm", new LostPasswordForm());
         model.addAttribute("title", "Quên mật khẩu");
         model.addAttribute("description", "Bạn quên mật khẩu? Hãy lấy lại mật khẩu của bạn một cách đơn giản.");
-        return "user/lostpassword";
+        return view(device, "member/lostpassword");
     }
 
     @RequestMapping(value = {"/json"}, method = {org.springframework.web.bind.annotation.RequestMethod.POST})
@@ -83,13 +85,13 @@ public class LostPasswordController {
     }
 
     @RequestMapping(method = {org.springframework.web.bind.annotation.RequestMethod.POST})
-    public String lostPassword(LostPasswordForm form, Model model, BindingResult bindingResult) {
+    public String lostPassword(Device device, LostPasswordForm form, Model model, BindingResult bindingResult) {
         this.validator.validate(form, bindingResult);
         if (bindingResult.hasErrors()) {
             model.addAttribute("lostPasswordForm", form);
-            return "user/lostpassword";
+            return view(device, "member/lostpassword");
         }
         model.addAttribute("email", form.getEmail());
-        return "user/successlostpassword";
+        return view(device, "member/successlostpassword");
     }
 }

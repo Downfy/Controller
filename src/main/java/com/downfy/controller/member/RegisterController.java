@@ -29,18 +29,21 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import com.downfy.common.ErrorMessage;
 import com.downfy.common.ValidationResponse;
+import com.downfy.controller.AbstractController;
 import com.downfy.controller.MyResourceMessage;
 import com.downfy.form.admin.RegisterForm;
 import com.downfy.form.validator.admin.RegisterValidator;
+import org.springframework.mobile.device.Device;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequestMapping({"/create-account"})
-public class RegisterController {
+public class RegisterController extends AbstractController {
 
     private final Logger logger = LoggerFactory.getLogger(RegisterController.class);
     @Autowired
@@ -52,15 +55,15 @@ public class RegisterController {
     @Autowired
     AccountService accountService;
 
-    @RequestMapping(method = {org.springframework.web.bind.annotation.RequestMethod.GET})
-    public String registerMemberForm(Model model) {
+    @RequestMapping(method = {RequestMethod.GET})
+    public String registerMemberForm(Device device, Model model) {
         model.addAttribute("registerForm", new RegisterForm());
         model.addAttribute("title", "Đăng ký thành viên");
         model.addAttribute("description", "Hãy đăng ký thành viên và tham gia vào mạng xã hội tuyển dụng. Hàng ngàn công việc phù hợp với bạn");
-        return "user/create";
+        return view(device, "member/create");
     }
 
-    @RequestMapping(value = {"/json"}, method = {org.springframework.web.bind.annotation.RequestMethod.POST})
+    @RequestMapping(value = {"/json"}, method = {RequestMethod.POST})
     @ResponseBody
     public ValidationResponse registerMemberAjaxJson(Model model, @ModelAttribute("registerForm") RegisterForm form, HttpServletRequest request, BindingResult bindingResult) {
         ValidationResponse res = new ValidationResponse();
@@ -79,12 +82,12 @@ public class RegisterController {
         return res;
     }
 
-    @RequestMapping(method = {org.springframework.web.bind.annotation.RequestMethod.POST})
-    public String registerMember(@ModelAttribute("registerForm") RegisterForm form, BindingResult bindingResult, Model model) {
+    @RequestMapping(method = {RequestMethod.POST})
+    public String registerMember(Device device, @ModelAttribute("registerForm") RegisterForm form, BindingResult bindingResult, Model model) {
         this.validator.validate(form, bindingResult);
         if (bindingResult.hasErrors()) {
             model.addAttribute("registerForm", form);
-            return "user/create";
+            return view(device, "member/create");
         }
         try {
             AccountDomain account = new AccountDomain();
@@ -94,13 +97,13 @@ public class RegisterController {
             account.setEnabled(true);
             if (this.accountService.save(account)) {
                 model.addAttribute("email", form.getEmail());
-                return "user/successregister";
+                return view(device, "member/successregister");
             }
         } catch (Exception ex) {
             this.logger.error("Register account error: ", ex);
         }
         bindingResult.rejectValue("username", "register.save.error");
         model.addAttribute("registerForm", form);
-        return "user/create";
+        return view(device, "member/create");
     }
 }

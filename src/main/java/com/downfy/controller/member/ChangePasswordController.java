@@ -38,6 +38,7 @@ import com.downfy.form.admin.ChangePasswordForm;
 import com.downfy.form.validator.admin.ChangePasswordValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.mobile.device.Device;
 
 /*
  * ChangePasswordController.java
@@ -85,27 +86,27 @@ public class ChangePasswordController extends AbstractController {
 
     @PreAuthorize("isAuthenticated()")
     @RequestMapping(method = {org.springframework.web.bind.annotation.RequestMethod.POST})
-    public String changePassword(@ModelAttribute("changePasswordForm") ChangePasswordForm form, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
+    public String changePassword(Device device, @ModelAttribute("changePasswordForm") ChangePasswordForm form, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
         this.validator.validate(form, bindingResult);
         if (bindingResult.hasErrors()) {
             uiModel.addAttribute("changePasswordForm", form);
-            return "user/changepassword";
+            return view(device, "member/changepassword");
         }
         try {
             this.accountService.changePassword(getUserId(), this.passwordEncoder.encodePassword(form.getNewPassword(), null));
-            return "user/successchangepassword";
+            return view(device, "member/successchangepassword");
         } catch (Exception ex) {
             logger.error("Change password for user " + getUserId() + " error.", ex);
             bindingResult.reject("changepassword.error");
             uiModel.addAttribute("changePasswordForm", new ChangePasswordForm());
         }
-        return "user/changepassword";
+        return view(device, "member/changepassword");
     }
 
     @PreAuthorize("isAuthenticated()")
     @RequestMapping(method = {org.springframework.web.bind.annotation.RequestMethod.GET})
-    public String index(Model uiModel) {
+    public String index(Device device, Model uiModel) {
         uiModel.addAttribute("changePasswordForm", new ChangePasswordForm());
-        return "user/changepassword";
+        return view(device, "member/changepassword");
     }
 }
