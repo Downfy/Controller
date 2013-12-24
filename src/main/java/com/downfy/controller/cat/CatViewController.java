@@ -14,11 +14,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.downfy.controller.app;
+package com.downfy.controller.cat;
 
 import com.downfy.controller.AbstractController;
-import com.downfy.controller.HomeController;
 import com.downfy.controller.MyResourceMessage;
+import com.downfy.controller.app.AppViewController;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,29 +31,38 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 /*
- * AppViewController.java
+ * CatViewController.java
  * 
- * App view controller
+ * Category view controller
  * 
  * Modification Logs:
  *  DATE            AUTHOR      DESCRIPTION
  *  --------------------------------------------------------
- *  12-Dec-2013     tuanta      Create first time
+ *  24-Dec-2013     tuanta      Create first time
  */
-@RequestMapping({"/*_{id}"})
 @Controller
-public class AppViewController extends AbstractController {
+public class CatViewController extends AbstractController {
 
     private Logger logger = LoggerFactory.getLogger(AppViewController.class);
     @Autowired
     MyResourceMessage resourceMessage;
 
-    @RequestMapping(method = RequestMethod.GET)
-    public String app(@PathVariable("id") long id, HttpServletRequest request, Device device, Model model) {
+    @RequestMapping(value = "/android-{group}", method = RequestMethod.GET)
+    public String groupAndroid(@PathVariable("group") String groupName, HttpServletRequest request, Device device, Model model) {
         try {
-            return view(device, "app-view");
+            return view(device, "android-group");
         } catch (Exception ex) {
-            logger.error("Cannot view app id " + id, ex);
+            logger.error("Cannot view group android " + groupName, ex);
+        }
+        return view(device, "maintenance");
+    }
+
+    @RequestMapping(value = "/android-{group}/{category}", method = RequestMethod.GET)
+    public String groupAndroidCategory(@PathVariable("group") String group, @PathVariable("category") String categoryName, HttpServletRequest request, Device device, Model model) {
+        try {
+            return view(device, "android-category");
+        } catch (Exception ex) {
+            logger.error("Cannot view category android " + categoryName, ex);
         }
         return view(device, "maintenance");
     }
