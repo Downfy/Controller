@@ -25,6 +25,16 @@ import org.springframework.validation.Validator;
 import com.downfy.common.MyValidator;
 import com.downfy.form.admin.RegisterForm;
 
+/*
+ * RegisterValidator.java
+ *
+ * Register validator
+ *
+ * Modification Logs:
+ *  DATE            AUTHOR      DESCRIPTION
+ *  --------------------------------------------------------
+ *  26-Nov-2013     tuanta      Create first time
+ */
 @Service
 public class RegisterValidator
         implements Validator {

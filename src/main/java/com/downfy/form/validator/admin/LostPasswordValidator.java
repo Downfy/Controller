@@ -25,6 +25,16 @@ import org.springframework.validation.Validator;
 import com.downfy.common.MyValidator;
 import com.downfy.form.admin.LostPasswordForm;
 
+/*
+ * LostPasswordValidator.java
+ *
+ * Lost password validator
+ *
+ * Modification Logs:
+ *  DATE            AUTHOR      DESCRIPTION
+ *  --------------------------------------------------------
+ *  26-Nov-2013     tuanta      Create first time
+ */
 @Service
 public class LostPasswordValidator
         implements Validator {
@@ -32,10 +42,12 @@ public class LostPasswordValidator
     @Autowired
     AccountService accountService;
 
+    @Override
     public boolean supports(Class<?> clazz) {
         return LostPasswordForm.class.equals(clazz);
     }
 
+    @Override
     public void validate(Object target, Errors errors) {
         LostPasswordForm form = (LostPasswordForm) target;
 

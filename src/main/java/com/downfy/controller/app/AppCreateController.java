@@ -17,7 +17,6 @@
 package com.downfy.controller.app;
 
 import com.downfy.controller.AbstractController;
-import com.downfy.controller.HomeController;
 import com.downfy.controller.MyResourceMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,9 +29,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 /*
- * HomeController.java
+ * AppCreateController.java
  * 
- * Home controller
+ * App create controller
  * 
  * Modification Logs:
  *  DATE            AUTHOR      DESCRIPTION
@@ -51,7 +50,7 @@ public class AppCreateController extends AbstractController {
     @RequestMapping(method = RequestMethod.GET)
     public String index(Device device, Model model) {
         try {
-            
+
             return view(device, "create-app");
         } catch (Exception ex) {
             logger.error("Cannot create app.", ex);

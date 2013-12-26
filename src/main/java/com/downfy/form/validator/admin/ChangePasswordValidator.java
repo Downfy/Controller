@@ -29,6 +29,16 @@ import org.springframework.validation.Validator;
 import com.downfy.common.MyValidator;
 import com.downfy.form.admin.ChangePasswordForm;
 
+/*
+ * ChangePasswordValidator.java
+ *
+ * Change password validator
+ *
+ * Modification Logs:
+ *  DATE            AUTHOR      DESCRIPTION
+ *  --------------------------------------------------------
+ *  26-Nov-2013     tuanta      Create first time
+ */
 @Service
 public class ChangePasswordValidator
         implements Validator {
