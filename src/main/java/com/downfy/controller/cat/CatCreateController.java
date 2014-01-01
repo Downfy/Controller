@@ -24,7 +24,8 @@ import com.downfy.controller.app.AppViewController;
 import com.downfy.form.CategoryForm;
 import com.downfy.form.admin.ChangePasswordForm;
 import com.downfy.form.validator.CategoryValidator;
-import com.downfy.form.validator.admin.ChangePasswordValidator;
+import com.downfy.persistence.domain.CategoryDomain;
+import com.downfy.service.CategoryService;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
@@ -61,11 +62,19 @@ public class CatCreateController extends AbstractController {
     MyResourceMessage resourceMessage;
     @Autowired
     CategoryValidator validator;
+    @Autowired
+    CategoryService categoryService;
+
+    private void setCategories(Model uiModel) {
+        List<CategoryDomain> cats = categoryService.findAll();
+        uiModel.addAttribute("cats", cats);
+    }
 
     @RequestMapping(method = RequestMethod.GET)
-    public String index(HttpServletRequest request, Device device, Model model) {
+    public String index(HttpServletRequest request, Device device, Model uiModel) {
         try {
-
+            uiModel.addAttribute("categoryForm", new CategoryForm());
+            setCategories(uiModel);
             return view(device, "member/create-cat");
         } catch (Exception ex) {
             logger.error("Cannot create category group.", ex);
@@ -74,11 +83,11 @@ public class CatCreateController extends AbstractController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @RequestMapping(value = {"/json"}, method = RequestMethod.POST)
+    @RequestMapping(value = "/json", method = RequestMethod.POST)
     @ResponseBody
-    public ValidationResponse createCategoryAjaxJson(Model model, @ModelAttribute("changePasswordForm") ChangePasswordForm form, HttpServletRequest request, BindingResult bindingResult) {
+    public ValidationResponse createCategoryAjaxJson(@ModelAttribute("categoryForm") CategoryDomain domain, HttpServletRequest request, BindingResult bindingResult) {
         ValidationResponse res = new ValidationResponse();
-        this.validator.validate(form, bindingResult);
+        this.validator.validate(domain, bindingResult);
         if (!bindingResult.hasErrors()) {
             res.setStatus("SUCCESS");
         } else {
@@ -95,15 +104,16 @@ public class CatCreateController extends AbstractController {
 
     @PreAuthorize("isAuthenticated()")
     @RequestMapping(method = RequestMethod.POST)
-    public String createCategory(Device device, @ModelAttribute("categoryForm") CategoryForm form, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
-        this.validator.validate(form, bindingResult);
+    public String createCategory(Device device, @ModelAttribute("categoryForm") CategoryDomain domain, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
+        this.validator.validate(domain, bindingResult);
         if (bindingResult.hasErrors()) {
-            uiModel.addAttribute("categoryForm", form);
+            uiModel.addAttribute("categoryForm", domain);
             return view(device, "member/create-cat");
         }
         try {
-//            this.accountService.changePassword(getUserId(), this.passwordEncoder.encodePassword(form.getNewPassword(), null));
-            return view(device, "member/create-cat-success");
+            categoryService.save(domain);
+            setCategories(uiModel);
+            return "redirect:/member/category.html";
         } catch (Exception ex) {
             logger.error("Change password for user " + getUserId() + " error.", ex);
             bindingResult.reject("changepassword.error");

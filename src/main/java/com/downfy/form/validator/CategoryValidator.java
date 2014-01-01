@@ -15,7 +15,8 @@
  */
 package com.downfy.form.validator;
 
-import com.downfy.form.admin.ResetPasswordForm;
+import com.downfy.common.MyValidator;
+import com.downfy.persistence.domain.CategoryDomain;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -36,14 +37,17 @@ public class CategoryValidator
 
     @Override
     public boolean supports(Class<?> clazz) {
-        return com.downfy.form.validator.admin.ResetPasswordValidator.class.equals(clazz);
+        return CategoryValidator.class.equals(clazz);
     }
 
     @Override
     public void validate(Object target, Errors errors) {
-        ResetPasswordForm form = (ResetPasswordForm) target;
-        if (!form.getNewPassword().equals(form.getAgainPassword())) {
-            errors.rejectValue("againPassword", "user.resetpasswordnotmatch");
+        CategoryDomain form = (CategoryDomain) target;
+        if (MyValidator.validateNullOrEmpty(form.getName())) {
+            errors.rejectValue("name", "category.namenotnull");
+        }
+        if (MyValidator.validateNullOrEmpty(form.getUrl())) {
+            errors.rejectValue("url", "category.urlnotnull");
         }
     }
 }

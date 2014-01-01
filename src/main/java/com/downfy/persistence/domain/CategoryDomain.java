@@ -106,13 +106,13 @@ public class CategoryDomain implements DomainObject {
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("[Category:").append(getName()).append(",");
         sb.append("URL:").append(getUrl()).append("]");
         return sb.toString();
     }
-    
+
     @Override
     public String getKey() {
         return getUrl();
