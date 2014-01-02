@@ -16,7 +16,7 @@
 package com.downfy.form.validator.backend.category;
 
 import com.downfy.common.MyValidator;
-import com.downfy.persistence.domain.backend.category.BackendCategoryDomain;
+import com.downfy.persistence.domain.category.CategoryDomain;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -42,7 +42,7 @@ public class BackendCategoryValidator
 
     @Override
     public void validate(Object target, Errors errors) {
-        BackendCategoryDomain form = (BackendCategoryDomain) target;
+        CategoryDomain form = (CategoryDomain) target;
         if (MyValidator.validateNullOrEmpty(form.getName())) {
             errors.rejectValue("name", "category.namenotnull");
         }

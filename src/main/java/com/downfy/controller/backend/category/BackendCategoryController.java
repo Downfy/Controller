@@ -22,7 +22,7 @@ import com.downfy.controller.AbstractController;
 import com.downfy.controller.MyResourceMessage;
 import com.downfy.form.member.ChangePasswordForm;
 import com.downfy.form.validator.backend.category.BackendCategoryValidator;
-import com.downfy.persistence.domain.backend.category.BackendCategoryDomain;
+import com.downfy.persistence.domain.category.CategoryDomain;
 import com.downfy.service.CategoryService;
 import java.util.ArrayList;
 import java.util.List;
@@ -64,7 +64,7 @@ public class BackendCategoryController extends AbstractController {
     CategoryService categoryService;
 
     private void setCategories(Model uiModel) {
-        List<BackendCategoryDomain> cats = categoryService.findAll();
+        List<CategoryDomain> cats = categoryService.findAll();
         uiModel.addAttribute("cats", cats);
     }
 
@@ -72,9 +72,9 @@ public class BackendCategoryController extends AbstractController {
     @RequestMapping(method = RequestMethod.GET)
     public String index(HttpServletRequest request, Device device, Model uiModel) {
         try {
-            uiModel.addAttribute("categoryForm", new BackendCategoryDomain());
+            uiModel.addAttribute("categoryForm", new CategoryDomain());
             setCategories(uiModel);
-            return view(device, "admin/category");
+            return view(device, "backend/category");
         } catch (Exception ex) {
             logger.error("Cannot create category group.", ex);
         }
@@ -84,7 +84,7 @@ public class BackendCategoryController extends AbstractController {
     @PreAuthorize("hasRole('ROLE_MANAGER')")
     @RequestMapping(value = "/json", method = RequestMethod.POST)
     @ResponseBody
-    public ValidationResponse createCategoryAjaxJson(@ModelAttribute("categoryForm") BackendCategoryDomain domain, HttpServletRequest request, BindingResult bindingResult) {
+    public ValidationResponse createCategoryAjaxJson(@ModelAttribute("categoryForm") CategoryDomain domain, HttpServletRequest request, BindingResult bindingResult) {
         ValidationResponse res = new ValidationResponse();
         this.validator.validate(domain, bindingResult);
         if (!bindingResult.hasErrors()) {
@@ -103,11 +103,11 @@ public class BackendCategoryController extends AbstractController {
 
     @PreAuthorize("hasRole('ROLE_MANAGER')")
     @RequestMapping(method = RequestMethod.POST)
-    public String createCategory(Device device, @ModelAttribute("categoryForm") BackendCategoryDomain domain, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
+    public String createCategory(Device device, @ModelAttribute("categoryForm") CategoryDomain domain, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
         this.validator.validate(domain, bindingResult);
         if (bindingResult.hasErrors()) {
             uiModel.addAttribute("categoryForm", domain);
-            return view(device, "admin/category");
+            return view(device, "backend/category");
         }
         try {
             categoryService.save(domain);
@@ -118,6 +118,6 @@ public class BackendCategoryController extends AbstractController {
             bindingResult.reject("changepassword.error");
             uiModel.addAttribute("changePasswordForm", new ChangePasswordForm());
         }
-        return view(device, "admin/category");
+        return view(device, "backend/category");
     }
 }

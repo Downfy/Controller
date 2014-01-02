@@ -14,14 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.downfy.persistence.repositories.backend.category;
+package com.downfy.persistence.repositories.category;
 
-import com.downfy.persistence.domain.backend.category.BackendCategoryDomain;
+import com.downfy.persistence.domain.category.CategoryDomain;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 /*
- * BackendCategoryRepository.java
+ * CategoryRepository.java
  * 
  * Category repository
  * 
@@ -30,17 +30,17 @@ import org.apache.ibatis.annotations.Param;
  *  --------------------------------------------------------
  *  1-Dec-2013     tuanta      Create first time
  */
-public interface BackendCategoryRepository {
+public interface CategoryRepository {
 
-    List<BackendCategoryDomain> findAll();
+    List<CategoryDomain> findAll();
 
-    BackendCategoryDomain findById(int id);
+    CategoryDomain findById(int id);
 
-    BackendCategoryDomain findByUrl(@Param(value = "url") String url);
+    CategoryDomain findByUrl(@Param(value = "url") String url);
 
-    void save(BackendCategoryDomain domain);
+    void save(CategoryDomain domain);
 
-    void update(BackendCategoryDomain domain);
+    void update(CategoryDomain domain);
     
     void delete(@Param(value = "url") String url);
 }

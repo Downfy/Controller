@@ -15,7 +15,7 @@
  */
 package com.downfy.persistence.repositories;
 
-import com.downfy.persistence.repositories.backend.category.BackendCategoryRepository;
+import com.downfy.persistence.repositories.category.CategoryRepository;
 import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
@@ -23,7 +23,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import com.downfy.persistence.domain.backend.category.BackendCategoryDomain;
+import com.downfy.persistence.domain.category.CategoryDomain;
 import org.springframework.dao.DuplicateKeyException;
 
 /*
@@ -41,7 +41,7 @@ import org.springframework.dao.DuplicateKeyException;
 public class CategoryRepositoryTest {
 
     @Autowired
-    BackendCategoryRepository repository;
+    CategoryRepository repository;
 
     @Test
     public void testConfigure() {
@@ -51,7 +51,7 @@ public class CategoryRepositoryTest {
     @Test
     public void testSave() {
         try {
-            BackendCategoryDomain domain = new BackendCategoryDomain();
+            CategoryDomain domain = new CategoryDomain();
             domain.setName("Arcade & Action");
             domain.setUrl("Arcade-Action");
             repository.save(domain);
@@ -61,8 +61,8 @@ public class CategoryRepositoryTest {
 
     @Test
     public void testUpdateUrl() {
-        List<BackendCategoryDomain> domains = repository.findAll();
-        for (BackendCategoryDomain category : domains) {
+        List<CategoryDomain> domains = repository.findAll();
+        for (CategoryDomain category : domains) {
             category.setUrl(System.currentTimeMillis() + "");
             repository.update(category);
         }

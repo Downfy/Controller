@@ -14,14 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.downfy.persistence.domain.backend.category;
+package com.downfy.persistence.domain.category;
 
 import com.downfy.common.ObjectKey;
 import com.downfy.persistence.domain.DomainObject;
 import java.sql.Timestamp;
 
 /*
- * BackendCategoryDomain.java
+ * CategoryDomain.java
  * 
  * Admin category domain
  * 
@@ -30,7 +30,7 @@ import java.sql.Timestamp;
  *  --------------------------------------------------------
  *  27-Nov-2013     tuanta      Create first time
  */
-public class BackendCategoryDomain implements DomainObject {
+public class CategoryDomain implements DomainObject {
 
     public static final String OBJECT_KEY = ObjectKey.CATEGORY;
     private int id;

@@ -21,7 +21,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import com.downfy.controller.AbstractController;
-import com.downfy.persistence.domain.backend.developer.BackendDeveloperDomain;
+import com.downfy.persistence.domain.developer.DeveloperDomain;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mobile.device.Device;
@@ -47,8 +47,8 @@ public class BackendDeveloperController extends AbstractController {
     @RequestMapping(method = RequestMethod.GET)
     public String index(Device device, Model uiModel) {
         try {
-            uiModel.addAttribute("adminDeveloperForm", new BackendDeveloperDomain());
-            return view(device, "admin/developer");
+            uiModel.addAttribute("developerForm", new DeveloperDomain());
+            return view(device, "backend/developer");
         } catch (Exception ex) {
             logger.error("Cannot show developer form.", ex);
         }

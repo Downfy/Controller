@@ -16,8 +16,8 @@
  */
 package com.downfy.service;
 
-import com.downfy.persistence.domain.backend.category.BackendCategoryDomain;
-import com.downfy.persistence.repositories.backend.category.BackendCategoryRepository;
+import com.downfy.persistence.domain.category.CategoryDomain;
+import com.downfy.persistence.repositories.category.CategoryRepository;
 import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
@@ -36,24 +36,24 @@ import org.springframework.data.redis.core.RedisTemplate;
  *  --------------------------------------------------------
  *  27-Nov-2013     tuanta      Create first time
  */
-public class CategoryService implements CacheService<BackendCategoryDomain> {
+public class CategoryService implements CacheService<CategoryDomain> {
 
     private final Logger logger = LoggerFactory.getLogger(CategoryService.class);
     @Autowired
-    private BackendCategoryRepository repository;
+    private CategoryRepository repository;
     @Autowired
-    private RedisTemplate<String, BackendCategoryDomain> redisTemplate;
+    private RedisTemplate<String, CategoryDomain> redisTemplate;
 
-    public void setRepository(BackendCategoryRepository repository) {
+    public void setRepository(CategoryRepository repository) {
         this.repository = repository;
     }
 
-    public void setRedisTemplate(RedisTemplate<String, BackendCategoryDomain> redisTemplate) {
+    public void setRedisTemplate(RedisTemplate<String, CategoryDomain> redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
 
-    public List<BackendCategoryDomain> findAll() {
-        List<BackendCategoryDomain> category = null;
+    public List<CategoryDomain> findAll() {
+        List<CategoryDomain> category = null;
         try {
             this.logger.debug("Find all categories in cache.");
             category = getCacheObjects();
@@ -73,17 +73,17 @@ public class CategoryService implements CacheService<BackendCategoryDomain> {
         return category;
     }
 
-    public BackendCategoryDomain findByURL(String url) {
+    public CategoryDomain findByURL(String url) {
         this.logger.debug("Find url " + url + " in cache.");
         return getCacheObject(url);
     }
 
     public boolean isExsit(String url) {
-        BackendCategoryDomain category = getCacheObject(url);
+        CategoryDomain category = getCacheObject(url);
         return category != null;
     }
 
-    public boolean save(BackendCategoryDomain domain) {
+    public boolean save(CategoryDomain domain) {
         try {
             this.logger.debug("Save category " + domain.toString() + " to database");
             this.repository.save(domain);
@@ -122,7 +122,7 @@ public class CategoryService implements CacheService<BackendCategoryDomain> {
     }
 
     @Override
-    public void putCacheObject(BackendCategoryDomain domain) {
+    public void putCacheObject(CategoryDomain domain) {
         try {
             this.redisTemplate.opsForHash().put(domain.getObjectKey(), domain.getKey(), domain);
         } catch (Exception ex) {
@@ -131,16 +131,16 @@ public class CategoryService implements CacheService<BackendCategoryDomain> {
     }
 
     @Override
-    public BackendCategoryDomain getCacheObject(String key) {
-        BackendCategoryDomain domain = null;
+    public CategoryDomain getCacheObject(String key) {
+        CategoryDomain domain = null;
         try {
-            this.logger.debug("Get key " + key + " object " + BackendCategoryDomain.OBJECT_KEY + " in cache");
-            domain = (BackendCategoryDomain) redisTemplate.opsForHash().get(BackendCategoryDomain.OBJECT_KEY, key);
+            this.logger.debug("Get key " + key + " object " + CategoryDomain.OBJECT_KEY + " in cache");
+            domain = (CategoryDomain) redisTemplate.opsForHash().get(CategoryDomain.OBJECT_KEY, key);
             if (domain == null) {
-                this.logger.debug("Get key " + key + " object " + BackendCategoryDomain.OBJECT_KEY + " in database");
+                this.logger.debug("Get key " + key + " object " + CategoryDomain.OBJECT_KEY + " in database");
                 domain = repository.findByUrl(key);
                 if (domain == null) {
-                    this.logger.debug("Account " + key + " object " + BackendCategoryDomain.OBJECT_KEY + " not found");
+                    this.logger.debug("Account " + key + " object " + CategoryDomain.OBJECT_KEY + " not found");
                 }
             }
         } catch (Exception ex) {
@@ -152,68 +152,68 @@ public class CategoryService implements CacheService<BackendCategoryDomain> {
     @Override
     public void removeCacheObject(String key) {
         try {
-            this.logger.debug("Remove key " + key + " object " + BackendCategoryDomain.OBJECT_KEY + " in cache");
-            this.redisTemplate.opsForHash().delete(BackendCategoryDomain.OBJECT_KEY, key);
+            this.logger.debug("Remove key " + key + " object " + CategoryDomain.OBJECT_KEY + " in cache");
+            this.redisTemplate.opsForHash().delete(CategoryDomain.OBJECT_KEY, key);
         } catch (Exception ex) {
             this.logger.warn("Can't remove from Redis", ex);
         }
     }
 
     @Override
-    public List<BackendCategoryDomain> getCacheObjects() {
-        List<BackendCategoryDomain> users = new ArrayList<BackendCategoryDomain>();
+    public List<CategoryDomain> getCacheObjects() {
+        List<CategoryDomain> users = new ArrayList<CategoryDomain>();
         try {
-            this.logger.debug("Get all objects " + BackendCategoryDomain.OBJECT_KEY + " in cache");
-            for (Object user : redisTemplate.opsForHash().values(BackendCategoryDomain.OBJECT_KEY)) {
-                users.add((BackendCategoryDomain) user);
+            this.logger.debug("Get all objects " + CategoryDomain.OBJECT_KEY + " in cache");
+            for (Object user : redisTemplate.opsForHash().values(CategoryDomain.OBJECT_KEY)) {
+                users.add((CategoryDomain) user);
             }
         } catch (Exception ex) {
-            this.logger.warn("Can't get all objects " + BackendCategoryDomain.OBJECT_KEY + " from Redis", ex);
+            this.logger.warn("Can't get all objects " + CategoryDomain.OBJECT_KEY + " from Redis", ex);
         }
         return users;
     }
 
     @Override
-    public List<BackendCategoryDomain> getCacheLimitObjects(int start, int end) {
-        List<BackendCategoryDomain> users = new ArrayList<BackendCategoryDomain>();
+    public List<CategoryDomain> getCacheLimitObjects(int start, int end) {
+        List<CategoryDomain> users = new ArrayList<CategoryDomain>();
         try {
-            this.logger.debug("Get objects from " + start + " to " + end + " " + BackendCategoryDomain.OBJECT_KEY + " in cache");
+            this.logger.debug("Get objects from " + start + " to " + end + " " + CategoryDomain.OBJECT_KEY + " in cache");
             long count = count();
             if (start > count) {
                 this.logger.debug("Can't get objects outside list data.");
                 return users;
             }
-            List users_ = redisTemplate.opsForHash().values(BackendCategoryDomain.OBJECT_KEY);
+            List users_ = redisTemplate.opsForHash().values(CategoryDomain.OBJECT_KEY);
             for (int i = start; i < end; i++) {
                 if (end < count) {
-                    users.add((BackendCategoryDomain) users_.get(i));
+                    users.add((CategoryDomain) users_.get(i));
                 }
             }
         } catch (Exception ex) {
-            this.logger.warn("Can't get objects from " + start + " to " + end + " " + BackendCategoryDomain.OBJECT_KEY + " from Redis", ex);
+            this.logger.warn("Can't get objects from " + start + " to " + end + " " + CategoryDomain.OBJECT_KEY + " from Redis", ex);
         }
         return users;
     }
 
     @Override
-    public void setCacheObjects(List<BackendCategoryDomain> domains) {
+    public void setCacheObjects(List<CategoryDomain> domains) {
         try {
-            this.logger.debug("Set " + domains.size() + " objects " + BackendCategoryDomain.OBJECT_KEY + " to cache");
-            for (BackendCategoryDomain domain : domains) {
+            this.logger.debug("Set " + domains.size() + " objects " + CategoryDomain.OBJECT_KEY + " to cache");
+            for (CategoryDomain domain : domains) {
                 putCacheObject(domain);
             }
         } catch (Exception ex) {
-            this.logger.warn("Can't set objects " + BackendCategoryDomain.OBJECT_KEY + " to Redis", ex);
+            this.logger.warn("Can't set objects " + CategoryDomain.OBJECT_KEY + " to Redis", ex);
         }
     }
 
     @Override
     public long countCacheObject() {
         try {
-            this.logger.debug("Count objects " + BackendCategoryDomain.OBJECT_KEY + " in cache");
-            return redisTemplate.opsForHash().size(BackendCategoryDomain.OBJECT_KEY);
+            this.logger.debug("Count objects " + CategoryDomain.OBJECT_KEY + " in cache");
+            return redisTemplate.opsForHash().size(CategoryDomain.OBJECT_KEY);
         } catch (Exception ex) {
-            this.logger.warn("Can't count objects " + BackendCategoryDomain.OBJECT_KEY + " from Redis", ex);
+            this.logger.warn("Can't count objects " + CategoryDomain.OBJECT_KEY + " from Redis", ex);
         }
         return 0;
     }

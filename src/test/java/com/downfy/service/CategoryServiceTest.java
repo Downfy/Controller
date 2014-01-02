@@ -15,7 +15,7 @@
  */
 package com.downfy.service;
 
-import com.downfy.persistence.domain.backend.category.BackendCategoryDomain;
+import com.downfy.persistence.domain.category.CategoryDomain;
 import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
@@ -50,13 +50,13 @@ public class CategoryServiceTest {
 
     @Test
     public void testFindAll() {
-        List<BackendCategoryDomain> categorys = service.findAll();
+        List<CategoryDomain> categorys = service.findAll();
         Assert.assertTrue(!categorys.isEmpty());
     }
 
     @Test
     public void testRepository() {
-        BackendCategoryDomain category = new BackendCategoryDomain();
+        CategoryDomain category = new CategoryDomain();
         category.setName("test");
         category.setUrl("test");
         Assert.assertEquals(true, service.save(category));

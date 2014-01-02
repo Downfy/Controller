@@ -14,14 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.downfy.persistence.domain.backend.developer;
+package com.downfy.persistence.domain.developer;
 
 import com.downfy.common.ObjectKey;
 import com.downfy.persistence.domain.DomainObject;
 import java.util.Date;
 
 /*
- * BackendDeveloperDomain.java
+ * DeveloperDomain.java
  * 
  * Admin developer domain
  * 
@@ -30,7 +30,7 @@ import java.util.Date;
  *  --------------------------------------------------------
  *  27-Nov-2013     tuanta      Create first time
  */
-public class BackendDeveloperDomain
+public class DeveloperDomain
         implements DomainObject {
 
     public static final String OBJECT_KEY = ObjectKey.USER_DEVELOPER;
