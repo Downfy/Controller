@@ -2,39 +2,39 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.downfy.persistence.repositories.CategoryRepository">
+<mapper namespace="com.downfy.persistence.repositories.category.CategoryRepository">
 
     <cache type="org.mybatis.caches.ehcache.EhcacheCache"/>
 
     <select id="findAll" resultType="CategoryDomain" flushCache="false" useCache="true">
-        SELECT ID, NAME, URL, ENABLED, SORT 
+        SELECT ID, PARENT, NAME, URL, ENABLED, SORT 
         FROM categories
-        WHERE ENABLED = true
-        ORDER BY URL
+        ORDER BY PARENT, URL
     </select>
     
     <select id="findById" resultType="CategoryDomain" flushCache="false" useCache="true">
-        SELECT ID, NAME, URL, ENABLED, SORT 
+        SELECT ID, PARENT, NAME, URL, ENABLED, SORT 
         FROM categories
         WHERE ID = #{id}
     </select>
     
     <select id="findByUrl" resultType="CategoryDomain" flushCache="false" useCache="true">
-        SELECT ID, NAME, URL, ENABLED, SORT 
+        SELECT ID, PARENT, NAME, URL, ENABLED, SORT 
         FROM categories
         WHERE URL = #{url}
     </select>
     
     <insert id="save" parameterType="CategoryDomain" flushCache="true">
         INSERT INTO categories
-        (NAME, URL)
+        (NAME, URL, PARENT)
         VALUES
-        (#{name},#{url})
+        (#{name},#{url},#{parent})
     </insert>
     
     <update id="update" flushCache="true">
         UPDATE categories
         SET 
+        PARENT = #{parent},
         NAME = #{name},
         URL = #{url},
         SORT = #{sort},

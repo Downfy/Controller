@@ -69,4 +69,11 @@ public class CategoryServiceTest {
     public void testExsit() {
         Assert.assertEquals(false, service.isExsit("test"));
     }
+
+    @Test
+    public void testClearCache() {
+        service.clearCache();
+        List<CategoryDomain> categorys = service.getCacheObjects();
+        Assert.assertTrue(categorys.isEmpty());
+    }
 }

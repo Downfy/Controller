@@ -217,4 +217,16 @@ public class CategoryService implements CacheService<CategoryDomain> {
         }
         return 0;
     }
+
+    public void clearCache() {
+        try {
+            this.logger.debug("Clear objects " + CategoryDomain.OBJECT_KEY + " in cache");
+            List<CategoryDomain> objects = getCacheObjects();
+            for (CategoryDomain categoryDomain : objects) {
+                removeCacheObject(categoryDomain.getKey());
+            }
+        } catch (Exception ex) {
+            this.logger.warn("Can't count objects " + CategoryDomain.OBJECT_KEY + " from Redis", ex);
+        }
+    }
 }
