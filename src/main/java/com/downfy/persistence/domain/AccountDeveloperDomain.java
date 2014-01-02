@@ -20,9 +20,9 @@ import com.downfy.common.ObjectKey;
 import java.util.Date;
 
 /*
- * AccountDomain.java
+ * AccountDeveloperDomain.java
  * 
- * Account domain
+ * Account developer domain
  * 
  * Modification Logs:
  *  DATE            AUTHOR      DESCRIPTION

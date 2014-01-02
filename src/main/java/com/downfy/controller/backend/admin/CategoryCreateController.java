@@ -14,14 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.downfy.controller.cat;
+package com.downfy.controller.backend.admin;
 
 import com.downfy.common.ErrorMessage;
 import com.downfy.common.ValidationResponse;
 import com.downfy.controller.AbstractController;
 import com.downfy.controller.MyResourceMessage;
 import com.downfy.controller.app.AppViewController;
-import com.downfy.form.CategoryForm;
 import com.downfy.form.admin.ChangePasswordForm;
 import com.downfy.form.validator.CategoryValidator;
 import com.downfy.persistence.domain.CategoryDomain;
@@ -44,7 +43,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /*
- * CatCreateController.java
+ * CategoryCreateController.java
  *
  * Category create controller
  *
@@ -53,9 +52,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
  *  --------------------------------------------------------
  *  26-Dec-2013     tuanta      Create first time
  */
-@RequestMapping("/member/category")
+@RequestMapping("/backend/category")
 @Controller
-public class CatCreateController extends AbstractController {
+public class CategoryCreateController extends AbstractController {
 
     private Logger logger = LoggerFactory.getLogger(AppViewController.class);
     @Autowired
@@ -73,7 +72,7 @@ public class CatCreateController extends AbstractController {
     @RequestMapping(method = RequestMethod.GET)
     public String index(HttpServletRequest request, Device device, Model uiModel) {
         try {
-            uiModel.addAttribute("categoryForm", new CategoryForm());
+            uiModel.addAttribute("categoryForm", new CategoryDomain());
             setCategories(uiModel);
             return view(device, "member/create-cat");
         } catch (Exception ex) {
