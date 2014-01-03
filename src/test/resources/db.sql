@@ -125,12 +125,28 @@ CREATE TABLE IF NOT EXISTS `categories` (
   `parent` int(11) NOT NULL DEFAULT '0',
   `enabled` bit(1) NOT NULL DEFAULT b'1',
   `sort` int(2) unsigned NOT NULL DEFAULT '0',
-  `hot` bit(1) NOT NULL,
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`),
   UNIQUE KEY `url` (`url`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `developers`
+--
+
+DROP TABLE IF EXISTS `developers`;
+CREATE TABLE IF NOT EXISTS `developers` (
+  `id` varchar(100) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `description` varchar(500) NOT NULL DEFAULT '',
+  `enabled` bit(1) NOT NULL DEFAULT b'1',
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 

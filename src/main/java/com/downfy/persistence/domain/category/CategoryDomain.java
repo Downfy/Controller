@@ -23,7 +23,7 @@ import java.sql.Timestamp;
 /*
  * CategoryDomain.java
  * 
- * Admin category domain
+ * Category domain
  * 
  * Modification Logs:
  *  DATE            AUTHOR      DESCRIPTION

@@ -14,10 +14,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.downfy.service;
+package com.downfy.service.category;
 
 import com.downfy.persistence.domain.category.CategoryDomain;
 import com.downfy.persistence.repositories.category.CategoryRepository;
+import com.downfy.service.CacheService;
 import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
@@ -27,9 +28,9 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.redis.core.RedisTemplate;
 
 /*
- * AccountService.java
+ * CategoryService.java
  * 
- * Account service
+ * Category service
  * 
  * Modification Logs:
  *  DATE            AUTHOR      DESCRIPTION

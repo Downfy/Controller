@@ -23,7 +23,7 @@ import java.util.Date;
 /*
  * DeveloperDomain.java
  * 
- * Admin developer domain
+ * Developer domain
  * 
  * Modification Logs:
  *  DATE            AUTHOR      DESCRIPTION
@@ -34,19 +34,11 @@ public class DeveloperDomain
         implements DomainObject {
 
     public static final String OBJECT_KEY = ObjectKey.USER_DEVELOPER;
-    private long id;
     private String developerId;
     private String developerInfo;
     private String developerName;
+    private boolean enabled;
     private Date created;
-
-    public long getId() {
-        return this.id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
 
     public String getDeveloperId() {
         return developerId;
@@ -70,6 +62,14 @@ public class DeveloperDomain
 
     public void setDeveloperName(String developerName) {
         this.developerName = developerName;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     public Date getCreated() {

@@ -15,8 +15,8 @@
  */
 package com.downfy.service;
 
-import com.downfy.service.category.CategoryService;
-import com.downfy.persistence.domain.category.CategoryDomain;
+import com.downfy.service.developer.DeveloperService;
+import com.downfy.persistence.domain.developer.DeveloperDomain;
 import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
@@ -26,23 +26,23 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /*
- * CategoryServiceTest.java
+ * DeveloperServiceTest.java
  * 
- * Account service test
+ * Developer service test
  * 
  * Modification Logs:
  *  DATE            AUTHOR      DESCRIPTION
  *  --------------------------------------------------------
- *  27-Nov-2013     tuanta      Create first time
+ *  03-Jan-2014     tuanta      Create first time
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:applicationContext-mybatis.xml",
     "classpath:META-INF/spring/applicationContext-service.xml",
     "classpath:META-INF/spring/applicationContext-redis.xml"})
-public class CategoryServiceTest {
+public class DeveloperServiceTest {
 
     @Autowired
-    CategoryService service;
+    DeveloperService service;
 
     @Test
     public void testConfigure() {
@@ -51,13 +51,14 @@ public class CategoryServiceTest {
 
     @Test
     public void testRepository() {
-        CategoryDomain category = new CategoryDomain();
-        category.setName("test");
-        category.setUrl("test");
-        Assert.assertEquals(true, service.save(category));
-        category = service.findByURL("test");
-        Assert.assertEquals("test", category.getUrl());
-        Assert.assertEquals(true, service.delete(category.getKey()));
+        DeveloperDomain developer = new DeveloperDomain();
+        developer.setDeveloperId("test");
+        developer.setDeveloperName("test");
+        developer.setDeveloperInfo("test");
+        Assert.assertEquals(true, service.save(developer));
+        developer = service.findById("test");
+        Assert.assertEquals("test", developer.getDeveloperId());
+        Assert.assertEquals(true, service.delete(developer.getKey()));
     }
 
     @Test
@@ -68,7 +69,7 @@ public class CategoryServiceTest {
     @Test
     public void testClearCache() {
         service.clearCache();
-        List<CategoryDomain> categorys = service.getCacheObjects();
-        Assert.assertTrue(categorys.isEmpty());
+        List<DeveloperDomain> developers = service.getCacheObjects();
+        Assert.assertTrue(developers.isEmpty());
     }
 }

@@ -20,10 +20,9 @@ import com.downfy.common.ErrorMessage;
 import com.downfy.common.ValidationResponse;
 import com.downfy.controller.AbstractController;
 import com.downfy.controller.MyResourceMessage;
-import com.downfy.form.member.ChangePasswordForm;
 import com.downfy.form.validator.backend.category.BackendCategoryValidator;
 import com.downfy.persistence.domain.category.CategoryDomain;
-import com.downfy.service.CategoryService;
+import com.downfy.service.category.CategoryService;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
@@ -112,11 +111,11 @@ public class BackendCategoryController extends AbstractController {
         try {
             categoryService.save(domain);
             setCategories(uiModel);
-            return "redirect:/admin/category.html";
+            return "redirect:/backend/category.html";
         } catch (Exception ex) {
-            logger.error("Change password for user " + getUserId() + " error.", ex);
-            bindingResult.reject("changepassword.error");
-            uiModel.addAttribute("changePasswordForm", new ChangePasswordForm());
+            logger.error("Create category error.", ex);
+            bindingResult.reject("category.error");
+            uiModel.addAttribute("categoryForm", domain);
         }
         return view(device, "backend/category");
     }
