@@ -16,15 +16,62 @@
  */
 package com.downfy.form;
 
-/**
+import com.downfy.persistence.domain.application.AppDomain;
+
+/*
+ * AppForm.java
  *
- * @author Tran Anh Tuan <tk1cntt@gmail.com>
+ * App form
+ *
+ * Modification Logs:
+ *  DATE            AUTHOR      DESCRIPTION
+ *  --------------------------------------------------------
+ *  05-Jan-2014     tuanta      Create first time
  */
 public class AppForm {
 
-    private String title;
-    private String description;
+    private long appId;
     private String appName;
-    private String appCategory;
-    private String appAuthor;
+    private String appDescription;
+    private int appCategory;
+
+    public long getAppId() {
+        return appId;
+    }
+
+    public void setAppId(long appId) {
+        this.appId = appId;
+    }
+
+    public String getAppName() {
+        return appName;
+    }
+
+    public void setAppName(String appName) {
+        this.appName = appName;
+    }
+
+    public String getAppDescription() {
+        return appDescription;
+    }
+
+    public void setAppDescription(String appDescription) {
+        this.appDescription = appDescription;
+    }
+
+    public int getAppCategory() {
+        return appCategory;
+    }
+
+    public void setAppCategory(int appCategory) {
+        this.appCategory = appCategory;
+    }
+
+    public AppDomain toAppDomain() {
+        AppDomain domain = new AppDomain();
+        domain.setAppName(getAppName());
+        domain.setAppDescription(getAppDescription());
+        domain.setAppCategory(getAppCategory());
+        return domain;
+    }
 }

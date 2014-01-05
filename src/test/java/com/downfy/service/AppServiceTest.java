@@ -15,7 +15,7 @@
  */
 package com.downfy.service;
 
-import com.downfy.persistence.domain.AppDomain;
+import com.downfy.persistence.domain.application.AppDomain;
 import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
@@ -51,7 +51,7 @@ public class AppServiceTest {
     @Test
     public void testFindAll() {
         List<AppDomain> apps = service.findAll();
-        Assert.assertTrue(apps.isEmpty());
+        Assert.assertTrue(!apps.isEmpty());
     }
 
     @Test
@@ -67,10 +67,10 @@ public class AppServiceTest {
         app.setAppId(time);
         app.setAppName("test");
         app.setAppDescription("test");
-        app.setAppCategory(1l);
+        app.setAppCategory(1);
         app.setCreater(1234567890);
         List<AppDomain> apps = service.findByDeveloper(1234567890);
-        Assert.assertTrue(apps.isEmpty());
+        Assert.assertTrue(!apps.isEmpty());
         Assert.assertTrue(service.save(app));
         apps = service.findByDeveloper(1234567890);
         Assert.assertTrue(!apps.isEmpty());

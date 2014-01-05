@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  *  --------------------------------------------------------
  *  01-Jan-2014     tuanta      Create first time
  */
-@RequestMapping({"/backend/admin"})
+@RequestMapping({"/backend"})
 @Controller
 public class BackendController {
 

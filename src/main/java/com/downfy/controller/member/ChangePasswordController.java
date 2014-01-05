@@ -93,10 +93,10 @@ public class ChangePasswordController extends AbstractController {
             return view(device, "member/changepassword");
         }
         try {
-            this.accountService.changePassword(getUserId(), this.passwordEncoder.encodePassword(form.getNewPassword(), null));
+            this.accountService.changePassword(getUsername(), this.passwordEncoder.encodePassword(form.getNewPassword(), null));
             return view(device, "member/successchangepassword");
         } catch (Exception ex) {
-            logger.error("Change password for user " + getUserId() + " error.", ex);
+            logger.error("Change password for user " + getUsername() + " error.", ex);
             bindingResult.reject("changepassword.error");
             uiModel.addAttribute("changePasswordForm", new ChangePasswordForm());
         }

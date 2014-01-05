@@ -16,8 +16,8 @@
  */
 package com.downfy.service;
 
-import com.downfy.persistence.domain.AppDomain;
-import com.downfy.persistence.repositories.AppRepository;
+import com.downfy.persistence.domain.application.AppDomain;
+import com.downfy.persistence.repositories.application.AppRepository;
 import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;

@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.downfy.persistence.repositories;
+package com.downfy.persistence.repositories.application;
 
-import com.downfy.persistence.domain.AppDomain;
+import com.downfy.persistence.domain.application.AppDomain;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 

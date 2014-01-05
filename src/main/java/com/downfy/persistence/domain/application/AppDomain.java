@@ -14,9 +14,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.downfy.persistence.domain;
+package com.downfy.persistence.domain.application;
 
 import com.downfy.common.ObjectKey;
+import com.downfy.persistence.domain.DomainObject;
 import java.util.Date;
 import java.util.List;
 
@@ -36,7 +37,7 @@ public class AppDomain implements DomainObject {
     private long appId;
     private String appName;
     private String appDescription;
-    private long appCategory;
+    private int appCategory;
     private int appView;
     private int appDownload;
     private String appCurrentVersion;
@@ -75,11 +76,11 @@ public class AppDomain implements DomainObject {
         this.appName = appName;
     }
 
-    public long getAppCategory() {
+    public int getAppCategory() {
         return appCategory;
     }
 
-    public void setAppCategory(long appCategory) {
+    public void setAppCategory(int appCategory) {
         this.appCategory = appCategory;
     }
 
@@ -195,7 +196,7 @@ public class AppDomain implements DomainObject {
         sb.append("Category:").append(getAppCategory()).append("]");
         return sb.toString();
     }
-    
+
     @Override
     public String getKey() {
         return getAppId() + "";

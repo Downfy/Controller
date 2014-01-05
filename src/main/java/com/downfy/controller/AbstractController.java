@@ -22,7 +22,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 public abstract class AbstractController {
 
-    public String getUserId() {
+    public String getUsername() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null) {
             if (auth.getPrincipal() instanceof UserDetails) {
@@ -34,8 +34,12 @@ public abstract class AbstractController {
         return "anonymousUser";
     }
 
+    public long getUserId() {
+        return 1234567890;
+    }
+
     public boolean isAuthenticated() {
-        if ((SecurityContextHolder.getContext().getAuthentication() != null) && (SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) && (!getUserId().equals("anonymousUser"))) {
+        if ((SecurityContextHolder.getContext().getAuthentication() != null) && (SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) && (!getUsername().equals("anonymousUser"))) {
             return true;
         }
         return false;
