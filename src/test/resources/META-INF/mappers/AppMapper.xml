@@ -4,8 +4,6 @@
 
 <mapper namespace="com.downfy.persistence.repositories.application.AppRepository">
 
-    <cache type="org.mybatis.caches.ehcache.EhcacheCache"/>
-    
     <select id="findAll" resultType="AppDomain" flushCache="false" useCache="true">
         SELECT
         APP_ID as appId,
@@ -84,9 +82,9 @@
     
     <insert id="save" parameterType="AppDomain" flushCache="true">
         INSERT INTO apps
-        (APP_ID, APP_NAME, APP_DESCRIPTION, APP_CATEGORY, CREATER)
+        (APP_ID, APP_NAME, APP_DESCRIPTION, APP_CATEGORY, CREATER, UPDATER, UPDATED)
         VALUES
-        (#{appId}, #{appName}, #{appDescription}, #{appCategory}, #{creater})
+        (#{appId}, #{appName}, #{appDescription}, #{appCategory}, #{creater}, #{updater}, #{updated})
     </insert>
     
     <update id="updateAppInfo" parameterType="AppDomain" flushCache="true">

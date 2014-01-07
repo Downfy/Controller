@@ -4,8 +4,6 @@
 
 <mapper namespace="com.downfy.persistence.repositories.AccountRepository">
 
-    <cache type="org.mybatis.caches.ehcache.EhcacheCache"/>
-    
     <select id="findAll" resultType="AccountDomain" flushCache="false" useCache="true">
         SELECT
         ID,

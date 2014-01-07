@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.downfy.form;
+package com.downfy.form.backend.application;
 
 import com.downfy.persistence.domain.application.AppDomain;
 
@@ -34,6 +34,7 @@ public class AppForm {
     private String appName;
     private String appDescription;
     private int appCategory;
+    private int appCategoryParent;
 
     public long getAppId() {
         return appId;
@@ -65,6 +66,14 @@ public class AppForm {
 
     public void setAppCategory(int appCategory) {
         this.appCategory = appCategory;
+    }
+
+    public int getAppCategoryParent() {
+        return appCategoryParent;
+    }
+
+    public void setAppCategoryParent(int appCategoryParent) {
+        this.appCategoryParent = appCategoryParent;
     }
 
     public AppDomain toAppDomain() {

@@ -79,6 +79,25 @@ public class CategoryService implements CacheService<CategoryDomain> {
         return getCacheObject(url);
     }
 
+    public List<CategoryDomain> findByParent(int parent) {
+        List<CategoryDomain> categories = new ArrayList<CategoryDomain>();
+        List<CategoryDomain> current;
+        try {
+            this.logger.debug("Find all categories by parent " + parent + " in cache.");
+            current = getCacheObjects();
+            if (!current.isEmpty()) {
+                for (CategoryDomain categoryDomain : current) {
+                    if (categoryDomain.getParent() == parent) {
+                        categories.add(categoryDomain);
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            this.logger.error("Find all categories error: " + ex, ex);
+        }
+        return categories;
+    }
+
     public boolean isExsit(String url) {
         CategoryDomain category = getCacheObject(url);
         return category != null;

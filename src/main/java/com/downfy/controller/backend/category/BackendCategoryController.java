@@ -20,10 +20,12 @@ import com.downfy.common.ErrorMessage;
 import com.downfy.common.ValidationResponse;
 import com.downfy.controller.AbstractController;
 import com.downfy.controller.MyResourceMessage;
+import com.downfy.form.CategorySelectorForm;
 import com.downfy.form.validator.backend.category.BackendCategoryValidator;
 import com.downfy.persistence.domain.category.CategoryDomain;
 import com.downfy.service.category.CategoryService;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -36,6 +38,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -78,6 +81,26 @@ public class BackendCategoryController extends AbstractController {
             logger.error("Cannot create category group.", ex);
         }
         return view(device, "maintenance");
+    }
+
+    @PreAuthorize("hasRole('ROLE_MANAGER')")
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    @ResponseBody
+    public List<CategorySelectorForm> getCategoryList(@PathVariable("id") int id, HttpServletRequest request, Device device, Model uiModel) {
+        List<CategorySelectorForm> values = new ArrayList<CategorySelectorForm>();
+        try {
+            List<CategoryDomain> categories = categoryService.findByParent(id);
+            for (CategoryDomain categoryDomain : categories) {
+                CategorySelectorForm selector = new CategorySelectorForm();
+                selector.setKey(categoryDomain.getId());
+                selector.setValue(categoryDomain.getName());
+                values.add(selector);
+            }
+            Collections.sort(values);
+        } catch (Exception ex) {
+            logger.error("Cannot get category selector.", ex);
+        }
+        return values;
     }
 
     @PreAuthorize("hasRole('ROLE_MANAGER')")

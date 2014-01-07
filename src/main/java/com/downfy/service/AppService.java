@@ -61,6 +61,9 @@ public class AppService implements CacheService<AppDomain> {
                 apps = this.repository.findAll();
                 setCacheObjects(apps);
             }
+            for (AppDomain appDomain : apps) {
+                this.logger.debug("App current version " + appDomain.getAppCurrentVersion());
+            }
         } catch (Exception ex) {
             this.logger.error("Find all apps error: " + ex, ex);
         }

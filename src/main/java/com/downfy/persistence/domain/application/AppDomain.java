@@ -101,6 +101,9 @@ public class AppDomain implements DomainObject {
     }
 
     public String getAppCurrentVersion() {
+        if (appCurrentVersion == null) {
+            appCurrentVersion = "1.0.0";
+        }
         return appCurrentVersion;
     }
 

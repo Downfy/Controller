@@ -16,16 +16,12 @@
  */
 package com.downfy.controller.backend.app;
 
-import com.downfy.common.ErrorMessage;
-import com.downfy.common.ValidationResponse;
 import com.downfy.controller.AbstractController;
 import com.downfy.controller.MyResourceMessage;
-import com.downfy.form.AppForm;
-import com.downfy.form.validator.backend.developer.BackendAppValidator;
+import com.downfy.form.backend.application.AppForm;
+import com.downfy.form.validator.backend.application.BackendAppValidator;
 import com.downfy.persistence.domain.application.AppDomain;
 import com.downfy.service.AppService;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -35,12 +31,9 @@ import org.springframework.mobile.device.Device;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 /*
  * BackendCategoryController.java
@@ -78,6 +71,19 @@ public class AppController extends AbstractController {
             return view(device, "backend/application");
         } catch (Exception ex) {
             logger.error("Cannot create application.", ex);
+        }
+        return view(device, "maintenance");
+    }
+
+    @PreAuthorize("hasRole('ROLE_MANAGER')")
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    public String detail(@PathVariable("id") long appId, HttpServletRequest request, Device device, Model uiModel) {
+        try {
+            AppDomain appDomain = appService.findById(appId);
+            uiModel.addAttribute("app", appDomain);
+            return view(device, "backend/application/detail");
+        } catch (Exception ex) {
+            logger.error("Cannot create detail application.", ex);
         }
         return view(device, "maintenance");
     }

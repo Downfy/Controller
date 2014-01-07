@@ -4,8 +4,6 @@
 
 <mapper namespace="com.downfy.persistence.repositories.category.CategoryRepository">
 
-    <cache type="org.mybatis.caches.ehcache.EhcacheCache"/>
-
     <select id="findAll" resultType="CategoryDomain" flushCache="false" useCache="true">
         SELECT ID, PARENT, NAME, URL, ENABLED, SORT 
         FROM categories

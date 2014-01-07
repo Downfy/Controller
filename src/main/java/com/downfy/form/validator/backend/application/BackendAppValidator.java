@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.downfy.form.validator.backend.developer;
+package com.downfy.form.validator.backend.application;
 
 import com.downfy.common.MyValidator;
-import com.downfy.form.AppForm;
+import com.downfy.form.backend.application.AppForm;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -48,6 +48,9 @@ public class BackendAppValidator
         }
         if (form.getAppCategory() == 0) {
             errors.rejectValue("appCategory", "app.categorynotnull");
+        }
+        if (form.getAppCategoryParent() == 0) {
+            errors.rejectValue("appCategoryParent", "app.categoryparentnotnull");
         }
     }
 }
