@@ -16,10 +16,12 @@
  */
 package com.downfy.service.category;
 
+import com.downfy.form.CategorySelectorForm;
 import com.downfy.persistence.domain.category.CategoryDomain;
 import com.downfy.persistence.repositories.category.CategoryRepository;
 import com.downfy.service.CacheService;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,9 +76,9 @@ public class CategoryService implements CacheService<CategoryDomain> {
         return category;
     }
 
-    public CategoryDomain findByURL(String url) {
-        this.logger.debug("Find url " + url + " in cache.");
-        return getCacheObject(url);
+    public CategoryDomain findById(int id) {
+        this.logger.debug("Find id " + id + " in cache.");
+        return getCacheObject(id + "");
     }
 
     public List<CategoryDomain> findByParent(int parent) {
@@ -96,6 +98,23 @@ public class CategoryService implements CacheService<CategoryDomain> {
             this.logger.error("Find all categories error: " + ex, ex);
         }
         return categories;
+    }
+
+    public List<CategorySelectorForm> findBySelectorParent(int parent) {
+        List<CategorySelectorForm> values = new ArrayList<CategorySelectorForm>();
+        try {
+            List<CategoryDomain> categories = findByParent(parent);
+            for (CategoryDomain categoryDomain : categories) {
+                CategorySelectorForm selector = new CategorySelectorForm();
+                selector.setKey(categoryDomain.getId());
+                selector.setValue(categoryDomain.getName());
+                values.add(selector);
+            }
+            Collections.sort(values);
+        } catch (Exception ex) {
+            logger.error("Cannot get category selector.", ex);
+        }
+        return values;
     }
 
     public boolean isExsit(String url) {

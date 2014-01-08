@@ -87,20 +87,7 @@ public class BackendCategoryController extends AbstractController {
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     @ResponseBody
     public List<CategorySelectorForm> getCategoryList(@PathVariable("id") int id, HttpServletRequest request, Device device, Model uiModel) {
-        List<CategorySelectorForm> values = new ArrayList<CategorySelectorForm>();
-        try {
-            List<CategoryDomain> categories = categoryService.findByParent(id);
-            for (CategoryDomain categoryDomain : categories) {
-                CategorySelectorForm selector = new CategorySelectorForm();
-                selector.setKey(categoryDomain.getId());
-                selector.setValue(categoryDomain.getName());
-                values.add(selector);
-            }
-            Collections.sort(values);
-        } catch (Exception ex) {
-            logger.error("Cannot get category selector.", ex);
-        }
-        return values;
+        return categoryService.findBySelectorParent(id);
     }
 
     @PreAuthorize("hasRole('ROLE_MANAGER')")

@@ -16,25 +16,28 @@
  */
 package com.downfy.form.backend.application;
 
+import com.downfy.form.CategorySelectorForm;
 import com.downfy.persistence.domain.application.AppDomain;
+import java.util.List;
 
 /*
- * AppForm.java
+ * AppDetailForm.java
  *
- * App form
+ * App detail form
  *
  * Modification Logs:
  *  DATE            AUTHOR      DESCRIPTION
  *  --------------------------------------------------------
- *  05-Jan-2014     tuanta      Create first time
+ *  08-Jan-2014     tuanta      Create first time
  */
-public class AppForm {
+public class AppDetailForm {
 
     private long appId;
     private String appName;
     private String appDescription;
     private int appCategory;
     private int appCategoryParent;
+    private List<CategorySelectorForm> appCategories;
 
     public long getAppId() {
         return appId;
@@ -76,11 +79,25 @@ public class AppForm {
         this.appCategoryParent = appCategoryParent;
     }
 
+    public List<CategorySelectorForm> getAppCategories() {
+        return appCategories;
+    }
+
+    public void setAppCategories(List<CategorySelectorForm> appCategories) {
+        this.appCategories = appCategories;
+    }
+
     public AppDomain toAppDomain() {
         AppDomain domain = new AppDomain();
         domain.setAppName(getAppName());
         domain.setAppDescription(getAppDescription());
         domain.setAppCategory(getAppCategory());
         return domain;
+    }
+
+    public void fromAppDomain(AppDomain domain) {
+        setAppName(domain.getAppName());
+        setAppDescription(domain.getAppDescription());
+        setAppCategory(domain.getAppCategory());
     }
 }

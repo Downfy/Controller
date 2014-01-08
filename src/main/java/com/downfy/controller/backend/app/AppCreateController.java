@@ -20,7 +20,7 @@ import com.downfy.common.ErrorMessage;
 import com.downfy.common.ValidationResponse;
 import com.downfy.controller.AbstractController;
 import com.downfy.controller.MyResourceMessage;
-import com.downfy.form.backend.application.AppForm;
+import com.downfy.form.backend.application.AppCreateForm;
 import com.downfy.form.validator.backend.application.BackendAppValidator;
 import com.downfy.persistence.domain.application.AppDomain;
 import com.downfy.service.AppService;
@@ -73,7 +73,7 @@ public class AppCreateController extends AbstractController {
     @RequestMapping(method = RequestMethod.GET)
     public String index(HttpServletRequest request, Device device, Model uiModel) {
         try {
-            uiModel.addAttribute("applicationForm", new AppForm());
+            uiModel.addAttribute("applicationForm", new AppCreateForm());
             return view(device, "backend/application/create");
         } catch (Exception ex) {
             logger.error("Cannot create application.", ex);
@@ -84,7 +84,7 @@ public class AppCreateController extends AbstractController {
     @PreAuthorize("hasRole('ROLE_MANAGER')")
     @RequestMapping(value = "/json", method = RequestMethod.POST)
     @ResponseBody
-    public ValidationResponse createApplicationAjaxJson(@ModelAttribute("applicationForm") AppForm domain, HttpServletRequest request, BindingResult bindingResult) {
+    public ValidationResponse createApplicationAjaxJson(@ModelAttribute("applicationForm") AppCreateForm domain, HttpServletRequest request, BindingResult bindingResult) {
         ValidationResponse res = new ValidationResponse();
         this.validator.validate(domain, bindingResult);
         if (!bindingResult.hasErrors()) {
@@ -103,7 +103,7 @@ public class AppCreateController extends AbstractController {
 
     @PreAuthorize("hasRole('ROLE_MANAGER')")
     @RequestMapping(method = RequestMethod.POST)
-    public String createApplication(Device device, @ModelAttribute("applicationForm") AppForm domain, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
+    public String createApplication(Device device, @ModelAttribute("applicationForm") AppCreateForm domain, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
         this.validator.validate(domain, bindingResult);
         if (bindingResult.hasErrors()) {
             uiModel.addAttribute("applicationForm", domain);
@@ -111,12 +111,17 @@ public class AppCreateController extends AbstractController {
         }
         try {
             AppDomain appDomain = domain.toAppDomain();
+
             appDomain.setAppId(System.currentTimeMillis());
             appDomain.setCreater(getUserId());
             appDomain.setCreated(new Date());
             appDomain.setUpdater(getUserId());
             appDomain.setUpdated(new Date());
-            appService.save(appDomain);
+            if (appDomain.getAppId() != 0) {
+                appService.updateApp(appDomain);
+            } else {
+                appService.save(appDomain);
+            }
             setApps(uiModel);
             return "redirect:/backend/application.html";
         } catch (Exception ex) {

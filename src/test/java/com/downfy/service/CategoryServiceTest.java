@@ -55,9 +55,6 @@ public class CategoryServiceTest {
         category.setName("test");
         category.setUrl("test");
         Assert.assertEquals(true, service.save(category));
-        category = service.findByURL("test");
-        Assert.assertEquals("test", category.getUrl());
-        Assert.assertEquals(true, service.delete(category.getKey()));
     }
 
     @Test

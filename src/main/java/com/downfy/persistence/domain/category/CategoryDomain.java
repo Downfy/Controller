@@ -116,7 +116,7 @@ public class CategoryDomain implements DomainObject {
 
     @Override
     public String getKey() {
-        return getUrl();
+        return getId() + "";
     }
 
     @Override
