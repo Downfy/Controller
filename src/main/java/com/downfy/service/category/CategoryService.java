@@ -106,7 +106,7 @@ public class CategoryService implements CacheService<CategoryDomain> {
             List<CategoryDomain> categories = findByParent(parent);
             for (CategoryDomain categoryDomain : categories) {
                 CategorySelectorForm selector = new CategorySelectorForm();
-                selector.setKey(categoryDomain.getId());
+                selector.setKey(categoryDomain.getUrl());
                 selector.setValue(categoryDomain.getName());
                 values.add(selector);
             }

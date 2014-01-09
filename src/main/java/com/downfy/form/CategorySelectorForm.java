@@ -28,14 +28,14 @@ package com.downfy.form;
  */
 public class CategorySelectorForm implements Comparable<CategorySelectorForm> {
 
-    private int key;
+    private String key;
     private String value;
 
-    public int getKey() {
+    public String getKey() {
         return key;
     }
 
-    public void setKey(int key) {
+    public void setKey(String key) {
         this.key = key;
     }
 
