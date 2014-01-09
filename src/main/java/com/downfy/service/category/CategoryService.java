@@ -76,12 +76,12 @@ public class CategoryService implements CacheService<CategoryDomain> {
         return category;
     }
 
-    public CategoryDomain findById(int id) {
-        this.logger.debug("Find id " + id + " in cache.");
+    public CategoryDomain findByURL(String id) {
+        this.logger.debug("Find url " + id + " in cache.");
         return getCacheObject(id + "");
     }
 
-    public List<CategoryDomain> findByParent(int parent) {
+    public List<CategoryDomain> findByParent(String parent) {
         List<CategoryDomain> categories = new ArrayList<CategoryDomain>();
         List<CategoryDomain> current;
         try {
@@ -89,7 +89,7 @@ public class CategoryService implements CacheService<CategoryDomain> {
             current = getCacheObjects();
             if (!current.isEmpty()) {
                 for (CategoryDomain categoryDomain : current) {
-                    if (categoryDomain.getParent() == parent) {
+                    if (categoryDomain.getParent().equals(parent)) {
                         categories.add(categoryDomain);
                     }
                 }
@@ -100,7 +100,7 @@ public class CategoryService implements CacheService<CategoryDomain> {
         return categories;
     }
 
-    public List<CategorySelectorForm> findBySelectorParent(int parent) {
+    public List<CategorySelectorForm> findBySelectorParent(String parent) {
         List<CategorySelectorForm> values = new ArrayList<CategorySelectorForm>();
         try {
             List<CategoryDomain> categories = findByParent(parent);
@@ -130,7 +130,7 @@ public class CategoryService implements CacheService<CategoryDomain> {
             this.logger.debug("Save category " + domain.toString() + " to cache");
             return true;
         } catch (DuplicateKeyException dkex) {
-            this.logger.warn("Email " + domain.toString() + " duplicate.");
+            this.logger.warn("Category " + domain.toString() + " duplicate.");
         } catch (Exception ex) {
             this.logger.error("Can't save category " + domain.toString(), ex);
         }

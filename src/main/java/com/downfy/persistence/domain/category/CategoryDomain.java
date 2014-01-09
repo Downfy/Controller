@@ -34,7 +34,7 @@ public class CategoryDomain implements DomainObject {
 
     public static final String OBJECT_KEY = ObjectKey.CATEGORY;
     private int id;
-    private int parent;
+    private String parent;
     private String name;
     private long count;
     private String url;
@@ -50,11 +50,11 @@ public class CategoryDomain implements DomainObject {
         this.id = id;
     }
 
-    public int getParent() {
+    public String getParent() {
         return parent;
     }
 
-    public void setParent(int parent) {
+    public void setParent(String parent) {
         this.parent = parent;
     }
 
@@ -116,7 +116,7 @@ public class CategoryDomain implements DomainObject {
 
     @Override
     public String getKey() {
-        return getId() + "";
+        return getUrl();
     }
 
     @Override

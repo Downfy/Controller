@@ -26,17 +26,21 @@ import com.downfy.persistence.domain.application.AppDomain;
 import com.downfy.persistence.domain.category.CategoryDomain;
 import com.downfy.service.AppService;
 import com.downfy.service.category.CategoryService;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
+import net.coobird.thumbnailator.Thumbnails;
+import net.coobird.thumbnailator.geometry.Positions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mobile.device.Device;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.FileCopyUtils;
@@ -48,9 +52,9 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 /*
- * BackendCategoryController.java
+ * AppController.java
  *
- * Admin application create controller
+ * App controller
  *
  * Modification Logs:
  *  DATE            AUTHOR      DESCRIPTION
@@ -94,7 +98,7 @@ public class AppController extends AbstractController {
     public String detail(@PathVariable("id") long appId, HttpServletRequest request, Device device, Model uiModel) {
         try {
             AppDomain appDomain = appService.findById(appId);
-            CategoryDomain categoryDomain = categoryService.findById(appDomain.getAppCategory());
+            CategoryDomain categoryDomain = categoryService.findByURL(appDomain.getAppCategory());
             AppDetailForm form = new AppDetailForm();
             form.fromAppDomain(appDomain);
             form.setAppCategoryParent(categoryDomain.getParent());
@@ -138,7 +142,87 @@ public class AppController extends AbstractController {
     @PreAuthorize("hasRole('ROLE_MANAGER')")
     @RequestMapping(value = "/upload/icon", method = RequestMethod.POST)
     @ResponseBody
-    public LinkedList<AppFileMetaDomain> icon(MultipartHttpServletRequest request, Device device, Model uiModel) {
+    public AppFileMetaDomain icon(MultipartHttpServletRequest request, Device device, Model uiModel) {
+        MultipartFile mpf = request.getFile("appIconFile");
+        AppFileMetaDomain fileMeta = null;
+        try {
+            Md5PasswordEncoder encoder = new Md5PasswordEncoder();
+            String appIconName = encoder.encodePassword(System.currentTimeMillis() + "", null);
+            // copy file to local disk (make sure the path "e.g. D:/temp/files" exists)
+            File f = new File(".");
+            String absolutePath = "/" + encoder.encodePassword("data", null)
+                    + "/icon/" + encoder.encodePassword(getUsername(), null)
+                    + "/" + appIconName + ".png";
+            String localPath = f.getCanonicalPath() + absolutePath;
+            f = new File(localPath);
+            f.getParentFile().mkdirs();
+            logger.debug("Create app icon " + localPath);
+            Thumbnails.of(mpf.getInputStream())
+                    .crop(Positions.CENTER)
+                    .size(84, 84)
+                    .outputFormat("png")
+                    .toFile(localPath);
+            //Create new fileMeta
+            fileMeta = new AppFileMetaDomain();
+            fileMeta.setFileName(absolutePath);
+            fileMeta.setFileSize(mpf.getSize() + "");
+            fileMeta.setFileType(mpf.getContentType());
+        } catch (Exception ex) {
+            logger.error("Cannot upload icon application.", ex);
+        }
+        return fileMeta;
+    }
+
+    @PreAuthorize("hasRole('ROLE_MANAGER')")
+    @RequestMapping(value = "/upload/apk", method = RequestMethod.POST)
+    @ResponseBody
+    public AppFileMetaDomain apk(MultipartHttpServletRequest request, Device device, Model uiModel) {
+        //1. build an iterator
+        Iterator<String> itr = request.getFileNames();
+        MultipartFile mpf;
+        LinkedList<AppFileMetaDomain> files = new LinkedList<AppFileMetaDomain>();
+        AppFileMetaDomain fileMeta = null;
+
+        //2. get each file
+        while (itr.hasNext()) {
+
+            //2.1 get next MultipartFile
+            mpf = request.getFile(itr.next());
+            logger.debug("File " + mpf.getOriginalFilename() + " uploaded! " + files.size());
+
+            //2.2 if files > 10 remove the first from the list
+            if (files.size() >= 10) {
+                files.pop();
+            }
+
+            //2.3 create new fileMeta
+            fileMeta = new AppFileMetaDomain();
+            fileMeta.setFileName(mpf.getOriginalFilename());
+            fileMeta.setFileSize(mpf.getSize() / 1024 + " Kb");
+            fileMeta.setFileType(mpf.getContentType());
+
+            try {
+                fileMeta.setBytes(mpf.getBytes());
+
+                // copy file to local disk (make sure the path "e.g. D:/temp/files" exists)            
+                FileCopyUtils.copy(mpf.getBytes(), new FileOutputStream("/home/tuanta/Desktop/data/apk/" + mpf.getOriginalFilename()));
+
+            } catch (IOException ex) {
+                // TODO Auto-generated catch block
+                logger.error("Cannot upload apk application.", ex);
+            }
+            //2.4 add to files
+            files.add(fileMeta);
+        }
+        // result will be like this
+        // [{"fileName":"app_engine-85x77.png","fileSize":"8 Kb","fileType":"image/png"},...]
+        return fileMeta;
+    }
+
+    @PreAuthorize("hasRole('ROLE_MANAGER')")
+    @RequestMapping(value = "/upload/screenshoots", method = RequestMethod.POST)
+    @ResponseBody
+    public LinkedList<AppFileMetaDomain> screenshoots(MultipartHttpServletRequest request, Device device, Model uiModel) {
         //1. build an iterator
         Iterator<String> itr = request.getFileNames();
         MultipartFile mpf;
@@ -167,11 +251,11 @@ public class AppController extends AbstractController {
                 fileMeta.setBytes(mpf.getBytes());
 
                 // copy file to local disk (make sure the path "e.g. D:/temp/files" exists)            
-                FileCopyUtils.copy(mpf.getBytes(), new FileOutputStream("/home/tuanta/Desktop/data/icon/" + mpf.getOriginalFilename()));
+                FileCopyUtils.copy(mpf.getBytes(), new FileOutputStream("/home/tuanta/Desktop/data/screenshoots/" + mpf.getOriginalFilename()));
 
             } catch (IOException ex) {
                 // TODO Auto-generated catch block
-                logger.error("Cannot upload icon application.", ex);
+                logger.error("Cannot upload screenshoots application.", ex);
             }
             //2.4 add to files
             files.add(fileMeta);

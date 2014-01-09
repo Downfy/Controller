@@ -33,8 +33,8 @@ public class AppCreateForm {
     private long appId;
     private String appName;
     private String appDescription;
-    private int appCategory;
-    private int appCategoryParent;
+    private String appCategory;
+    private String appCategoryParent;
 
     public long getAppId() {
         return appId;
@@ -60,19 +60,19 @@ public class AppCreateForm {
         this.appDescription = appDescription;
     }
 
-    public int getAppCategory() {
+    public String getAppCategory() {
         return appCategory;
     }
 
-    public void setAppCategory(int appCategory) {
+    public void setAppCategory(String appCategory) {
         this.appCategory = appCategory;
     }
 
-    public int getAppCategoryParent() {
+    public String getAppCategoryParent() {
         return appCategoryParent;
     }
 
-    public void setAppCategoryParent(int appCategoryParent) {
+    public void setAppCategoryParent(String appCategoryParent) {
         this.appCategoryParent = appCategoryParent;
     }
 

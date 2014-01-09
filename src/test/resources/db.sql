@@ -119,17 +119,15 @@ CREATE TABLE IF NOT EXISTS `app_view` (
 
 DROP TABLE IF EXISTS `categories`;
 CREATE TABLE IF NOT EXISTS `categories` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) NOT NULL,
-  `url` varchar(100) NOT NULL DEFAULT '',
-  `parent` int(11) NOT NULL DEFAULT '0',
+  `name` varchar(20) NOT NULL,
+  `url` varchar(20) NOT NULL DEFAULT '',
+  `parent` varchar(20) NOT NULL DEFAULT '0',
   `enabled` bit(1) NOT NULL DEFAULT b'1',
   `sort` int(2) unsigned NOT NULL DEFAULT '0',
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `name` (`name`),
-  UNIQUE KEY `url` (`url`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+  PRIMARY KEY (`url`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 

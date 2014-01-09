@@ -46,10 +46,10 @@ public class BackendAppValidator
         if (MyValidator.validateNullOrEmpty(form.getAppName())) {
             errors.rejectValue("appName", "app.namenotnull");
         }
-        if (form.getAppCategory() == 0) {
+        if (MyValidator.validateNullOrEmpty(form.getAppCategory())) {
             errors.rejectValue("appCategory", "app.categorynotnull");
         }
-        if (form.getAppCategoryParent() == 0) {
+        if (MyValidator.validateNullOrEmpty(form.getAppCategoryParent())) {
             errors.rejectValue("appCategoryParent", "app.categoryparentnotnull");
         }
     }

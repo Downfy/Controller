@@ -55,11 +55,8 @@ public class CategoryServiceTest {
         category.setName("test");
         category.setUrl("test");
         Assert.assertEquals(true, service.save(category));
-    }
-
-    @Test
-    public void testExsit() {
-        Assert.assertEquals(false, service.isExsit("test"));
+        Assert.assertEquals(true, service.isExsit("test"));
+        Assert.assertEquals(true, service.delete("test"));
     }
 
     @Test

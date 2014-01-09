@@ -34,13 +34,11 @@ public interface CategoryRepository {
 
     List<CategoryDomain> findAll();
 
-    CategoryDomain findById(int id);
-
     CategoryDomain findByUrl(@Param(value = "url") String url);
 
     void save(CategoryDomain domain);
 
     void update(CategoryDomain domain);
-    
+
     void delete(@Param(value = "url") String url);
 }

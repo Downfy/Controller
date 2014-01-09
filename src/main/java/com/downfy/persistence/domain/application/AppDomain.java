@@ -37,7 +37,7 @@ public class AppDomain implements DomainObject {
     private long appId;
     private String appName;
     private String appDescription;
-    private int appCategory;
+    private String appCategory;
     private int appView;
     private int appDownload;
     private String appCurrentVersion;
@@ -76,11 +76,11 @@ public class AppDomain implements DomainObject {
         this.appName = appName;
     }
 
-    public int getAppCategory() {
+    public String getAppCategory() {
         return appCategory;
     }
 
-    public void setAppCategory(int appCategory) {
+    public void setAppCategory(String appCategory) {
         this.appCategory = appCategory;
     }
 

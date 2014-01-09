@@ -4,32 +4,26 @@
 
 <mapper namespace="com.downfy.persistence.repositories.category.CategoryRepository">
 
-    <select id="findAll" resultType="CategoryDomain" flushCache="false" useCache="true">
-        SELECT ID, PARENT, NAME, URL, ENABLED, SORT 
+    <select id="findAll" resultType="CategoryDomain">
+        SELECT PARENT, NAME, URL, ENABLED, SORT 
         FROM categories
         ORDER BY PARENT, URL
     </select>
     
-    <select id="findById" resultType="CategoryDomain" flushCache="false" useCache="true">
-        SELECT ID, PARENT, NAME, URL, ENABLED, SORT 
-        FROM categories
-        WHERE ID = #{id}
-    </select>
-    
-    <select id="findByUrl" resultType="CategoryDomain" flushCache="false" useCache="true">
-        SELECT ID, PARENT, NAME, URL, ENABLED, SORT 
+    <select id="findByUrl" resultType="CategoryDomain">
+        SELECT PARENT, NAME, URL, ENABLED, SORT 
         FROM categories
         WHERE URL = #{url}
     </select>
     
-    <insert id="save" parameterType="CategoryDomain" flushCache="true">
+    <insert id="save" parameterType="CategoryDomain">
         INSERT INTO categories
         (NAME, URL, PARENT)
         VALUES
         (#{name},#{url},#{parent})
     </insert>
     
-    <update id="update" flushCache="true">
+    <update id="update">
         UPDATE categories
         SET 
         PARENT = #{parent},
@@ -37,10 +31,10 @@
         URL = #{url},
         SORT = #{sort},
         ENABLED = #{enabled}
-        WHERE ID = #{id}
+        WHERE URL = #{url}
     </update>
     
-    <delete id="delete" flushCache="true">
+    <delete id="delete">
         DELETE FROM categories
         WHERE URL = #{url}
     </delete>

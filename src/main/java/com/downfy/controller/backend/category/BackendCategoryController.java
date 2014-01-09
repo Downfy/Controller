@@ -86,7 +86,7 @@ public class BackendCategoryController extends AbstractController {
     @PreAuthorize("hasRole('ROLE_MANAGER')")
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     @ResponseBody
-    public List<CategorySelectorForm> getCategoryList(@PathVariable("id") int id, HttpServletRequest request, Device device, Model uiModel) {
+    public List<CategorySelectorForm> getCategoryList(@PathVariable("id") String id, HttpServletRequest request, Device device, Model uiModel) {
         return categoryService.findBySelectorParent(id);
     }
 
