@@ -25,7 +25,6 @@ import com.downfy.form.validator.backend.category.BackendCategoryValidator;
 import com.downfy.persistence.domain.category.CategoryDomain;
 import com.downfy.service.category.CategoryService;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;

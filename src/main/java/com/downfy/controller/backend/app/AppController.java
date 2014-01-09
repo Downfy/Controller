@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import net.coobird.thumbnailator.Thumbnails;
 import net.coobird.thumbnailator.geometry.Positions;
@@ -74,6 +75,8 @@ public class AppController extends AbstractController {
     AppService appService;
     @Autowired
     CategoryService categoryService;
+    @Autowired
+    ServletContext context;
 
     private void setApps(Model uiModel) {
         List<AppDomain> apps = appService.findAll();
@@ -149,11 +152,11 @@ public class AppController extends AbstractController {
             Md5PasswordEncoder encoder = new Md5PasswordEncoder();
             String appIconName = encoder.encodePassword(System.currentTimeMillis() + "", null);
             // copy file to local disk (make sure the path "e.g. D:/temp/files" exists)
-            File f = new File(".");
-            String absolutePath = "/" + encoder.encodePassword("data", null)
-                    + "/icon/" + encoder.encodePassword(getUsername(), null)
+            File f = new File(context.getRealPath("/"));
+            String absolutePath = "/icon/" + encoder.encodePassword(getUsername(), null)
                     + "/" + appIconName + ".png";
-            String localPath = f.getCanonicalPath() + absolutePath;
+            String localPath = f.getCanonicalPath() + "/" + encoder.encodePassword("data", null)
+                    + absolutePath;
             f = new File(localPath);
             f.getParentFile().mkdirs();
             logger.debug("Create app icon " + localPath);
@@ -164,7 +167,7 @@ public class AppController extends AbstractController {
                     .toFile(localPath);
             //Create new fileMeta
             fileMeta = new AppFileMetaDomain();
-            fileMeta.setFileName(absolutePath);
+            fileMeta.setFileName("/resources/" + absolutePath);
             fileMeta.setFileSize(mpf.getSize() + "");
             fileMeta.setFileType(mpf.getContentType());
         } catch (Exception ex) {
