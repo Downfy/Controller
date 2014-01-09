@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS `apps` (
   `app_id` bigint(20) unsigned NOT NULL,
   `app_name` varchar(250) NOT NULL,
   `app_description` text,
-  `app_category` int(10) unsigned NOT NULL,
+  `app_category` varchar(20) NOT NULL,
   `app_view` int(10) unsigned NOT NULL DEFAULT '0',
   `app_download` int(10) unsigned NOT NULL DEFAULT '0',
   `app_current_version` varchar(50) NOT NULL DEFAULT '1.0.0',

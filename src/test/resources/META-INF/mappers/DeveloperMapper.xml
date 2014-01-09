@@ -4,7 +4,7 @@
 
 <mapper namespace="com.downfy.persistence.repositories.developer.DeveloperRepository">
 
-    <select id="findAll" resultType="DeveloperDomain" flushCache="false" useCache="true">
+    <select id="findAll" resultType="DeveloperDomain">
         SELECT 
         ID as developerId, 
         NAME as developerName, 
@@ -14,7 +14,7 @@
         ORDER BY ID
     </select>
     
-    <select id="findById" resultType="DeveloperDomain" flushCache="false" useCache="true">
+    <select id="findById" resultType="DeveloperDomain">
         SELECT 
         ID as developerId, 
         NAME as developerName, 
@@ -24,14 +24,14 @@
         WHERE ID = #{id}
     </select>
     
-    <insert id="save" parameterType="DeveloperDomain" flushCache="true">
+    <insert id="save" parameterType="DeveloperDomain">
         INSERT INTO developers
         (ID, NAME, DESCRIPTION)
         VALUES
         (#{developerId},#{developerName},#{developerInfo})
     </insert>
     
-    <update id="update" flushCache="true">
+    <update id="update">
         UPDATE developers
         SET 
         NAME = #{developerName},
@@ -40,7 +40,7 @@
         WHERE ID = #{developerId}
     </update>
     
-    <delete id="delete" flushCache="true">
+    <delete id="delete">
         DELETE FROM developers
         WHERE ID = #{id}
     </delete>

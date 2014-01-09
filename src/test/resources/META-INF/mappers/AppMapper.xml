@@ -4,7 +4,7 @@
 
 <mapper namespace="com.downfy.persistence.repositories.application.AppRepository">
 
-    <select id="findAll" resultType="AppDomain" flushCache="false" useCache="true">
+    <select id="findAll" resultType="AppDomain">
         SELECT
         APP_ID as appId,
         APP_NAME as appName,
@@ -28,7 +28,7 @@
         ORDER BY CREATED DESC
     </select>
     
-    <select id="findByDeveloper" parameterType="long" resultType="AppDomain" flushCache="false" useCache="true">
+    <select id="findByDeveloper" parameterType="long" resultType="AppDomain">
         SELECT
         APP_ID as appId,
         APP_NAME as appName,
@@ -52,7 +52,7 @@
         AND DELETED = 0
     </select>
     
-    <select id="findById" parameterType="long" resultType="AppDomain" flushCache="false" useCache="true">
+    <select id="findById" parameterType="long" resultType="AppDomain">
         SELECT
         APP_ID as appId,
         APP_NAME as appName,
@@ -76,18 +76,18 @@
         LIMIT 0, 1
     </select>
     
-    <select id="count" resultType="long" flushCache="false" useCache="true">
+    <select id="count" resultType="long">
         SELECT count(*) FROM apps
     </select>
     
-    <insert id="save" parameterType="AppDomain" flushCache="true">
+    <insert id="save" parameterType="AppDomain">
         INSERT INTO apps
         (APP_ID, APP_NAME, APP_DESCRIPTION, APP_CATEGORY, CREATER, UPDATER, UPDATED)
         VALUES
         (#{appId}, #{appName}, #{appDescription}, #{appCategory}, #{creater}, #{updater}, #{updated})
     </insert>
     
-    <update id="updateAppInfo" parameterType="AppDomain" flushCache="true">
+    <update id="updateAppInfo" parameterType="AppDomain">
         UPDATE apps
         SET
         APP_NAME = #{appName},
@@ -104,7 +104,7 @@
         AND DELETED = 0
     </update>
     
-    <update id="updateAppView" parameterType="AppDomain" flushCache="true">
+    <update id="updateAppView" parameterType="AppDomain">
         UPDATE apps
         SET
         APP_VIEW = #{appView}
@@ -112,7 +112,7 @@
         AND DELETED = 0
     </update>
     
-    <update id="updateAppDownload" parameterType="AppDomain" flushCache="true">
+    <update id="updateAppDownload" parameterType="AppDomain">
         UPDATE apps
         SET
         APP_DOWNLOAD = #{appDownload}
@@ -120,7 +120,7 @@
         AND DELETED = 0
     </update>
     
-    <update id="publish" parameterType="long" flushCache="true">
+    <update id="publish" parameterType="long">
         UPDATE apps 
         SET 
         PUBLISHED = 1 
@@ -128,7 +128,7 @@
         AND DELETED = 0
     </update>
     
-    <update id="block" parameterType="long" flushCache="true">
+    <update id="block" parameterType="long">
         UPDATE apps 
         SET 
         PUBLISHED = 0 
@@ -136,7 +136,7 @@
         AND DELETED = 0
     </update>
     
-    <delete id="delete" parameterType="long" flushCache="true">
+    <delete id="delete" parameterType="long">
         UPDATE apps 
         SET 
         DELETED = 1 

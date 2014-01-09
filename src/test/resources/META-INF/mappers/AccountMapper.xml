@@ -4,7 +4,7 @@
 
 <mapper namespace="com.downfy.persistence.repositories.AccountRepository">
 
-    <select id="findAll" resultType="AccountDomain" flushCache="false" useCache="true">
+    <select id="findAll" resultType="AccountDomain">
         SELECT
         ID,
         PASSWORD,
@@ -24,7 +24,7 @@
         ORDER BY CREATED DESC
     </select>
     
-    <select id="findByLimit" resultType="AccountDomain" flushCache="false" useCache="true">
+    <select id="findByLimit" resultType="AccountDomain">
         SELECT
         ID,
         PASSWORD,
@@ -42,7 +42,7 @@
         LIMIT #{start}, #{end}
     </select>
     
-    <select id="findByUsernameAndPassword" parameterType="string" resultType="AccountDomain" flushCache="false" useCache="true">
+    <select id="findByUsernameAndPassword" parameterType="string" resultType="AccountDomain">
         SELECT
         ID,
         PASSWORD,
@@ -62,7 +62,7 @@
         LIMIT 0, 1
     </select>
     
-    <select id="findByUsername" parameterType="string" resultType="AccountDomain" flushCache="false" useCache="true">
+    <select id="findByUsername" parameterType="string" resultType="AccountDomain">
         SELECT
         ID,
         PASSWORD,
@@ -80,7 +80,7 @@
         LIMIT 0, 1
     </select>
     
-    <select id="findByEmail" parameterType="String" resultType="AccountDomain" flushCache="false" useCache="true">
+    <select id="findByEmail" parameterType="String" resultType="AccountDomain">
         SELECT
         ID,
         PASSWORD,
@@ -98,7 +98,7 @@
         LIMIT 0, 1
     </select>
     
-    <select id="findById" parameterType="long" resultType="AccountDomain" flushCache="false" useCache="true">
+    <select id="findById" parameterType="long" resultType="AccountDomain">
         SELECT
         ID,
         PASSWORD,
@@ -116,7 +116,7 @@
         LIMIT 0, 1
     </select>
     
-    <select id="findByEnable" parameterType="boolean" resultType="AccountDomain" flushCache="false" useCache="true">
+    <select id="findByEnable" parameterType="boolean" resultType="AccountDomain">
         SELECT
         ID,
         PASSWORD,
@@ -135,26 +135,26 @@
         LIMIT #{start}, #{end}
     </select>
     
-    <select id="count" resultType="long" flushCache="false" useCache="true">
+    <select id="count" resultType="long">
         SELECT count(*) FROM users 
     </select>
     
-    <insert id="save" parameterType="AccountDomain" flushCache="true">
+    <insert id="save" parameterType="AccountDomain">
         INSERT INTO users
         (ID, PASSWORD, EMAIL, ACTIVE_KEY, ENABLED)
         VALUES
         (#{id}, #{password}, #{email}, #{activeKey}, #{enabled})
     </insert>
     
-    <update id="active" parameterType="string" flushCache="true">
+    <update id="active" parameterType="string">
         UPDATE users SET ENABLED = 1 WHERE EMAIL = #{username}
     </update>
     
-    <update id="block" parameterType="string" flushCache="true">
+    <update id="block" parameterType="string">
         UPDATE users SET ENABLED = 0 WHERE EMAIL = #{username}
     </update>
     
-    <update id="login" parameterType="AccountDomain" flushCache="true">
+    <update id="login" parameterType="AccountDomain">
         UPDATE users 
         SET 
         LAST_HOST_ADDRESS = #{lastHostAddress},
@@ -162,7 +162,7 @@
         WHERE EMAIL = #{username}
     </update>
     
-    <update id="changePassword" parameterType="AccountDomain" flushCache="true">
+    <update id="changePassword" parameterType="AccountDomain">
         UPDATE users 
         SET
         PASSWORD = #{password},
@@ -170,7 +170,7 @@
         WHERE EMAIL = #{username}
     </update>
     
-    <delete id="delete" parameterType="string" flushCache="true">
+    <delete id="delete" parameterType="string">
         DELETE FROM users WHERE EMAIL = #{username}
     </delete>
 </mapper>
