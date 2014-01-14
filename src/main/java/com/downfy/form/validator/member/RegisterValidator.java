@@ -16,14 +16,15 @@
  */
 package com.downfy.form.validator.member;
 
+import com.downfy.common.RegexpUtils;
 import com.downfy.persistence.domain.AccountDomain;
 import com.downfy.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
-import com.downfy.common.MyValidator;
 import com.downfy.form.member.RegisterForm;
+import com.google.common.base.Strings;
 
 /*
  * RegisterValidator.java
@@ -51,9 +52,9 @@ public class RegisterValidator
     public void validate(Object target, Errors errors) {
         RegisterForm form = (RegisterForm) target;
 
-        if (MyValidator.validateNullOrEmpty(form.getUsername())) {
+        if (Strings.isNullOrEmpty(form.getUsername())) {
             errors.rejectValue("username", "user.usernamenotnull");
-        } else if (!MyValidator.validateUsername(form.getUsername())) {
+        } else if (!RegexpUtils.validateUsername(form.getUsername())) {
             errors.rejectValue("username", "user.usernamenotmatch");
         } else {
             AccountDomain account = this.accountService.findByEmail(form.getUsername());
@@ -61,19 +62,19 @@ public class RegisterValidator
                 errors.rejectValue("username", "user.usernamenotavaiable");
             }
         }
-        if (MyValidator.validateNullOrEmpty(form.getPassword())) {
+        if (Strings.isNullOrEmpty(form.getPassword())) {
             errors.rejectValue("password", "user.passwordnotnull");
         }
-        if (MyValidator.validateNullOrEmpty(form.getRePassword())) {
+        if (Strings.isNullOrEmpty(form.getRePassword())) {
             errors.rejectValue("rePassword", "user.passwordnotnull");
         }
         if (!form.getPassword().equals(form.getRePassword())) {
             errors.rejectValue("password", "user.passwordnotmatch");
             errors.rejectValue("rePassword", "user.passwordnotmatch");
         }
-        if (MyValidator.validateNullOrEmpty(form.getEmail())) {
+        if (Strings.isNullOrEmpty(form.getEmail())) {
             errors.rejectValue("email", "user.emailnotnull");
-        } else if (!MyValidator.validateEmail(form.getEmail())) {
+        } else if (!RegexpUtils.validateEmail(form.getEmail())) {
             errors.rejectValue("email", "user.emailnotmatch");
         } else {
             AccountDomain account = this.accountService.findByEmail(form.getEmail());

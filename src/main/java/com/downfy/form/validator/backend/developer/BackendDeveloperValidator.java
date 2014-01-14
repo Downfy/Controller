@@ -15,8 +15,8 @@
  */
 package com.downfy.form.validator.backend.developer;
 
-import com.downfy.common.MyValidator;
 import com.downfy.persistence.domain.developer.DeveloperDomain;
+import com.google.common.base.Strings;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -43,10 +43,10 @@ public class BackendDeveloperValidator
     @Override
     public void validate(Object target, Errors errors) {
         DeveloperDomain form = (DeveloperDomain) target;
-        if (MyValidator.validateNullOrEmpty(form.getDeveloperName())) {
+        if (Strings.isNullOrEmpty(form.getDeveloperName())) {
             errors.rejectValue("developerName", "developer.namenotnull");
         }
-        if (MyValidator.validateNullOrEmpty(form.getDeveloperId())) {
+        if (Strings.isNullOrEmpty(form.getDeveloperId())) {
             errors.rejectValue("developerId", "developer.idnotnull");
         }
     }

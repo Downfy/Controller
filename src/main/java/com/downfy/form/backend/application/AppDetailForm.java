@@ -96,6 +96,7 @@ public class AppDetailForm {
     }
 
     public void fromAppDomain(AppDomain domain) {
+        setAppId(domain.getAppId());
         setAppName(domain.getAppName());
         setAppDescription(domain.getAppDescription());
         setAppCategory(domain.getAppCategory());

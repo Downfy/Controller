@@ -16,6 +16,7 @@
  */
 package com.downfy.security;
 
+import com.downfy.common.RegexpUtils;
 import com.downfy.persistence.domain.AccountDomain;
 import com.downfy.service.AccountService;
 import java.util.ArrayList;
@@ -28,7 +29,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
-import com.downfy.common.MyValidator;
 import org.springframework.security.core.GrantedAuthority;
 
 /*
@@ -63,7 +63,7 @@ public class MyUserDetailsService
         }
 
         AccountDomain account = null;
-        if (MyValidator.validateEmail(username)) {
+        if (RegexpUtils.validateEmail(username)) {
             account = this.accountService.findByEmail(username);
         }
         if (account == null) {

@@ -16,14 +16,15 @@
  */
 package com.downfy.form.validator.member;
 
+import com.downfy.common.RegexpUtils;
 import com.downfy.persistence.domain.AccountDomain;
 import com.downfy.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
-import com.downfy.common.MyValidator;
 import com.downfy.form.member.LostPasswordForm;
+import com.google.common.base.Strings;
 
 /*
  * LostPasswordValidator.java
@@ -51,9 +52,9 @@ public class LostPasswordValidator
     public void validate(Object target, Errors errors) {
         LostPasswordForm form = (LostPasswordForm) target;
 
-        if (MyValidator.validateNullOrEmpty(form.getEmail())) {
+        if (Strings.isNullOrEmpty(form.getEmail())) {
             errors.rejectValue("email", "user.emailnotnull");
-        } else if (!MyValidator.validateEmail(form.getEmail())) {
+        } else if (!RegexpUtils.validateEmail(form.getEmail())) {
             errors.rejectValue("email", "user.emailnotmatch");
         } else {
             AccountDomain account = this.accountService.findByEmail(form.getEmail());

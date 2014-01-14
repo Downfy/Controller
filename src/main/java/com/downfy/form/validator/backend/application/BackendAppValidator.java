@@ -15,8 +15,8 @@
  */
 package com.downfy.form.validator.backend.application;
 
-import com.downfy.common.MyValidator;
 import com.downfy.form.backend.application.AppCreateForm;
+import com.google.common.base.Strings;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -43,13 +43,13 @@ public class BackendAppValidator
     @Override
     public void validate(Object target, Errors errors) {
         AppCreateForm form = (AppCreateForm) target;
-        if (MyValidator.validateNullOrEmpty(form.getAppName())) {
+        if (Strings.isNullOrEmpty(form.getAppName())) {
             errors.rejectValue("appName", "app.namenotnull");
         }
-        if (MyValidator.validateNullOrEmpty(form.getAppCategory())) {
+        if (Strings.isNullOrEmpty(form.getAppCategory())) {
             errors.rejectValue("appCategory", "app.categorynotnull");
         }
-        if (MyValidator.validateNullOrEmpty(form.getAppCategoryParent())) {
+        if (Strings.isNullOrEmpty(form.getAppCategoryParent())) {
             errors.rejectValue("appCategoryParent", "app.categoryparentnotnull");
         }
     }

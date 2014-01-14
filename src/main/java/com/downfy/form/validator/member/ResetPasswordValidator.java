@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import com.downfy.form.member.ResetPasswordForm;
+import com.google.common.base.Objects;
 
 /*
  * ResetPasswordValidator.java
@@ -43,7 +44,7 @@ public class ResetPasswordValidator
     @Override
     public void validate(Object target, Errors errors) {
         ResetPasswordForm form = (ResetPasswordForm) target;
-        if (!form.getNewPassword().equals(form.getAgainPassword())) {
+        if (Objects.equal(form.getNewPassword(), form.getAgainPassword())) {
             errors.rejectValue("againPassword", "user.resetpasswordnotmatch");
         }
     }

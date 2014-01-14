@@ -26,6 +26,7 @@ import com.downfy.persistence.domain.application.AppDomain;
 import com.downfy.persistence.domain.category.CategoryDomain;
 import com.downfy.service.AppService;
 import com.downfy.service.category.CategoryService;
+import com.google.common.io.Files;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -103,6 +104,7 @@ public class AppController extends AbstractController {
             AppDomain appDomain = appService.findById(appId);
             CategoryDomain categoryDomain = categoryService.findByURL(appDomain.getAppCategory());
             AppDetailForm form = new AppDetailForm();
+            form.setAppId(appId);
             form.fromAppDomain(appDomain);
             form.setAppCategoryParent(categoryDomain.getParent());
             form.setAppCategories(categoryService.findBySelectorParent(categoryDomain.getParent()));
@@ -158,7 +160,7 @@ public class AppController extends AbstractController {
             String localPath = f.getCanonicalPath() + "/" + encoder.encodePassword("data", null)
                     + absolutePath;
             f = new File(localPath);
-            f.getParentFile().mkdirs();
+            Files.createParentDirs(f);
             logger.debug("Create app icon " + localPath);
             Thumbnails.of(mpf.getInputStream())
                     .crop(Positions.CENTER)
@@ -167,7 +169,7 @@ public class AppController extends AbstractController {
                     .toFile(localPath);
             //Create new fileMeta
             fileMeta = new AppFileMetaDomain();
-            fileMeta.setFileName("/resources/" + absolutePath);
+            fileMeta.setFileName(absolutePath);
             fileMeta.setFileSize(mpf.getSize() + "");
             fileMeta.setFileType(mpf.getContentType());
         } catch (Exception ex) {
@@ -180,45 +182,29 @@ public class AppController extends AbstractController {
     @RequestMapping(value = "/upload/apk", method = RequestMethod.POST)
     @ResponseBody
     public AppFileMetaDomain apk(MultipartHttpServletRequest request, Device device, Model uiModel) {
-        //1. build an iterator
-        Iterator<String> itr = request.getFileNames();
-        MultipartFile mpf;
-        LinkedList<AppFileMetaDomain> files = new LinkedList<AppFileMetaDomain>();
+        MultipartFile mpf = request.getFile("appAPKFile");
         AppFileMetaDomain fileMeta = null;
-
-        //2. get each file
-        while (itr.hasNext()) {
-
-            //2.1 get next MultipartFile
-            mpf = request.getFile(itr.next());
-            logger.debug("File " + mpf.getOriginalFilename() + " uploaded! " + files.size());
-
-            //2.2 if files > 10 remove the first from the list
-            if (files.size() >= 10) {
-                files.pop();
-            }
-
-            //2.3 create new fileMeta
+        try {
+            Md5PasswordEncoder encoder = new Md5PasswordEncoder();
+            String appIconName = encoder.encodePassword(System.currentTimeMillis() + "", null);
+            // copy file to local disk (make sure the path "e.g. D:/temp/files" exists)
+            File f = new File(context.getRealPath("/"));
+            String absolutePath = "/apk/" + encoder.encodePassword(getUsername(), null)
+                    + "/" + appIconName + ".apk";
+            String localPath = f.getCanonicalPath() + "/" + encoder.encodePassword("data", null)
+                    + absolutePath;
+            f = new File(localPath);
+            Files.createParentDirs(f);
+            logger.debug("Create app apk " + localPath);
+            FileCopyUtils.copy(mpf.getInputStream(), new FileOutputStream(localPath));
+            //Create new fileMeta
             fileMeta = new AppFileMetaDomain();
-            fileMeta.setFileName(mpf.getOriginalFilename());
-            fileMeta.setFileSize(mpf.getSize() / 1024 + " Kb");
+            fileMeta.setFileName(absolutePath);
+            fileMeta.setFileSize(mpf.getSize() + "");
             fileMeta.setFileType(mpf.getContentType());
-
-            try {
-                fileMeta.setBytes(mpf.getBytes());
-
-                // copy file to local disk (make sure the path "e.g. D:/temp/files" exists)            
-                FileCopyUtils.copy(mpf.getBytes(), new FileOutputStream("/home/tuanta/Desktop/data/apk/" + mpf.getOriginalFilename()));
-
-            } catch (IOException ex) {
-                // TODO Auto-generated catch block
-                logger.error("Cannot upload apk application.", ex);
-            }
-            //2.4 add to files
-            files.add(fileMeta);
+        } catch (Exception ex) {
+            logger.error("Cannot upload icon application.", ex);
         }
-        // result will be like this
-        // [{"fileName":"app_engine-85x77.png","fileSize":"8 Kb","fileType":"image/png"},...]
         return fileMeta;
     }
 
@@ -237,34 +223,40 @@ public class AppController extends AbstractController {
 
             //2.1 get next MultipartFile
             mpf = request.getFile(itr.next());
-            logger.debug("File " + mpf.getOriginalFilename() + " uploaded! " + files.size());
 
             //2.2 if files > 10 remove the first from the list
             if (files.size() >= 10) {
                 files.pop();
             }
 
+            Md5PasswordEncoder encoder = new Md5PasswordEncoder();
+            String appIconName = encoder.encodePassword(System.currentTimeMillis() + "", null);
+            // copy file to local disk (make sure the path "e.g. D:/temp/files" exists)
+            File f = new File(context.getRealPath("/"));
+            String absolutePath = "/screenshoots/" + encoder.encodePassword(getUsername(), null)
+                    + "/" + appIconName + ".png";
+
             //2.3 create new fileMeta
             fileMeta = new AppFileMetaDomain();
-            fileMeta.setFileName(mpf.getOriginalFilename());
-            fileMeta.setFileSize(mpf.getSize() / 1024 + " Kb");
+            fileMeta.setFileName(absolutePath);
+            fileMeta.setFileSize(mpf.getSize() + "");
             fileMeta.setFileType(mpf.getContentType());
 
             try {
-                fileMeta.setBytes(mpf.getBytes());
+                String localPath = f.getCanonicalPath() + "/" + encoder.encodePassword("data", null)
+                        + absolutePath;
+                f = new File(localPath);
+                Files.createParentDirs(f);
+                logger.debug("Create app screenshoot " + localPath);
+                FileCopyUtils.copy(mpf.getInputStream(), new FileOutputStream(localPath));
 
-                // copy file to local disk (make sure the path "e.g. D:/temp/files" exists)            
-                FileCopyUtils.copy(mpf.getBytes(), new FileOutputStream("/home/tuanta/Desktop/data/screenshoots/" + mpf.getOriginalFilename()));
-
+                //2.4 add to files
+                files.add(fileMeta);
             } catch (IOException ex) {
-                // TODO Auto-generated catch block
-                logger.error("Cannot upload screenshoots application.", ex);
+                logger.error("Cannot upload screenshoot application.", ex);
             }
-            //2.4 add to files
-            files.add(fileMeta);
+
         }
-        // result will be like this
-        // [{"fileName":"app_engine-85x77.png","fileSize":"8 Kb","fileType":"image/png"},...]
         return files;
     }
 }

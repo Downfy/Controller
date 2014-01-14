@@ -26,8 +26,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
-import com.downfy.common.MyValidator;
 import com.downfy.form.member.ChangePasswordForm;
+import com.google.common.base.Strings;
 
 /*
  * ChangePasswordValidator.java
@@ -56,13 +56,13 @@ public class ChangePasswordValidator
     @Override
     public void validate(Object target, Errors errors) {
         ChangePasswordForm form = (ChangePasswordForm) target;
-        if (MyValidator.validateNullOrEmpty(form.getOldPassword())) {
+        if (Strings.isNullOrEmpty(form.getOldPassword())) {
             errors.rejectValue("oldPassword", "changepassword.oldpasswordnotnull");
         }
-        if (MyValidator.validateNullOrEmpty(form.getNewPassword())) {
+        if (Strings.isNullOrEmpty(form.getNewPassword())) {
             errors.rejectValue("newPassword", "changepassword.newpasswordnotnull");
         }
-        if (MyValidator.validateNullOrEmpty(form.getAgainPassword())) {
+        if (Strings.isNullOrEmpty(form.getAgainPassword())) {
             errors.rejectValue("againPassword", "changepassword.againpasswordnotnull");
         } else if (!form.getNewPassword().equals(form.getAgainPassword())) {
             errors.rejectValue("newPassword", "changepassword.passwordsnomatch");
