@@ -145,9 +145,9 @@ public class AppController extends AbstractController {
     }
 
     @PreAuthorize("hasRole('ROLE_MANAGER')")
-    @RequestMapping(value = "/upload/icon", method = RequestMethod.POST)
+    @RequestMapping(value = "/upload/{id}/icon", method = RequestMethod.POST)
     @ResponseBody
-    public AppFileMetaDomain icon(MultipartHttpServletRequest request, Device device, Model uiModel) {
+    public AppFileMetaDomain icon(@PathVariable("id") long appId, MultipartHttpServletRequest request, Device device, Model uiModel) {
         MultipartFile mpf = request.getFile("appIconFile");
         AppFileMetaDomain fileMeta = null;
         try {
@@ -179,9 +179,9 @@ public class AppController extends AbstractController {
     }
 
     @PreAuthorize("hasRole('ROLE_MANAGER')")
-    @RequestMapping(value = "/upload/apk", method = RequestMethod.POST)
+    @RequestMapping(value = "/upload/{id}/apk", method = RequestMethod.POST)
     @ResponseBody
-    public AppFileMetaDomain apk(MultipartHttpServletRequest request, Device device, Model uiModel) {
+    public AppFileMetaDomain apk(@PathVariable("id") long appId, MultipartHttpServletRequest request, Device device, Model uiModel) {
         MultipartFile mpf = request.getFile("appAPKFile");
         AppFileMetaDomain fileMeta = null;
         try {
@@ -209,9 +209,9 @@ public class AppController extends AbstractController {
     }
 
     @PreAuthorize("hasRole('ROLE_MANAGER')")
-    @RequestMapping(value = "/upload/screenshoots", method = RequestMethod.POST)
+    @RequestMapping(value = "/upload/{id}/screenshoots", method = RequestMethod.POST)
     @ResponseBody
-    public LinkedList<AppFileMetaDomain> screenshoots(MultipartHttpServletRequest request, Device device, Model uiModel) {
+    public LinkedList<AppFileMetaDomain> screenshoots(@PathVariable("id") long appId, MultipartHttpServletRequest request, Device device, Model uiModel) {
         //1. build an iterator
         Iterator<String> itr = request.getFileNames();
         MultipartFile mpf;

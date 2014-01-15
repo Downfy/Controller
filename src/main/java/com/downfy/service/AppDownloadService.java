@@ -16,7 +16,7 @@
  */
 package com.downfy.service;
 
-import com.downfy.persistence.domain.AppDownloadDomain;
+import com.downfy.persistence.domain.application.AppDownloadDomain;
 import java.util.List;
 
 /*

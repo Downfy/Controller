@@ -17,7 +17,7 @@
 
 package com.downfy.service;
 
-import com.downfy.persistence.domain.AppVersionDomain;
+import com.downfy.persistence.domain.application.AppVersionDomain;
 import java.util.List;
 
 /*

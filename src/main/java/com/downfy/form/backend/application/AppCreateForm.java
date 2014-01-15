@@ -35,6 +35,7 @@ public class AppCreateForm {
     private String appDescription;
     private String appCategory;
     private String appCategoryParent;
+    private String appIcon;
 
     public long getAppId() {
         return appId;
@@ -76,12 +77,21 @@ public class AppCreateForm {
         this.appCategoryParent = appCategoryParent;
     }
 
+    public String getAppIcon() {
+        return appIcon;
+    }
+
+    public void setAppIcon(String appIcon) {
+        this.appIcon = appIcon;
+    }
+
     public AppDomain toAppDomain() {
         AppDomain domain = new AppDomain();
         domain.setAppId(getAppId());
         domain.setAppName(getAppName());
         domain.setAppDescription(getAppDescription());
         domain.setAppCategory(getAppCategory());
+        domain.setAppIcon(getAppIcon());
         return domain;
     }
 }

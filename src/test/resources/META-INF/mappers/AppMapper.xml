@@ -104,6 +104,28 @@
         AND DELETED = 0
     </update>
     
+    <update id="updateAppFile" parameterType="AppDomain">
+        UPDATE apps
+        SET
+        APP_CURRENT_VERSION = #{appCurrentVersion},
+        APP_PATH = #{appPath},
+        APP_SIZE = #{appSize},
+        UPDATER = #{updater},
+        UPDATED = #{updated}
+        WHERE APP_ID = #{appId}
+        AND DELETED = 0
+    </update>
+    
+    <update id="updateAppScreenShoot" parameterType="AppDomain">
+        UPDATE apps
+        SET
+        APP_SCREEN_SHOOT = #{appScreenShoot},
+        UPDATER = #{updater},
+        UPDATED = #{updated}
+        WHERE APP_ID = #{appId}
+        AND DELETED = 0
+    </update>
+    
     <update id="updateAppView" parameterType="AppDomain">
         UPDATE apps
         SET

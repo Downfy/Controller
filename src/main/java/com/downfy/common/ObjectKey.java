@@ -36,6 +36,7 @@ public final class ObjectKey {
     public static String APP_VERSION = "APP-VERSION";
     public static String APP_VIEW = "APP-VIEW";
     public static String APP_VOTE = "APP-VOTE";
+    public static String APP_SCREEN_SHOOT = "APP-SCREEN-SHOOT";
     public static String CATEGORY = "CATEGORY";
     public static String USER = "USER";
     public static String USER_DEVELOPER = "USER-DEVELOPER";
