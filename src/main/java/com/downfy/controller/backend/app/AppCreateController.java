@@ -65,7 +65,7 @@ public class AppCreateController extends AbstractController {
     AppService appService;
 
     private void setApps(Model uiModel) {
-        List<AppDomain> apps = appService.findAll();
+        List<AppDomain> apps = appService.findByDeveloper(getUserId());
         uiModel.addAttribute("apps", apps);
     }
 

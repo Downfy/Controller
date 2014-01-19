@@ -18,6 +18,7 @@ package com.downfy.persistence.domain.application;
 
 import com.downfy.common.ObjectKey;
 import com.downfy.persistence.domain.DomainObject;
+import com.google.common.base.Objects;
 import java.util.Date;
 
 /*
@@ -39,10 +40,11 @@ public class AppVersionDomain implements DomainObject {
     private String appPath;
     private String appVersion;
     private String appIcon;
-    private String appSize;
+    private long appSize;
     private int status;
     private Date created;
     private long creater;
+    private Date updated;
 
     public long getId() {
         return id;
@@ -92,11 +94,11 @@ public class AppVersionDomain implements DomainObject {
         this.appIcon = appIcon;
     }
 
-    public String getAppSize() {
+    public long getAppSize() {
         return appSize;
     }
 
-    public void setAppSize(String appSize) {
+    public void setAppSize(long appSize) {
         this.appSize = appSize;
     }
 
@@ -122,6 +124,24 @@ public class AppVersionDomain implements DomainObject {
 
     public void setCreater(long creater) {
         this.creater = creater;
+    }
+
+    public Date getUpdated() {
+        return updated;
+    }
+
+    public void setUpdated(Date updated) {
+        this.updated = updated;
+    }
+
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+                .add("id", getId())
+                .add("appId", getAppId())
+                .add("appVersion", getAppVersion())
+                .add("appCreater", getCreater())
+                .omitNullValues().toString();
     }
 
     @Override

@@ -14,8 +14,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.downfy.persistence.repositories.application;
 
-package com.downfy.persistence.repositories;
+import com.downfy.persistence.domain.application.AppVersionDomain;
+import java.util.List;
+import org.apache.ibatis.annotations.Param;
 
 /*
  * AppVersionRepository.java
@@ -29,4 +32,23 @@ package com.downfy.persistence.repositories;
  */
 public interface AppVersionRepository {
 
+    public List<AppVersionDomain> findAll();
+
+    public AppVersionDomain findById(@Param("id") long id);
+
+    public List<AppVersionDomain> findByDeveloper(@Param("developerId") long developerId);
+
+    public long count();
+
+    public long countByDeveloper(@Param("developerId") long developerId);
+
+    public long save(AppVersionDomain domain);
+
+    public void updateAppVersion(AppVersionDomain domain);
+
+    public void publish(@Param("id") long id);
+
+    public void block(@Param("id") long id);
+
+    public void delete(@Param("id") long id);
 }

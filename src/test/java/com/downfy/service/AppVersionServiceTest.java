@@ -15,7 +15,7 @@
  */
 package com.downfy.service;
 
-import com.downfy.persistence.domain.application.AppDomain;
+import com.downfy.persistence.domain.application.AppVersionDomain;
 import java.util.Date;
 import java.util.List;
 import org.junit.Assert;
@@ -39,10 +39,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:applicationContext-mybatis.xml",
     "classpath:META-INF/spring/applicationContext-redis.xml"})
-public class AppServiceTest {
+public class AppVersionServiceTest {
 
     @Autowired
-    AppService service;
+    AppVersionService service;
 
     @Before
     public void clearCache() {
@@ -56,28 +56,30 @@ public class AppServiceTest {
 
     @Test
     public void testFindById() {
-        AppDomain app = service.findById(10000l, 1234567890);
+        AppVersionDomain app = service.findById(10000l, 1234567890);
         Assert.assertEquals(null, app);
     }
 
     @Test
     public void testRepository() {
         long time = System.currentTimeMillis() - 138600000000l;
-        AppDomain app = new AppDomain();
+        AppVersionDomain app = new AppVersionDomain();
+        app.setId(time);
         app.setAppId(time);
         app.setAppName("test");
-        app.setAppDescription("test");
-        app.setAppCategory("social");
+        app.setAppPath("test");
+        app.setAppSize(1l);
+        app.setAppVersion("1.0.0");
         app.setCreater(1234567890);
-        app.setUpdater(1234567890);
+        app.setCreated(new Date());
         app.setUpdated(new Date());
-        List<AppDomain> apps = service.findByDeveloper(1234567890);
+        List<AppVersionDomain> apps = service.findByDeveloper(1234567890);
         Assert.assertTrue(apps.isEmpty());
         Assert.assertTrue(service.save(app));
         apps = service.findByDeveloper(1234567890);
         Assert.assertTrue(!apps.isEmpty());
-        for (AppDomain appDomain : apps) {
-            Assert.assertTrue(service.delete(appDomain.getAppId(), 1234567890));
+        for (AppVersionDomain appDomain : apps) {
+            Assert.assertTrue(service.delete(appDomain.getId(), 1234567890));
         }
         apps = service.findByDeveloper(1234567890);
         Assert.assertTrue(apps.isEmpty());

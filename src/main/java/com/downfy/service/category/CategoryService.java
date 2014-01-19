@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Service;
 
 /*
  * CategoryService.java
@@ -39,6 +40,7 @@ import org.springframework.data.redis.core.RedisTemplate;
  *  --------------------------------------------------------
  *  27-Nov-2013     tuanta      Create first time
  */
+@Service
 public class CategoryService implements CacheService<CategoryDomain> {
 
     private final Logger logger = LoggerFactory.getLogger(CategoryService.class);

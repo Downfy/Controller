@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Jan 17, 2014 at 12:52 PM
+-- Generation Time: Jan 17, 2014 at 01:58 PM
 -- Server version: 5.5.34-0ubuntu0.13.10.1
 -- PHP Version: 5.5.3-1ubuntu2.1
 
@@ -92,7 +92,8 @@ CREATE TABLE IF NOT EXISTS `app_download` (
   KEY `session_id` (`session_id`),
   KEY `creater` (`creater`),
   KEY `app_type` (`app_type`),
-  KEY `created` (`created`)
+  KEY `created` (`created`),
+  KEY `creater_2` (`creater`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -103,7 +104,7 @@ CREATE TABLE IF NOT EXISTS `app_download` (
 
 DROP TABLE IF EXISTS `app_screen_shoots`;
 CREATE TABLE IF NOT EXISTS `app_screen_shoots` (
-  `id` bigint(20) NOT NULL,
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `app_id` bigint(20) NOT NULL,
   `app_screen_shoot` varchar(200) NOT NULL,
   `status` int(1) NOT NULL DEFAULT '0',
@@ -114,7 +115,7 @@ CREATE TABLE IF NOT EXISTS `app_screen_shoots` (
   KEY `status` (`status`),
   KEY `created` (`created`),
   KEY `creater` (`creater`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -124,11 +125,10 @@ CREATE TABLE IF NOT EXISTS `app_screen_shoots` (
 
 DROP TABLE IF EXISTS `app_version`;
 CREATE TABLE IF NOT EXISTS `app_version` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `app_id` bigint(20) unsigned NOT NULL,
   `app_name` varchar(250) NOT NULL,
   `app_path` varchar(200) DEFAULT NULL,
-  `app_icon` varchar(200) DEFAULT NULL,
   `app_version` varchar(10) DEFAULT NULL,
   `app_size` bigint(20) unsigned NOT NULL DEFAULT '0',
   `status` int(1) NOT NULL DEFAULT '0',
@@ -140,9 +140,8 @@ CREATE TABLE IF NOT EXISTS `app_version` (
   KEY `app_version` (`app_version`),
   KEY `status` (`status`),
   KEY `created` (`created`),
-  KEY `created_2` (`created`),
   KEY `creater` (`creater`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -157,7 +156,7 @@ CREATE TABLE IF NOT EXISTS `app_view` (
   `session_id` varchar(250) NOT NULL,
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  KEY `app_id` (`app_id`),
+  KEY `app_id` (`app_id`,`session_id`),
   KEY `created` (`created`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -195,8 +194,7 @@ CREATE TABLE IF NOT EXISTS `developers` (
   `enabled` bit(1) NOT NULL DEFAULT b'1',
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `name` (`name`),
-  KEY `enabled` (`enabled`)
+  UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------

@@ -45,8 +45,7 @@ public class AppDomain implements DomainObject {
     private String appPath;
     private List<String> appScreenShoot;
     private String appIcon;
-    private boolean published;
-    private boolean deleted;
+    private int status;
     private Date created;
     private Date updated;
     private long creater;
@@ -143,20 +142,12 @@ public class AppDomain implements DomainObject {
         this.appIcon = appIcon;
     }
 
-    public boolean isPublished() {
-        return published;
+    public int getStatus() {
+        return status;
     }
 
-    public void setPublished(boolean published) {
-        this.published = published;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
+    public void setStatus(int status) {
+        this.status = status;
     }
 
     public Date getCreated() {

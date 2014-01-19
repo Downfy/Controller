@@ -53,7 +53,7 @@ public class AccountServiceTest {
         List<AccountDomain> accounts = service.findAll();
         Assert.assertTrue(accounts.isEmpty());
     }
-    
+
     @Test
     public void testFindByLimit() {
         List<AccountDomain> accounts = service.findByLimit(0, 10);

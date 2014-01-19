@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Service;
 
 /*
  * AccountService.java
@@ -37,6 +38,7 @@ import org.springframework.data.redis.core.RedisTemplate;
  *  --------------------------------------------------------
  *  26-Nov-2013     tuanta      Create first time
  */
+@Service
 public class AccountService implements CacheService<AccountDomain> {
 
     private final Logger logger = LoggerFactory.getLogger(AccountService.class);
@@ -194,6 +196,7 @@ public class AccountService implements CacheService<AccountDomain> {
             removeCacheObject(key);
             this.logger.debug("Delete account " + key + " in database.");
             this.repository.delete(key);
+            this.logger.debug(getCacheObjects().toString());
         } catch (Exception ex) {
             this.logger.error("Can't delete account " + key, ex);
             return false;
@@ -214,6 +217,7 @@ public class AccountService implements CacheService<AccountDomain> {
     @Override
     public void putCacheObject(AccountDomain domain) {
         try {
+
             this.redisTemplate.opsForHash().put(domain.getObjectKey(), domain.getKey(), domain);
         } catch (Exception ex) {
             this.logger.warn("Can't put data to cache", ex);

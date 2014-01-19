@@ -32,7 +32,7 @@ import java.util.Date;
 public class AccountDomain
         implements DomainObject {
 
-    public static final String OBJECT_KEY = ObjectKey.USER;
+    public static final String OBJECT_KEY = ObjectKey.ACCOUNT;
     private long id;
     private String password;
     private String email;
