@@ -20,7 +20,6 @@ import com.downfy.persistence.domain.AccountDomain;
 import com.downfy.persistence.repositories.AccountRepository;
 import com.downfy.persistence.table.AccountTable;
 import com.google.common.base.Preconditions;
-import com.google.common.io.BaseEncoding;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -74,7 +73,7 @@ public class AccountService implements CacheService<AccountDomain> {
     public List<AccountDomain> findAll() {
         List<AccountDomain> account = null;
         try {
-            this.logger.debug("Find all account in cache.");
+            this.logger.info("Find all account in cache.");
             account = this.getCacheObjects();
             if (account.isEmpty()) {
                 this.logger.debug("Find all account in database.");
@@ -95,7 +94,7 @@ public class AccountService implements CacheService<AccountDomain> {
     public List<AccountDomain> findByLimit(int start, int end) {
         List<AccountDomain> account = null;
         try {
-            this.logger.debug("Find list account from " + start + " to " + end + " in cache.");
+            this.logger.info("Find list account from " + start + " to " + end + " in cache.");
             account = getCacheLimitObjects(start, end);
         } catch (Exception ex) {
             this.logger.error("Find list account error: " + ex, ex);
@@ -110,7 +109,7 @@ public class AccountService implements CacheService<AccountDomain> {
     public AccountDomain findByEmailAndPassword(String email, String password) {
         AccountDomain account = null;
         try {
-            this.logger.debug("Find account " + email + " and password ********* in cache.");
+            this.logger.info("Find account " + email + " and password ********* in cache.");
             account = findByEmail(email);
             if (account != null && !account.getPassword().equals(password)) {
                 this.logger.debug("Account " + email + " and password not match.");
@@ -150,7 +149,7 @@ public class AccountService implements CacheService<AccountDomain> {
 
     public boolean save(AccountDomain domain) {
         try {
-            this.logger.debug("Save account " + domain.toString() + " to database");
+            this.logger.info("Save account " + domain.toString() + " to database");
             this.putCacheObject(domain);
             this.repository.save(domain);
             this.logger.debug("Save account " + domain.toString() + " to cache");
@@ -165,7 +164,7 @@ public class AccountService implements CacheService<AccountDomain> {
 
     public boolean active(AccountDomain domain) {
         try {
-            this.logger.debug("Active account " + domain.getEmail() + " in cache.");
+            this.logger.info("Active account " + domain.getEmail() + " in cache.");
             domain.setEnabled(true);
             this.putCacheObject(domain);
             this.logger.debug("Active account " + domain.getEmail() + " in database.");
@@ -179,7 +178,7 @@ public class AccountService implements CacheService<AccountDomain> {
 
     public boolean block(AccountDomain domain) {
         try {
-            this.logger.debug("Block account " + domain.getEmail() + " in cache.");
+            this.logger.info("Block account " + domain.getEmail() + " in cache.");
             domain.setEnabled(false);
             this.putCacheObject(domain);
             this.logger.debug("Block account " + domain.getEmail() + " in database.");
@@ -193,7 +192,7 @@ public class AccountService implements CacheService<AccountDomain> {
 
     public boolean login(AccountDomain domain, String lastHostAddress) {
         try {
-            this.logger.debug("Log time login account " + domain.getEmail() + " in cache");
+            this.logger.info("Log time login account " + domain.getEmail() + " in cache");
             domain.setLastHostAddress(lastHostAddress);
             this.putCacheObject(domain);
             this.logger.debug("Log time login account " + domain.getEmail() + " to database");
@@ -207,7 +206,7 @@ public class AccountService implements CacheService<AccountDomain> {
 
     public boolean changePassword(String email, String password) {
         try {
-            this.logger.debug("Change password account " + email + " to cache");
+            this.logger.info("Change password account " + email + " to cache");
             AccountDomain domain = findByEmail(email);
             Preconditions.checkNotNull(domain, "Can't find account by " + email + " in cache");
             domain.setPassword(password);
@@ -216,7 +215,7 @@ public class AccountService implements CacheService<AccountDomain> {
             this.repository.changePassword(email, password, new Date());
             return true;
         } catch (NullPointerException null_) {
-            this.logger.error(null_.getMessage());
+            this.logger.info(null_.getMessage());
         } catch (Exception ex) {
             this.logger.error("Can't change password account " + email, ex);
         }
@@ -225,7 +224,7 @@ public class AccountService implements CacheService<AccountDomain> {
 
     public boolean delete(String email) {
         try {
-            this.logger.debug("Delete account " + email + " in cache.");
+            this.logger.info("Delete account " + email + " in cache.");
             AccountDomain domain = findByEmail(email);
             Preconditions.checkNotNull(domain, "Can't find account by " + email + " in cache");
             this.removeCacheObject(domain.getKey());
@@ -234,7 +233,7 @@ public class AccountService implements CacheService<AccountDomain> {
             this.repository.delete(domain.getKey());
             this.logger.debug(getCacheObjects().toString());
         } catch (NullPointerException null_) {
-            this.logger.error(null_.getMessage());
+            this.logger.info(null_.getMessage());
         } catch (Exception ex) {
             this.logger.error("Can't delete account " + email, ex);
             return false;
