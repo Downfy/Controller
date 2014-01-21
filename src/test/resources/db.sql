@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS `apps` (
 
 DROP TABLE IF EXISTS `app_category`;
 CREATE TABLE IF NOT EXISTS `app_category` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(10) unsigned NOT NULL,
   `category_id` int(10) unsigned NOT NULL,
   `category_name` varchar(250) NOT NULL,
   `app_id` bigint(20) NOT NULL,
@@ -80,7 +80,7 @@ CREATE TABLE IF NOT EXISTS `app_category` (
 
 DROP TABLE IF EXISTS `app_download`;
 CREATE TABLE IF NOT EXISTS `app_download` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `id` bigint(20) unsigned NOT NULL,
   `app_id` bigint(20) unsigned NOT NULL,
   `app_version` varchar(250) NOT NULL,
   `app_type` int(11) NOT NULL DEFAULT '0',
@@ -104,7 +104,7 @@ CREATE TABLE IF NOT EXISTS `app_download` (
 
 DROP TABLE IF EXISTS `app_screen_shoots`;
 CREATE TABLE IF NOT EXISTS `app_screen_shoots` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` bigint(20) unsigned NOT NULL,
   `app_id` bigint(20) NOT NULL,
   `app_screen_shoot` varchar(200) NOT NULL,
   `status` int(1) NOT NULL DEFAULT '0',
@@ -125,7 +125,7 @@ CREATE TABLE IF NOT EXISTS `app_screen_shoots` (
 
 DROP TABLE IF EXISTS `app_version`;
 CREATE TABLE IF NOT EXISTS `app_version` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` bigint(20) unsigned NOT NULL,
   `app_id` bigint(20) unsigned NOT NULL,
   `app_name` varchar(250) NOT NULL,
   `app_path` varchar(200) DEFAULT NULL,
@@ -133,6 +133,7 @@ CREATE TABLE IF NOT EXISTS `app_version` (
   `app_size` bigint(20) unsigned NOT NULL DEFAULT '0',
   `status` int(1) NOT NULL DEFAULT '0',
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated` timestamp NULL DEFAULT NULL,
   `creater` bigint(20) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   KEY `app_id` (`app_id`),
@@ -151,7 +152,7 @@ CREATE TABLE IF NOT EXISTS `app_version` (
 
 DROP TABLE IF EXISTS `app_view`;
 CREATE TABLE IF NOT EXISTS `app_view` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` bigint(20) unsigned NOT NULL,
   `app_id` bigint(20) unsigned NOT NULL,
   `session_id` varchar(250) NOT NULL,
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,

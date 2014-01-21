@@ -28,9 +28,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /*
  * AppServiceTest.java
- * 
+ *
  * App service test
- * 
+ *
  * Modification Logs:
  *  DATE            AUTHOR      DESCRIPTION
  *  --------------------------------------------------------
@@ -56,7 +56,7 @@ public class AppVersionServiceTest {
 
     @Test
     public void testFindById() {
-        AppVersionDomain app = service.findById(10000l, 1234567890);
+        AppVersionDomain app = service.findById(10000l);
         Assert.assertEquals(null, app);
     }
 
@@ -87,17 +87,17 @@ public class AppVersionServiceTest {
 
     @Test
     public void testExsit() {
-        Assert.assertEquals(false, service.isExsit(1234567890l, 1234567890));
+        Assert.assertEquals(false, service.isExsit(1234567890));
     }
 
     @Test
     public void testPublish() {
-        Assert.assertEquals(false, service.publishApp(1234567890l, 1234567890));
+        Assert.assertEquals(false, service.publishApp(1234567890));
     }
 
     @Test
     public void testBlock() {
-        Assert.assertEquals(false, service.blockApp(1234567890l, 1234567890));
+        Assert.assertEquals(false, service.blockApp(1234567890));
     }
 
     @Test
