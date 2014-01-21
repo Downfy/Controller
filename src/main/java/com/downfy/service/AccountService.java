@@ -52,7 +52,7 @@ public class AccountService implements CacheService<AccountDomain> {
     private RedisTemplate<String, AccountDomain> accountRedisTemplate;
     private RedisTemplate<String, Long> longRedisTemplate;
 
-    public RedisTemplate<String, Long> getLongRedisTemplate() {
+    private RedisTemplate<String, Long> getLongRedisTemplate() {
         if (longRedisTemplate == null) {
             this.longRedisTemplate = new RedisTemplate<String, Long>();
             this.longRedisTemplate.setConnectionFactory(jedisConnectionFactory);
@@ -61,7 +61,7 @@ public class AccountService implements CacheService<AccountDomain> {
         return longRedisTemplate;
     }
 
-    public RedisTemplate<String, AccountDomain> getAccountRedisTemplate() {
+    private RedisTemplate<String, AccountDomain> getAccountRedisTemplate() {
         if (accountRedisTemplate == null) {
             this.accountRedisTemplate = new RedisTemplate<String, AccountDomain>();
             this.accountRedisTemplate.setConnectionFactory(jedisConnectionFactory);
@@ -130,9 +130,9 @@ public class AccountService implements CacheService<AccountDomain> {
         return null;
     }
 
-    public long findIdByEmail(String email) {
+    private long findIdByEmail(String email) {
         try {
-            String key = AccountTable.EMAIL + ":" + email;
+            String key = AccountTable.KEY + ":" + email;
             this.logger.debug("Find email " + key + " in cache.");
             return this.getLongRedisTemplate().opsForSet().randomMember(key);
         } catch (NullPointerException null_) {
@@ -228,7 +228,7 @@ public class AccountService implements CacheService<AccountDomain> {
             AccountDomain domain = findByEmail(email);
             Preconditions.checkNotNull(domain, "Can't find account by " + email + " in cache");
             this.removeCacheObject(domain.getKey());
-            this.getLongRedisTemplate().opsForSet().pop(AccountTable.EMAIL + ":" + email);
+            this.getLongRedisTemplate().opsForSet().pop(AccountTable.KEY + ":" + email);
             this.logger.debug("Delete account " + email + " in database.");
             this.repository.delete(domain.getKey());
             this.logger.debug(getCacheObjects().toString());
@@ -254,7 +254,7 @@ public class AccountService implements CacheService<AccountDomain> {
     @Override
     public void putCacheObject(AccountDomain domain) {
         try {
-            String key = AccountTable.EMAIL + ":" + domain.getEmail();
+            String key = AccountTable.KEY + ":" + domain.getEmail();
             this.logger.debug("Put email " + key + " and id " + domain.getId() + " in cache.");
             this.getLongRedisTemplate().opsForSet().add(key, domain.getId());
             this.logger.debug("Put account " + key + " in cache.");

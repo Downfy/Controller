@@ -22,8 +22,5 @@ package com.downfy.persistence.table;
  */
 public final class AccountTable {
 
-    public static String ID = "ACCOUNT:ID";
-    public static String PASSWORD = "ACCOUNT:PASSWORD";
-    public static String EMAIL = "ACCOUNT:EMAIL";
-    public static String ENABLED = "ACCOUNT:ENABLED";
+    public static String KEY = "ACCOUNT:EMAIL";
 }
