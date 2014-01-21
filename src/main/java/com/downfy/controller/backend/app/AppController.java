@@ -101,7 +101,7 @@ public class AppController extends AbstractController {
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public String detail(@PathVariable("id") long appId, HttpServletRequest request, Device device, Model uiModel) {
         try {
-            AppDomain appDomain = appService.findById(appId, getUserId());
+            AppDomain appDomain = appService.findById(appId);
             CategoryDomain categoryDomain = categoryService.findByURL(appDomain.getAppCategory());
             AppDetailForm form = new AppDetailForm();
             form.setAppId(appId);
@@ -120,7 +120,7 @@ public class AppController extends AbstractController {
     @RequestMapping(value = "/{id}/apk", method = RequestMethod.GET)
     public String apk(@PathVariable("id") long appId, HttpServletRequest request, Device device, Model uiModel) {
         try {
-            AppDomain appDomain = appService.findById(appId, getUserId());
+            AppDomain appDomain = appService.findById(appId);
             uiModel.addAttribute("app", appDomain);
             return view(device, "backend/application/apk");
         } catch (Exception ex) {
@@ -133,7 +133,7 @@ public class AppController extends AbstractController {
     @RequestMapping(value = "/{id}/screenshoot", method = RequestMethod.GET)
     public String screenshoots(@PathVariable("id") long appId, HttpServletRequest request, Device device, Model uiModel) {
         try {
-            AppDomain appDomain = appService.findById(appId, getUserId());
+            AppDomain appDomain = appService.findById(appId);
             AppDetailForm form = new AppDetailForm();
             form.fromAppDomain(appDomain);
             uiModel.addAttribute("app", form);

@@ -19,72 +19,109 @@ package com.downfy.service;
 import com.downfy.common.AppStatus;
 import com.downfy.persistence.domain.application.AppDomain;
 import com.downfy.persistence.repositories.application.AppRepository;
+import com.downfy.persistence.table.AppTable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 /*
  * AppDownloadService.java
- * 
+ *
  * App download service
- * 
+ *
  * Modification Logs:
  *  DATE            AUTHOR      DESCRIPTION
  *  --------------------------------------------------------
  *  1-Dec-2013     tuanta      Create first time
+ *  21-Dec-2013    tuanta      Add Developer <--> App
  */
 @Service
-public class AppService implements CacheDeveloperService<AppDomain> {
+public class AppService {
 
     private final Logger logger = LoggerFactory.getLogger(AppService.class);
     @Autowired
     AppRepository repository;
     @Autowired
-    private RedisTemplate<String, AppDomain> redisTemplate;
+    private JedisConnectionFactory jedisConnectionFactory;
+    private RedisTemplate<String, AppDomain> appVersionRedisTemplate;
+    private RedisTemplate<String, String> longRedisTemplate;
 
-    public void setRepository(AppRepository repository) {
-        this.repository = repository;
+    public RedisTemplate<String, String> getLongRedisTemplate() {
+        if (longRedisTemplate == null) {
+            this.longRedisTemplate = new RedisTemplate<String, String>();
+            this.longRedisTemplate.setConnectionFactory(jedisConnectionFactory);
+            this.longRedisTemplate.afterPropertiesSet();
+        }
+        return longRedisTemplate;
     }
 
-    public void setRedisTemplate(RedisTemplate<String, AppDomain> redisTemplate) {
-        this.redisTemplate = redisTemplate;
+    public RedisTemplate<String, AppDomain> getAppVersionRedisTemplate() {
+        if (appVersionRedisTemplate == null) {
+            this.appVersionRedisTemplate = new RedisTemplate<String, AppDomain>();
+            this.appVersionRedisTemplate.setConnectionFactory(jedisConnectionFactory);
+            this.appVersionRedisTemplate.afterPropertiesSet();
+        }
+        return appVersionRedisTemplate;
     }
 
-    public AppDomain findById(long appId, long developerId) {
-        this.logger.debug("Find app " + appId + " in cache.");
-        return getCacheObject(appId + "", developerId);
+    public List<AppDomain> findAll() {
+        List<AppDomain> apps = null;
+        try {
+            this.logger.info("Find all app in cache.");
+            apps = this.getCacheObjects();
+            if (apps.isEmpty()) {
+                this.logger.debug("Find all app in database.");
+                apps = this.repository.findAll();
+                if (!apps.isEmpty()) {
+                    this.setCacheObjects(apps);
+                }
+            }
+        } catch (Exception ex) {
+            this.logger.error("Find all app error: " + ex, ex);
+        }
+        if (apps != null) {
+            this.logger.debug("Total get " + apps.size() + " apps.");
+        }
+        return apps;
+    }
+
+    public AppDomain findById(long appId) {
+        this.logger.info("Find app " + appId + " in cache.");
+        return getCacheObject(appId + "");
     }
 
     public List<AppDomain> findByDeveloper(long developerId) {
         List<AppDomain> apps = null;
         try {
-            this.logger.debug("Find all apps of developer " + developerId + " in cache.");
+            this.logger.info("Find all app of developer " + developerId + " in cache.");
             apps = getCacheObjects(developerId);
             if (apps.isEmpty()) {
-                this.logger.debug("Find all apps of developer " + developerId + " in database.");
+                this.logger.debug("Find all app of developer " + developerId + " in database.");
                 apps = this.repository.findByDeveloper(developerId);
                 if (!apps.isEmpty()) {
-                    setCacheObjects(apps, developerId);
-                } else {
+                    setCacheObjects(apps);
                 }
             }
         } catch (Exception ex) {
-            this.logger.error("Find all apps of developer " + developerId + " error: " + ex, ex);
+            this.logger.error("Find all app of developer " + developerId + " error: " + ex, ex);
         }
         if (apps != null) {
-            this.logger.debug("Total get " + apps.size() + " apps of developer " + developerId + ".");
+            this.logger.info("Total get " + apps.size() + " app of developer " + developerId + ".");
         }
         return apps;
     }
 
-    public boolean updateApp(AppDomain domain) {
+    public boolean updateApp(AppDomain domain, long developerId) {
         try {
-            this.logger.debug("Update app " + domain.toString() + " to cache");
-            putCacheObject(domain, domain.getCreater());
+            this.logger.info("Update app " + domain.toString() + " to cache");
+            putCacheObject(domain, developerId);
             return true;
         } catch (Exception ex) {
             this.logger.error("Can't update app " + domain.toString(), ex);
@@ -99,61 +136,73 @@ public class AppService implements CacheDeveloperService<AppDomain> {
      *
      * Step 3: Move app in storage tmp version to origin version
      *
-     * @param appId Application ID
+     * @param key Application ID
      * @return
      */
-    public boolean publishApp(long appId, long developerId) {
+    public boolean publishApp(long key) {
         try {
-            this.logger.debug("Publish app " + appId + " to cache");
-            AppDomain app = getCacheObject(appId + "", developerId);
+            this.logger.info("Publish app " + key + " to cache");
+            AppDomain app = getCacheObject(key + "");
             if (app != null) {
                 app.setStatus(AppStatus.PUBLISHED);
-                putCacheObject(app, developerId);
-                this.logger.debug("Publish app " + appId + " to database");
-                this.repository.publish(appId);
+                putCacheObject(app, app.getCreater());
+                this.logger.debug("Publish app " + key + " to database");
+                this.repository.publish(key);
+                this.logger.info("Publish success app " + key);
                 return true;
             }
         } catch (Exception ex) {
-            this.logger.error("Can't publish app " + appId, ex);
+            this.logger.error("Can't publish app " + key, ex);
         }
         return false;
     }
 
-    public boolean blockApp(long appId, long developerId) {
+    public boolean blockApp(long key) {
         try {
-            this.logger.debug("Block app " + appId + " to cache");
-            AppDomain app = getCacheObject(appId + "", developerId);
+            this.logger.info("Block app " + key + " to cache");
+            AppDomain app = getCacheObject(key + "");
             if (app != null) {
                 app.setStatus(AppStatus.BLOCKED);
-                putCacheObject(app, developerId);
-                this.logger.debug("Block app " + appId + " to database");
-                this.repository.block(appId);
+                putCacheObject(app, app.getCreater());
+                this.logger.debug("Block app " + key + " to database");
+                this.repository.block(key);
+                this.logger.info("Block success app " + key);
                 return true;
             }
         } catch (Exception ex) {
-            this.logger.error("Can't block app " + appId, ex);
+            this.logger.error("Can't block app " + key, ex);
         }
         return false;
     }
 
-    public boolean isExsit(long appId, long developerId) {
-        AppDomain account = getCacheObject(appId + "", developerId);
+    public boolean isExsit(long appId) {
+        AppDomain account = getCacheObject(appId + "");
         return account != null;
     }
 
     public long count(long developerId) {
         try {
             long count = countCacheObject(developerId);
-            this.logger.debug("Total " + count + " apps in cache.");
+            this.logger.info("Total " + count + " app of developer " + developerId + " in cache.");
         } catch (Exception ex) {
-            this.logger.error("Count total apps error.", ex);
+            this.logger.error("Count total app of developer " + developerId + " error.", ex);
+        }
+        return 0;
+    }
+
+    public long count() {
+        try {
+            long count = countCacheObject();
+            this.logger.info("Total " + count + " app in cache.");
+        } catch (Exception ex) {
+            this.logger.error("Count total app error.", ex);
         }
         return 0;
     }
 
     public boolean save(AppDomain domain) {
         try {
-            this.logger.debug("Save app " + domain.toString() + " to database");
+            this.logger.info("Save app " + domain.toString() + " to database");
             this.repository.save(domain);
             this.logger.debug("Save app " + domain.toString() + " to cache");
             putCacheObject(domain, domain.getCreater());
@@ -164,39 +213,39 @@ public class AppService implements CacheDeveloperService<AppDomain> {
         return false;
     }
 
-    public boolean delete(long appId, long developerId) {
+    public boolean delete(long key, long developerId) {
         try {
-            this.logger.debug("Delete app " + appId + " in cache.");
-            removeCacheObject(appId + "", developerId);
-            this.logger.debug("Delete app " + appId + " in database.");
-            this.repository.delete(appId);
+            this.logger.info("Delete app " + key + " in cache.");
+            removeCacheObject(key + "", developerId);
+            this.logger.debug("Delete app " + key + " in database.");
+            this.repository.delete(key);
+            this.logger.info("Delete success app " + key);
         } catch (Exception ex) {
-            this.logger.error("Can't delete account " + appId, ex);
+            this.logger.error("Can't delete app " + key, ex);
             return false;
         }
         return true;
     }
 
-    @Override
-    public void putCacheObject(AppDomain domain, long developerId) {
+    private void putCacheObject(AppDomain domain, long developerId) {
         try {
-            this.redisTemplate.opsForHash().put(getObjectMessageKey(developerId), domain.getKey(), domain);
+            this.getLongRedisTemplate().opsForSet().add(AppTable.KEY + ":" + developerId, domain.getKey());
+            this.getAppVersionRedisTemplate().opsForHash().put(AppDomain.OBJECT_KEY, domain.getKey(), domain);
         } catch (Exception ex) {
             this.logger.warn("Can't put data to cache", ex);
         }
     }
 
-    @Override
-    public AppDomain getCacheObject(String key, long developerId) {
+    private AppDomain getCacheObject(String key) {
         AppDomain domain = null;
         try {
-            this.logger.debug("Get key " + key + " object " + getObjectMessageKey(developerId) + " in cache");
-            domain = (AppDomain) redisTemplate.opsForHash().get(getObjectDeveloperKey(developerId), key);
+            this.logger.debug("Get key " + key + " object " + AppDomain.OBJECT_KEY + " in cache");
+            domain = (AppDomain) this.getAppVersionRedisTemplate().opsForHash().get(AppDomain.OBJECT_KEY, key);
             if (domain == null) {
-                this.logger.debug("Get key " + key + " object " + getObjectMessageKey(developerId) + " in database");
+                this.logger.debug("Get key " + key + " object " + AppDomain.OBJECT_KEY + " in database");
                 domain = repository.findById(Long.valueOf(key));
                 if (domain == null) {
-                    this.logger.debug("App " + key + " object " + getObjectMessageKey(developerId) + " not found");
+                    this.logger.debug("App " + key + " object " + AppDomain.OBJECT_KEY + " not found");
                 }
             }
         } catch (Exception ex) {
@@ -205,70 +254,114 @@ public class AppService implements CacheDeveloperService<AppDomain> {
         return domain;
     }
 
-    @Override
-    public void removeCacheObject(String key, long developerId) {
+    private void removeCacheObject(String key, long developerId) {
         try {
-            this.logger.debug("Remove key " + key + " object " + getObjectMessageKey(developerId) + " in cache");
-            this.redisTemplate.opsForHash().delete(getObjectDeveloperKey(developerId), key);
+            this.logger.debug("Remove key " + key + " object " + AppDomain.OBJECT_KEY + " in cache");
+            this.getAppVersionRedisTemplate().opsForHash().delete(AppDomain.OBJECT_KEY, key);
+            this.getLongRedisTemplate().opsForSet().pop(AppTable.KEY + ":" + developerId);
         } catch (Exception ex) {
             this.logger.warn("Can't remove from Redis", ex);
         }
     }
 
-    @Override
-    public List<AppDomain> getCacheObjects(long developerId) {
+    private void removeCacheObject(String key) {
+        try {
+            this.logger.debug("Remove key " + key + " object " + AppDomain.OBJECT_KEY + " in cache");
+            this.getAppVersionRedisTemplate().opsForHash().delete(AppDomain.OBJECT_KEY, key);
+        } catch (Exception ex) {
+            this.logger.warn("Can't remove from Redis", ex);
+        }
+    }
+
+    private List<AppDomain> getCacheObjects() {
         List<AppDomain> apps = new ArrayList<AppDomain>();
         try {
-            this.logger.debug("Get all objects " + getObjectMessageKey(developerId) + " in cache");
-            for (Object user : redisTemplate.opsForHash().values(getObjectDeveloperKey(developerId))) {
+            this.logger.debug("Get all objects " + AppDomain.OBJECT_KEY + " in cache");
+            for (Object user : this.getAppVersionRedisTemplate().opsForHash().values(AppDomain.OBJECT_KEY)) {
                 apps.add((AppDomain) user);
             }
         } catch (Exception ex) {
-            this.logger.warn("Can't get all objects " + getObjectMessageKey(developerId) + " from Redis", ex);
+            this.logger.warn("Can't get all objects " + AppDomain.OBJECT_KEY + " from Redis", ex);
         }
         return apps;
     }
 
-    @Override
-    public long countCacheObject(long developerId) {
+    private List<AppDomain> getCacheObjects(long developerId) {
+        Collection<Object> keys = getKeys(developerId);
+        List<AppDomain> apps = new ArrayList<AppDomain>();
         try {
-            this.logger.debug("Count objects " + getObjectMessageKey(developerId) + " in cache");
-            return redisTemplate.opsForHash().size(getObjectDeveloperKey(developerId));
+            this.logger.debug("Get all objects " + AppDomain.OBJECT_KEY + " in cache");
+            for (Object user : this.getAppVersionRedisTemplate().opsForHash().multiGet(AppDomain.OBJECT_KEY, keys)) {
+                apps.add((AppDomain) user);
+            }
         } catch (Exception ex) {
-            this.logger.warn("Can't count objects " + getObjectMessageKey(developerId) + " from Redis", ex);
+            this.logger.warn("Can't get all objects " + AppDomain.OBJECT_KEY + " from Redis", ex);
+        }
+        return apps;
+    }
+
+    private long countCacheObject() {
+        try {
+            this.logger.debug("Count objects " + AppDomain.OBJECT_KEY + " in cache");
+            return this.getAppVersionRedisTemplate().opsForHash().size(AppDomain.OBJECT_KEY);
+        } catch (Exception ex) {
+            this.logger.warn("Can't count objects " + AppDomain.OBJECT_KEY + " from Redis", ex);
         }
         return 0;
     }
 
-    @Override
-    public void setCacheObjects(List<AppDomain> domains, long developerId) {
+    private long countCacheObject(long developerId) {
         try {
-            this.logger.debug("Set " + domains.size() + " objects " + getObjectMessageKey(developerId) + " to cache");
+            this.logger.debug("Count objects " + AppDomain.OBJECT_KEY + " in cache");
+            return this.getLongRedisTemplate().opsForSet().size(AppTable.KEY + ":" + developerId);
+        } catch (Exception ex) {
+            this.logger.warn("Can't count objects " + AppDomain.OBJECT_KEY + " from Redis", ex);
+        }
+        return 0;
+    }
+
+    private void setCacheObjects(List<AppDomain> domains) {
+        try {
+            this.logger.debug("Set " + domains.size() + " objects " + AppDomain.OBJECT_KEY + " to cache");
             for (AppDomain domain : domains) {
-                putCacheObject(domain, developerId);
+                putCacheObject(domain, domain.getCreater());
             }
         } catch (Exception ex) {
-            this.logger.warn("Can't set objects " + getObjectMessageKey(developerId) + " to Redis", ex);
+            this.logger.warn("Can't set objects " + AppDomain.OBJECT_KEY + " to Redis", ex);
         }
     }
 
     public void clearCache(long developerId) {
         try {
-            this.logger.debug("Clear objects " + getObjectMessageKey(developerId) + " in cache");
-            List<AppDomain> objects = getCacheObjects(developerId);
-            for (AppDomain appDomain : objects) {
-                removeCacheObject(appDomain.getKey(), developerId);
+            this.logger.debug("Clear objects " + AppDomain.OBJECT_KEY + " in cache");
+            List<AppDomain> objects = getCacheObjects();
+            for (AppDomain appVersionDomain : objects) {
+                removeCacheObject(appVersionDomain.getKey(), developerId);
             }
         } catch (Exception ex) {
-            this.logger.warn("Can't count objects " + getObjectMessageKey(developerId) + " from Redis", ex);
+            this.logger.warn("Can't count objects " + AppDomain.OBJECT_KEY + " from Redis", ex);
         }
     }
 
-    private String getObjectDeveloperKey(long developerId) {
-        return AppDomain.OBJECT_KEY + "-" + developerId;
+    public void clearCache() {
+        try {
+            this.logger.debug("Clear objects " + AppDomain.OBJECT_KEY + " in cache");
+            List<AppDomain> objects = getCacheObjects();
+            for (AppDomain appVersionDomain : objects) {
+                removeCacheObject(appVersionDomain.getKey());
+            }
+        } catch (Exception ex) {
+            this.logger.warn("Can't count objects " + AppDomain.OBJECT_KEY + " from Redis", ex);
+        }
     }
 
-    private String getObjectMessageKey(long developerId) {
-        return AppDomain.OBJECT_KEY + " of developer id " + developerId;
+    private Collection<Object> getKeys(long developerId) {
+        Collection<Object> keys = new ArrayList<Object>();
+        try {
+            Set<String> appIds = this.getLongRedisTemplate().opsForSet().members(developerId + "");
+            keys.addAll(appIds);
+        } catch (Exception ex) {
+        }
+        return keys;
     }
 }
