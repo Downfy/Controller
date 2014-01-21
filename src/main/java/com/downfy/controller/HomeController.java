@@ -27,15 +27,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 /*
  * HomeController.java
- * 
+ *
  * Home controller
- * 
+ *
  * Modification Logs:
  *  DATE            AUTHOR      DESCRIPTION
  *  --------------------------------------------------------
  *  26-Nov-2013     tuanta      Create first time
  */
-@RequestMapping({"/"})
+@RequestMapping
 @Controller
 public class HomeController extends AbstractController {
 
@@ -43,7 +43,7 @@ public class HomeController extends AbstractController {
     @Autowired
     MyResourceMessage resourceMessage;
 
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(value = "/", method = RequestMethod.GET)
     public String index(Device device, Model model) {
         try {
             return view(device, "index");

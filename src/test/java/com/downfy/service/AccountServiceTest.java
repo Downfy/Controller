@@ -26,9 +26,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /*
  * AccountServiceTest.java
- * 
+ *
  * Account service test
- * 
+ *
  * Modification Logs:
  *  DATE            AUTHOR      DESCRIPTION
  *  --------------------------------------------------------
@@ -36,7 +36,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:applicationContext-mybatis.xml",
-    "classpath:META-INF/spring/applicationContext-service.xml",
     "classpath:META-INF/spring/applicationContext-redis.xml"})
 public class AccountServiceTest {
 
@@ -51,7 +50,7 @@ public class AccountServiceTest {
     @Test
     public void testFindAll() {
         List<AccountDomain> accounts = service.findAll();
-        Assert.assertTrue(accounts.isEmpty());
+        Assert.assertTrue(accounts.size() > 0);
     }
 
     @Test
@@ -66,16 +65,38 @@ public class AccountServiceTest {
         account.setId(System.currentTimeMillis());
         account.setPassword("test");
         account.setEmail("test@test.com");
-        Assert.assertEquals(true, service.save(account));
+        service.save(account);
         account = service.findByEmail("test@test.com");
-        Assert.assertEquals(true, service.changePassword(account.getEmail(), "test001"));
+        Assert.assertNotNull(account);
+        Assert.assertEquals(true, service.changePassword("test@test.com", "test001"));
         account = service.findByEmailAndPassword("test@test.com", "test001");
+        Assert.assertNotNull(account);
         Assert.assertEquals("test@test.com", account.getEmail());
-        Assert.assertEquals(true, service.delete(account.getKey()));
+        Assert.assertEquals(true, service.delete("test@test.com"));
+    }
+
+    @Test
+    public void testFindByEmail() {
+        service.findByEmail("test@test.com");
+    }
+
+    @Test
+    public void testChangePassword() {
+        service.changePassword("test@test.com", "test001");
+    }
+
+    @Test
+    public void testFindByEmailAndPassword() {
+        service.findByEmailAndPassword("test@test.com", "test001");
+    }
+
+    @Test
+    public void testDelete() {
+        service.delete("test@test.com");
     }
 
     @Test
     public void testExsit() {
-        Assert.assertEquals(false, service.isExsit("tuanta@topmedia.vn"));
+        Assert.assertEquals(false, service.isExsit(1234567890));
     }
 }

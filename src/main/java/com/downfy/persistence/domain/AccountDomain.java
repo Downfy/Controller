@@ -21,9 +21,9 @@ import java.util.Date;
 
 /*
  * AccountDomain.java
- * 
+ *
  * Account domain
- * 
+ *
  * Modification Logs:
  *  DATE            AUTHOR      DESCRIPTION
  *  --------------------------------------------------------
@@ -179,7 +179,7 @@ public class AccountDomain
 
     @Override
     public String getKey() {
-        return getEmail();
+        return getId() + "";
     }
 
     @Override
