@@ -16,13 +16,21 @@
 package com.downfy.service;
 
 import com.downfy.persistence.domain.AccountDomain;
+import com.github.springtestdbunit.DbUnitTestExecutionListener;
+import com.github.springtestdbunit.annotation.DatabaseSetup;
+import com.github.springtestdbunit.annotation.ExpectedDatabase;
+import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
 import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
 /*
  * AccountServiceTest.java
@@ -37,6 +45,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:applicationContext-mybatis.xml",
     "classpath:META-INF/spring/applicationContext-redis.xml"})
+@TestExecutionListeners({DependencyInjectionTestExecutionListener.class,
+    DirtiesContextTestExecutionListener.class,
+    TransactionalTestExecutionListener.class,
+    DbUnitTestExecutionListener.class})
 public class AccountServiceTest {
 
     @Autowired
@@ -48,55 +60,91 @@ public class AccountServiceTest {
     }
 
     @Test
+    @DatabaseSetup("userDB.xml")
     public void testFindAll() {
+        service.clearCache();
         List<AccountDomain> accounts = service.findAll();
-        Assert.assertTrue(accounts.size() > 0);
+        Assert.assertEquals(accounts.size(), 3);
     }
 
+//    @Test
+//    @DatabaseSetup("userDB.xml")
+//    public void testFindByLimit() {
+//        service.clearCache();
+//        List<AccountDomain> accounts = service.findAll();
+//        Assert.assertEquals(3, accounts.size());
+//        accounts = service.findByLimit(0, 2);
+//        Assert.assertEquals(2, accounts.size());
+//    }
     @Test
-    public void testFindByLimit() {
-        List<AccountDomain> accounts = service.findByLimit(0, 10);
-        Assert.assertTrue(accounts.isEmpty());
-    }
-
-    @Test
-    public void testRepository() {
+    @DatabaseSetup("userDB.xml")
+    @ExpectedDatabase(value = "userDB-add-expected.xml", assertionMode = DatabaseAssertionMode.NON_STRICT)
+    public void testSave() {
+        service.clearCache();
+        List<AccountDomain> accounts = service.findAll();
+        Assert.assertEquals(3, accounts.size());
         AccountDomain account = new AccountDomain();
-        account.setId(System.currentTimeMillis());
-        account.setPassword("test");
-        account.setEmail("test@test.com");
-        service.save(account);
-        account = service.findByEmail("test@test.com");
-        Assert.assertNotNull(account);
-        Assert.assertEquals(true, service.changePassword("test@test.com", "test001"));
-        account = service.findByEmailAndPassword("test@test.com", "test001");
-        Assert.assertNotNull(account);
-        Assert.assertEquals("test@test.com", account.getEmail());
-        Assert.assertEquals(true, service.delete("test@test.com"));
+        account.setId(4);
+        account.setPassword("new");
+        account.setEmail("new@new.com");
+        account.setEnabled(true);
+        Assert.assertTrue(service.save(account));
+        accounts = service.findAll();
+        Assert.assertEquals(4, accounts.size());
+        Assert.assertTrue(service.isExsit(4l));
     }
 
     @Test
+    @DatabaseSetup("userDB.xml")
     public void testFindByEmail() {
-        service.findByEmail("test@test.com");
+        AccountDomain domain = service.findByEmail("test@test.com");
+        Assert.assertNotNull(domain);
+        Assert.assertEquals("test@test.com", domain.getEmail());
     }
 
     @Test
+    @DatabaseSetup("userDB.xml")
+    @ExpectedDatabase(value = "userDB-changepassword-expected.xml", assertionMode = DatabaseAssertionMode.NON_STRICT)
     public void testChangePassword() {
-        service.changePassword("test@test.com", "test001");
+        Assert.assertTrue(service.changePassword("test@test.com", "test001"));
     }
 
     @Test
+    @DatabaseSetup("userDB.xml")
     public void testFindByEmailAndPassword() {
-        service.findByEmailAndPassword("test@test.com", "test001");
+        service.clearCache();
+        Assert.assertNotNull(service.findByEmailAndPassword("test@test.com", "test"));
     }
 
     @Test
+    @DatabaseSetup("userDB.xml")
+    @ExpectedDatabase(value = "userDB.xml", assertionMode = DatabaseAssertionMode.NON_STRICT)
+    public void testActive() {
+        AccountDomain domain = service.findByEmail("test@test.com");
+        service.active(domain);
+    }
+
+    @Test
+    @DatabaseSetup("userDB.xml")
+    @ExpectedDatabase(value = "userDB-block-expected.xml", assertionMode = DatabaseAssertionMode.NON_STRICT)
+    public void testBlock() {
+        AccountDomain domain = service.findByEmail("test@test.com");
+        service.block(domain);
+    }
+
+    @Test
+    @DatabaseSetup("userDB.xml")
+    @ExpectedDatabase(value = "userDB-expected.xml", assertionMode = DatabaseAssertionMode.NON_STRICT)
     public void testDelete() {
         service.delete("test@test.com");
     }
 
     @Test
+    @DatabaseSetup("userDB.xml")
     public void testExsit() {
-        Assert.assertEquals(false, service.isExsit(1234567890));
+        Assert.assertEquals(false, service.isExsit(0l));
+        Assert.assertEquals(true, service.isExsit(1l));
+        Assert.assertEquals(true, service.isExsit(2l));
+        Assert.assertEquals(true, service.isExsit(3l));
     }
 }

@@ -17,6 +17,7 @@
 package com.downfy.service;
 
 import com.downfy.persistence.domain.AccountDomain;
+import com.downfy.persistence.domain.category.CategoryDomain;
 import com.downfy.persistence.repositories.AccountRepository;
 import com.downfy.persistence.table.AccountTable;
 import com.google.common.base.Preconditions;
@@ -91,21 +92,20 @@ public class AccountService implements CacheService<AccountDomain> {
         return account;
     }
 
-    public List<AccountDomain> findByLimit(int start, int end) {
-        List<AccountDomain> account = null;
-        try {
-            this.logger.info("Find list account from " + start + " to " + end + " in cache.");
-            account = getCacheLimitObjects(start, end);
-        } catch (Exception ex) {
-            this.logger.error("Find list account error: " + ex, ex);
-        }
-        if ((account != null) && (!account.isEmpty())) {
-            this.logger.debug("Total get " + account.size() + " accounts.");
-            return account;
-        }
-        return new ArrayList();
-    }
-
+//    public List<AccountDomain> findByLimit(int start, int end) {
+//        List<AccountDomain> account = null;
+//        try {
+//            this.logger.info("Find list account from " + start + " to " + end + " in cache.");
+//            account = getCacheLimitObjects(start, end);
+//        } catch (Exception ex) {
+//            this.logger.error("Find list account error: " + ex, ex);
+//        }
+//        if ((account != null) && (!account.isEmpty())) {
+//            this.logger.debug("Total get " + account.size() + " accounts.");
+//            return account;
+//        }
+//        return new ArrayList();
+//    }
     public AccountDomain findByEmailAndPassword(String email, String password) {
         AccountDomain account = null;
         try {
@@ -122,12 +122,20 @@ public class AccountService implements CacheService<AccountDomain> {
     }
 
     public AccountDomain findByEmail(String email) {
+        this.logger.info("Find account by " + email);
         long id = findIdByEmail(email);
         if (id > 0) {
             this.logger.debug("Find account by " + id + " in cache.");
             return getCacheObject(id + "");
+        } else {
+            AccountDomain domain = this.repository.findByEmail(email);
+            if (domain != null) {
+                this.putCacheObject(domain);
+            } else {
+                this.logger.info("Can't find email " + email + " in db.");
+            }
+            return domain;
         }
-        return null;
     }
 
     private long findIdByEmail(String email) {
@@ -137,14 +145,20 @@ public class AccountService implements CacheService<AccountDomain> {
             return this.getLongRedisTemplate().opsForSet().randomMember(key);
         } catch (NullPointerException null_) {
         } catch (Exception ex) {
-            this.logger.error("Can't email " + email + " in cache.");
         }
+        this.logger.info("Can't find email " + email + " in cache.");
         return 0;
     }
 
     public boolean isExsit(long id) {
+        this.logger.info("Check exist account by id " + id);
         AccountDomain account = getCacheObject(id + "");
-        return account != null;
+        if (account != null) {
+            return true;
+        } else {
+            account = repository.findById(id);
+            return account != null;
+        }
     }
 
     public boolean save(AccountDomain domain) {
@@ -168,7 +182,7 @@ public class AccountService implements CacheService<AccountDomain> {
             domain.setEnabled(true);
             this.putCacheObject(domain);
             this.logger.debug("Active account " + domain.getEmail() + " in database.");
-            this.repository.active(domain.getEmail());
+            this.repository.active(domain.getId());
         } catch (Exception ex) {
             this.logger.error("Can't active account " + domain.getEmail(), ex);
             return false;
@@ -182,7 +196,7 @@ public class AccountService implements CacheService<AccountDomain> {
             domain.setEnabled(false);
             this.putCacheObject(domain);
             this.logger.debug("Block account " + domain.getEmail() + " in database.");
-            this.repository.block(domain.getEmail());
+            this.repository.block(domain.getId());
         } catch (Exception ex) {
             this.logger.error("Can't block account " + domain.getEmail(), ex);
             return false;
@@ -196,7 +210,7 @@ public class AccountService implements CacheService<AccountDomain> {
             domain.setLastHostAddress(lastHostAddress);
             this.putCacheObject(domain);
             this.logger.debug("Log time login account " + domain.getEmail() + " to database");
-            this.repository.login(domain.getEmail(), lastHostAddress, new Date());
+            this.repository.login(domain.getId(), lastHostAddress, new Date());
         } catch (Exception ex) {
             this.logger.error("Can't update login account " + domain.getEmail(), ex);
             return false;
@@ -212,7 +226,7 @@ public class AccountService implements CacheService<AccountDomain> {
             domain.setPassword(password);
             this.putCacheObject(domain);
             this.logger.debug("Change password account " + domain.getEmail() + " to database");
-            this.repository.changePassword(email, password, new Date());
+            this.repository.changePassword(domain.getId(), password, new Date());
             return true;
         } catch (NullPointerException null_) {
             this.logger.info(null_.getMessage());
@@ -230,7 +244,7 @@ public class AccountService implements CacheService<AccountDomain> {
             this.removeCacheObject(domain.getKey());
             this.getLongRedisTemplate().opsForSet().pop(AccountTable.KEY + ":" + email);
             this.logger.debug("Delete account " + email + " in database.");
-            this.repository.delete(domain.getKey());
+            this.repository.delete(domain.getId());
             this.logger.debug(getCacheObjects().toString());
         } catch (NullPointerException null_) {
             this.logger.info(null_.getMessage());
@@ -317,12 +331,11 @@ public class AccountService implements CacheService<AccountDomain> {
                 this.logger.debug("Can't get objects outside list data.");
                 return users;
             }
-            List users_ = this.getAccountRedisTemplate().opsForHash().values(AccountDomain.OBJECT_KEY);
-            for (int i = start; i < end; i++) {
-                if (end < count) {
-                    users.add((AccountDomain) users_.get(i));
-                }
+            if (end > count) {
+                this.logger.debug("Can't get objects outside list data.");
+                return users;
             }
+            return getCacheObjects().subList(start, end);
         } catch (Exception ex) {
             this.logger.warn("Can't get objects from " + start + " to " + end + " " + AccountDomain.OBJECT_KEY + " from Redis", ex);
         }
@@ -345,10 +358,22 @@ public class AccountService implements CacheService<AccountDomain> {
     public long countCacheObject() {
         try {
             this.logger.debug("Count objects " + AccountDomain.OBJECT_KEY + " in cache");
-            return this.getAccountRedisTemplate().opsForHash().size(AccountDomain.OBJECT_KEY);
+            return getCacheObjects().size();
         } catch (Exception ex) {
             this.logger.warn("Can't count objects " + AccountDomain.OBJECT_KEY + " from Redis", ex);
         }
         return 0;
+    }
+
+    public void clearCache() {
+        try {
+            this.logger.debug("Clear objects " + AccountDomain.OBJECT_KEY + " in cache");
+            List<AccountDomain> objects = getCacheObjects();
+            for (AccountDomain account : objects) {
+                removeCacheObject(account.getKey());
+            }
+        } catch (Exception ex) {
+            this.logger.warn("Can't count objects " + AccountDomain.OBJECT_KEY + " from Redis", ex);
+        }
     }
 }

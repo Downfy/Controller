@@ -1,0 +1,6 @@
+<dataset>
+    <users id="1" password="admin" email="admin@admin@com" enabled="1"/>
+    <users id="2" password="test" email="test@test.com" enabled="1"/>
+    <users id="3" password="tuanta" email="tuanta@tuanta.com" enabled="1"/>
+    <users id="4" password="new" email="new@new.com" enabled="1"/>
+</dataset>

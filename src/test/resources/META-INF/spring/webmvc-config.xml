@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc" 
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+            http://www.springframework.org/schema/beans/spring-beans-3.2.xsd     
+            http://www.springframework.org/schema/context 
+            http://www.springframework.org/schema/context/spring-context-3.2.xsd     
+            http://www.springframework.org/schema/mvc 
+            http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd
+            http://www.springframework.org/schema/security 
+            http://www.springframework.org/schema/security/spring-security-3.2.xsd">
+
+    <!-- The controllers are autodetected POJOs labeled with the @Controller 
+    annotation. -->
+    <context:component-scan base-package="com.downfy.controller">
+        <context:include-filter expression="org.springframework.stereotype.Controller"
+                                type="annotation" />
+    </context:component-scan>
+    
+    <context:component-scan base-package="com.downfy.form.validator"/>
+
+    <!-- Configures the @Controller programming model -->
+    <mvc:annotation-driven >
+        <mvc:argument-resolvers>
+            <bean class="org.springframework.mobile.device.DeviceWebArgumentResolver" />
+        </mvc:argument-resolvers>
+    </mvc:annotation-driven>
+
+    <!-- Handles HTTP GET requests for /resources/** by efficiently serving 
+    up static resources -->
+    <mvc:resources
+        location="/,/8d777f385d3dfec8815d20f7496026dc/,classpath:/META-INF/web-resources/"
+        mapping="/resources/**" 
+        cache-period="86400"/>
+
+    <!-- Allows for mapping the DispatcherServlet to "/" by forwarding static 
+    resource requests to the container's default Servlet -->
+    <mvc:default-servlet-handler />
+
+    <!-- enable json -->
+    <bean id="jacksonMessageConverter" class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter"/>
+
+    <!-- register "global" interceptor beans to apply to all registered HandlerMappings -->
+    <mvc:interceptors>
+        <!-- On pre-handle, resolve the device that originated the web request -->
+        <bean class="org.springframework.mobile.device.DeviceResolverHandlerInterceptor" />
+        <bean class="org.springframework.web.servlet.theme.ThemeChangeInterceptor" />
+        <bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor"
+              p:paramName="lang" />
+    </mvc:interceptors>
+
+    <!-- selects a static view for rendering without the need for an explicit 
+    controller -->
+    <mvc:view-controller path="/login" />
+    <mvc:view-controller path="/" view-name="home/index" />
+    <mvc:view-controller path="/uncaughtException" />
+    <mvc:view-controller path="/resourceNotFound" />
+    <mvc:view-controller path="/dataAccessFailure" />
+    <mvc:view-controller path="/accessDenied" />
+
+    <!-- Resolves localized messages*.properties and application.properties 
+    files in the application to allow for internationalization. The messages*.properties 
+    files translate Roo generated messages which are part of the admin interface, 
+    the application.properties resource bundle localizes all application specific 
+    messages such as entity names and menu items. -->
+    <bean
+        class="org.springframework.context.support.ReloadableResourceBundleMessageSource"
+        id="messageSource" p:basenames="WEB-INF/i18n/messages,WEB-INF/i18n/application"
+        p:fallbackToSystemLocale="false"
+        p:cacheSeconds="300"
+    />
+
+    <!-- store preferred language configuration in a cookie -->
+    <bean class="org.springframework.web.servlet.i18n.CookieLocaleResolver"
+          id="localeResolver" p:cookieName="locale" >
+        <property name="defaultLocale" value="en"/>
+    </bean>
+
+    <!-- resolves localized <theme_name>.properties files in the classpath to 
+    allow for theme support -->
+    <bean
+        class="org.springframework.ui.context.support.ResourceBundleThemeSource"
+        id="themeSource" />
+
+    <!-- store preferred theme configuration in a cookie -->
+    <bean class="org.springframework.web.servlet.theme.CookieThemeResolver"
+          id="themeResolver" p:cookieName="theme" p:defaultThemeName="standard" />
+
+    <!-- This bean resolves specific types of exceptions to corresponding logical 
+    - view names for error views. The default behaviour of DispatcherServlet 
+    - is to propagate all exceptions to the servlet container: this will happen 
+    - here with all other types of exceptions. -->
+    <bean
+        class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver"
+        p:defaultErrorView="uncaughtException">
+        <property name="exceptionMappings">
+            <props>
+                <prop key=".AccessDeniedException">accessDenied</prop>
+                <prop key=".AuthenticationCredentialsNotFoundException">accessDenied</prop>
+                <prop key=".DataAccessException">dataAccessFailure</prop>
+                <prop key=".NoSuchRequestHandlingMethodException">resourceNotFound</prop>
+                <prop key=".TypeMismatchException">resourceNotFound</prop>
+                <prop key=".MissingServletRequestParameterException">resourceNotFound</prop>
+            </props>
+        </property>
+    </bean>
+
+    <security:global-method-security pre-post-annotations="enabled"/>
+        
+</beans>

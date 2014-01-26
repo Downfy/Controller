@@ -123,17 +123,17 @@
 
     <insert id="save" parameterType="AccountDomain">
         INSERT INTO users
-        (ID, PASSWORD, EMAIL, ACTIVE_KEY, ENABLED)
+        (ID, PASSWORD, EMAIL, ENABLED)
         VALUES
-        (#{id}, #{password}, #{email}, #{activeKey}, #{enabled})
+        (#{id}, #{password}, #{email}, #{enabled})
     </insert>
 
-    <update id="active" parameterType="string">
-        UPDATE users SET ENABLED = 1 WHERE ID = #{username}
+    <update id="active" parameterType="long">
+        UPDATE users SET ENABLED = 1 WHERE ID = #{id}
     </update>
 
-    <update id="block" parameterType="string">
-        UPDATE users SET ENABLED = 0 WHERE ID = #{username}
+    <update id="block" parameterType="long">
+        UPDATE users SET ENABLED = 0 WHERE ID = #{id}
     </update>
 
     <update id="login" parameterType="AccountDomain">
@@ -141,7 +141,7 @@
         SET
         LAST_HOST_ADDRESS = #{lastHostAddress},
         LAST_LOGIN_TIME = #{lastLoginTime}
-        WHERE ID = #{username}
+        WHERE ID = #{id}
     </update>
 
     <update id="changePassword" parameterType="AccountDomain">
@@ -149,10 +149,10 @@
         SET
         PASSWORD = #{password},
         LAST_PASSWORD_CHANGE_TIME = #{lastPasswordChangeTime}
-        WHERE ID = #{username}
+        WHERE ID = #{id}
     </update>
 
-    <delete id="delete" parameterType="string">
-        DELETE FROM users WHERE ID = #{username}
+    <delete id="delete" parameterType="long">
+        DELETE FROM users WHERE ID = #{id}
     </delete>
 </mapper>

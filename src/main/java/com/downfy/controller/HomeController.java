@@ -19,11 +19,15 @@ package com.downfy.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.mobile.device.Device;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 /*
  * HomeController.java
@@ -55,6 +59,13 @@ public class HomeController extends AbstractController {
 
     @RequestMapping(value = "/undermaintain", method = RequestMethod.GET)
     public String undermaintain(Device device, Model model) {
+        return view(device, "maintenance");
+    }
+
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler(AuthenticationCredentialsNotFoundException.class)
+    public String handleBadRequest(Device device, Model model, AuthenticationCredentialsNotFoundException ex) {
+//        return "accessDenied";
         return view(device, "maintenance");
     }
 }

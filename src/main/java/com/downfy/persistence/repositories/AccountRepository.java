@@ -39,21 +39,19 @@ public interface AccountRepository {
 
     public AccountDomain findById(@Param("id") long id);
 
-    public AccountDomain findByUsername(@Param("username") String username);
-
     public AccountDomain findByEmail(@Param("email") String email);
 
     public long count();
 
     public void save(AccountDomain domain);
 
-    public void active(@Param("username") String username);
+    public void active(@Param("id") long id);
 
-    public void block(@Param("username") String username);
+    public void block(@Param("id") long id);
 
-    public void login(@Param("username") String username, @Param("lastHostAddress") String lastHostAddress, @Param("lastLoginTime") Date lastLoginTime);
+    public void login(@Param("id") long id, @Param("lastHostAddress") String lastHostAddress, @Param("lastLoginTime") Date lastLoginTime);
 
-    public void changePassword(@Param("username") String username, @Param("password") String password, @Param("lastPasswordChangeTime") Date lastPasswordChangeTime);
+    public void changePassword(@Param("id") long id, @Param("password") String password, @Param("lastPasswordChangeTime") Date lastPasswordChangeTime);
 
-    public void delete(@Param("username") String username);
+    public void delete(@Param("id") long id);
 }
