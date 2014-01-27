@@ -21,13 +21,13 @@ import java.util.Random;
 
 /*
  * JobUtils.java
- * 
+ *
  * Version 1.0
  *
  * Date 01/01/2013
- * 
+ *
  * Utilities
- * 
+ *
  * Modification Logs:
  *  DATE            AUTHOR      DESCRIPTION
  *  --------------------------------------------------------
@@ -249,10 +249,7 @@ public class JobUtils {
                     result[i] = 'D';
                     break;
                 }
-                case ' ': {
-                    result[i] = '-';
-                    break;
-                }
+                case ' ':
                 case '/': {
                     result[i] = '-';
                     break;

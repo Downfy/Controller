@@ -20,10 +20,10 @@ package com.downfy.common;
  *
  * @author Tran Anh Tuan <tk1cntt@gmail.com>
  */
-public final class AppStatus {
+public class AppStatus {
 
-    public static byte DELETED = 0;
-    public static byte BLOCKED = 1;
-    public static byte PENDING = 2;
-    public static byte PUBLISHED = 3;
+    public static final byte DELETED = 0;
+    public static final byte BLOCKED = 1;
+    public static final byte PENDING = 2;
+    public static final byte PUBLISHED = 3;
 }

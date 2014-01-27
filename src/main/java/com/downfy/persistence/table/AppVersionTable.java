@@ -20,7 +20,7 @@ package com.downfy.persistence.table;
  *
  * @author Tran Anh Tuan <tk1cntt@gmail.com>
  */
-public final class AppVersionTable {
+public class AppVersionTable {
 
-    public static String KEY = "VERSION:DEVELOPER";
+    public static final String KEY = "VERSION:DEVELOPER";
 }

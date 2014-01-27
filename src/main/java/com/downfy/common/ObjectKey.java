@@ -18,29 +18,29 @@ package com.downfy.common;
 
 /*
  * ObjectKey.java
- * 
+ *
  * Object key stored in Redis
- * 
+ *
  * Modification Logs:
  *  DATE            AUTHOR      DESCRIPTION
  *  --------------------------------------------------------
  *  26-Nov-2013     tuanta      Create first time
  */
-public final class ObjectKey {
+public class ObjectKey {
 
-    public static String APP = "APP";
-    public static String APP_CATEGORY = "APP-CATEGORY";
-    public static String APP_HOT = "APP-HOT";
-    public static String APP_NEW = "APP-NEW";
-    public static String APP_DOWNLOAD = "APP-DOWNLOAD";
-    public static String APP_VERSION = "APP-VERSION";
-    public static String APP_VIEW = "APP-VIEW";
-    public static String APP_VOTE = "APP-VOTE";
-    public static String APP_SCREEN_SHOOT = "APP-SCREEN-SHOOT";
-    public static String CATEGORY = "CATEGORY";
-    public static String ACCOUNT = "ACCOUNT:";
-    public static String USER_DEVELOPER = "USER-DEVELOPER";
-    public static String LOG = "LOG";
-    public static String LOG_IP = "LOG-IP";
-    public static String SEO = "SEO";
+    public static final String APP = "APP";
+    public static final String APP_CATEGORY = "APP-CATEGORY";
+    public static final String APP_HOT = "APP-HOT";
+    public static final String APP_NEW = "APP-NEW";
+    public static final String APP_DOWNLOAD = "APP-DOWNLOAD";
+    public static final String APP_VERSION = "APP-VERSION";
+    public static final String APP_VIEW = "APP-VIEW";
+    public static final String APP_VOTE = "APP-VOTE";
+    public static final String APP_SCREEN_SHOOT = "APP-SCREEN-SHOOT";
+    public static final String CATEGORY = "CATEGORY";
+    public static final String ACCOUNT = "ACCOUNT:";
+    public static final String USER_DEVELOPER = "USER-DEVELOPER";
+    public static final String LOG = "LOG";
+    public static final String LOG_IP = "LOG-IP";
+    public static final String SEO = "SEO";
 }

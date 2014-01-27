@@ -20,7 +20,7 @@ package com.downfy.persistence.table;
  *
  * @author Tran Anh Tuan <tk1cntt@gmail.com>
  */
-public final class AppTable {
+public class AppTable {
 
-    public static String KEY = "APP:DEVELOPER";
+    public static final String KEY = "APP:DEVELOPER";
 }

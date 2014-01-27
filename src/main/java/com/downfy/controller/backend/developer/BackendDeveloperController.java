@@ -42,14 +42,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 /*
  * BackendDeveloperController.java
- * 
+ *
  * Admin developer area controller
- * 
+ *
  * Modification Logs:
  *  DATE            AUTHOR      DESCRIPTION
  *  --------------------------------------------------------
  *  01-Jan-2014     tuanta      Create first time
  */
+@PreAuthorize("hasRole('ROLE_MANAGER')")
 @RequestMapping("/backend/developer")
 @Controller
 public class BackendDeveloperController extends AbstractController {
@@ -67,7 +68,6 @@ public class BackendDeveloperController extends AbstractController {
         uiModel.addAttribute("devs", devs);
     }
 
-    @PreAuthorize("hasRole('ROLE_MANAGER')")
     @RequestMapping(method = RequestMethod.GET)
     public String index(Device device, Model uiModel) {
         try {
@@ -80,7 +80,6 @@ public class BackendDeveloperController extends AbstractController {
         return view(device, "maintenance");
     }
 
-    @PreAuthorize("hasRole('ROLE_MANAGER')")
     @RequestMapping(value = "/json", method = RequestMethod.POST)
     @ResponseBody
     public ValidationResponse createCategoryAjaxJson(@ModelAttribute("developerForm") DeveloperDomain domain, HttpServletRequest request, BindingResult bindingResult) {
@@ -100,7 +99,6 @@ public class BackendDeveloperController extends AbstractController {
         return res;
     }
 
-    @PreAuthorize("hasRole('ROLE_MANAGER')")
     @RequestMapping(method = RequestMethod.POST)
     public String createCategory(Device device, @ModelAttribute("developerForm") DeveloperDomain domain, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
         this.validator.validate(domain, bindingResult);

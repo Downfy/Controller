@@ -20,7 +20,7 @@ package com.downfy.persistence.table;
  *
  * @author Tran Anh Tuan <tk1cntt@gmail.com>
  */
-public final class AccountTable {
+public class AccountTable {
 
-    public static String KEY = "ACCOUNT:EMAIL";
+    public static final String KEY = "ACCOUNT:EMAIL";
 }

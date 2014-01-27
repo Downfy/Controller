@@ -52,6 +52,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  *  --------------------------------------------------------
  *  26-Dec-2013     tuanta      Create first time
  */
+@PreAuthorize("hasRole('ROLE_MANAGER')")
 @RequestMapping("/backend/category")
 @Controller
 public class BackendCategoryController extends AbstractController {
@@ -69,7 +70,6 @@ public class BackendCategoryController extends AbstractController {
         uiModel.addAttribute("cats", cats);
     }
 
-    @PreAuthorize("hasRole('ROLE_MANAGER')")
     @RequestMapping(method = RequestMethod.GET)
     public String index(HttpServletRequest request, Device device, Model uiModel) {
         try {
@@ -82,14 +82,12 @@ public class BackendCategoryController extends AbstractController {
         return view(device, "maintenance");
     }
 
-    @PreAuthorize("hasRole('ROLE_MANAGER')")
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     @ResponseBody
     public List<CategorySelectorForm> getCategoryList(@PathVariable("id") String id, HttpServletRequest request, Device device, Model uiModel) {
         return categoryService.findBySelectorParent(id);
     }
 
-    @PreAuthorize("hasRole('ROLE_MANAGER')")
     @RequestMapping(value = "/json", method = RequestMethod.POST)
     @ResponseBody
     public ValidationResponse createCategoryAjaxJson(@ModelAttribute("categoryForm") CategoryDomain domain, HttpServletRequest request, BindingResult bindingResult) {
@@ -109,7 +107,6 @@ public class BackendCategoryController extends AbstractController {
         return res;
     }
 
-    @PreAuthorize("hasRole('ROLE_MANAGER')")
     @RequestMapping(method = RequestMethod.POST)
     public String createCategory(Device device, @ModelAttribute("categoryForm") CategoryDomain domain, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
         this.validator.validate(domain, bindingResult);

@@ -63,6 +63,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
  *  --------------------------------------------------------
  *  26-Dec-2013     tuanta      Create first time
  */
+@PreAuthorize("hasRole('ROLE_MANAGER')")
 @RequestMapping("/backend/application")
 @Controller
 public class AppController extends AbstractController {
@@ -84,7 +85,6 @@ public class AppController extends AbstractController {
         uiModel.addAttribute("apps", apps);
     }
 
-    @PreAuthorize("hasRole('ROLE_MANAGER')")
     @RequestMapping(method = RequestMethod.GET)
     public String index(HttpServletRequest request, Device device, Model uiModel) {
         try {
@@ -97,7 +97,6 @@ public class AppController extends AbstractController {
         return view(device, "maintenance");
     }
 
-    @PreAuthorize("hasRole('ROLE_MANAGER')")
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public String detail(@PathVariable("id") long appId, HttpServletRequest request, Device device, Model uiModel) {
         try {
@@ -116,7 +115,6 @@ public class AppController extends AbstractController {
         return view(device, "maintenance");
     }
 
-    @PreAuthorize("hasRole('ROLE_MANAGER')")
     @RequestMapping(value = "/{id}/apk", method = RequestMethod.GET)
     public String apk(@PathVariable("id") long appId, HttpServletRequest request, Device device, Model uiModel) {
         try {
@@ -129,7 +127,6 @@ public class AppController extends AbstractController {
         return view(device, "maintenance");
     }
 
-    @PreAuthorize("hasRole('ROLE_MANAGER')")
     @RequestMapping(value = "/{id}/screenshoot", method = RequestMethod.GET)
     public String screenshoots(@PathVariable("id") long appId, HttpServletRequest request, Device device, Model uiModel) {
         try {
@@ -144,7 +141,6 @@ public class AppController extends AbstractController {
         return view(device, "maintenance");
     }
 
-    @PreAuthorize("hasRole('ROLE_MANAGER')")
     @RequestMapping(value = "/upload/{id}/icon", method = RequestMethod.POST)
     @ResponseBody
     public AppFileMetaDomain icon(@PathVariable("id") long appId, MultipartHttpServletRequest request, Device device, Model uiModel) {
@@ -178,7 +174,6 @@ public class AppController extends AbstractController {
         return fileMeta;
     }
 
-    @PreAuthorize("hasRole('ROLE_MANAGER')")
     @RequestMapping(value = "/upload/{id}/apk", method = RequestMethod.POST)
     @ResponseBody
     public AppFileMetaDomain apk(@PathVariable("id") long appId, MultipartHttpServletRequest request, Device device, Model uiModel) {
@@ -202,13 +197,12 @@ public class AppController extends AbstractController {
             fileMeta.setFileName(absolutePath);
             fileMeta.setFileSize(mpf.getSize() + "");
             fileMeta.setFileType(mpf.getContentType());
-        } catch (Exception ex) {
+        } catch (IOException ex) {
             logger.error("Cannot upload icon application.", ex);
         }
         return fileMeta;
     }
 
-    @PreAuthorize("hasRole('ROLE_MANAGER')")
     @RequestMapping(value = "/upload/{id}/screenshoots", method = RequestMethod.POST)
     @ResponseBody
     public LinkedList<AppFileMetaDomain> screenshoots(@PathVariable("id") long appId, MultipartHttpServletRequest request, Device device, Model uiModel) {
