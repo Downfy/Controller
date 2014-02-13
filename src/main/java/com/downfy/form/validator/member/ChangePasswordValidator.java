@@ -16,10 +16,10 @@
  */
 package com.downfy.form.validator.member;
 
+import com.downfy.common.Utils;
 import com.downfy.persistence.domain.AccountDomain;
 import com.downfy.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -45,8 +45,6 @@ public class ChangePasswordValidator
 
     @Autowired
     AccountService accountService;
-    @Autowired
-    ShaPasswordEncoder passwordEncoder;
 
     @Override
     public boolean supports(Class<?> clazz) {
@@ -70,7 +68,7 @@ public class ChangePasswordValidator
             errors.rejectValue("againPassword", "changepassword.passwordsnomatch");
         } else {
             String oldPassword = form.getOldPassword();
-            String encryptPassword = this.passwordEncoder.encodePassword(oldPassword, null);
+            String encryptPassword = Utils.toMd5(oldPassword);
             try {
                 AccountDomain accountDomain = this.accountService.findByEmailAndPassword(getUsername(), encryptPassword);
                 if (accountDomain == null) {

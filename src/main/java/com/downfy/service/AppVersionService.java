@@ -16,7 +16,7 @@
  */
 package com.downfy.service;
 
-import com.downfy.common.AppStatus;
+import com.downfy.common.AppCommon;
 import com.downfy.persistence.domain.application.AppVersionDomain;
 import com.downfy.persistence.repositories.application.AppVersionRepository;
 import com.downfy.persistence.table.AppVersionTable;
@@ -144,7 +144,7 @@ public class AppVersionService {
             this.logger.info("Publish app version " + key + " to cache");
             AppVersionDomain app = getCacheObject(key + "");
             if (app != null) {
-                app.setStatus(AppStatus.PUBLISHED);
+                app.setStatus(AppCommon.PUBLISHED);
                 putCacheObject(app, app.getCreater());
                 this.logger.debug("Publish app version " + key + " to database");
                 this.repository.publish(key);
@@ -162,7 +162,7 @@ public class AppVersionService {
             this.logger.info("Block app version " + key + " to cache");
             AppVersionDomain app = getCacheObject(key + "");
             if (app != null) {
-                app.setStatus(AppStatus.BLOCKED);
+                app.setStatus(AppCommon.BLOCKED);
                 putCacheObject(app, app.getCreater());
                 this.logger.debug("Block app version " + key + " to database");
                 this.repository.block(key);
@@ -360,7 +360,7 @@ public class AppVersionService {
         try {
             Set<String> appIds = this.getLongRedisTemplate().opsForSet().members(developerId + "");
             keys.addAll(appIds);
-        } catch (Exception ex) {
+        } catch (NullPointerException ex) {
         }
         return keys;
     }

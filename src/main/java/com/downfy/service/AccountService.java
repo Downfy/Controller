@@ -17,7 +17,6 @@
 package com.downfy.service;
 
 import com.downfy.persistence.domain.AccountDomain;
-import com.downfy.persistence.domain.category.CategoryDomain;
 import com.downfy.persistence.repositories.AccountRepository;
 import com.downfy.persistence.table.AccountTable;
 import com.google.common.base.Preconditions;
@@ -92,20 +91,6 @@ public class AccountService implements CacheService<AccountDomain> {
         return account;
     }
 
-//    public List<AccountDomain> findByLimit(int start, int end) {
-//        List<AccountDomain> account = null;
-//        try {
-//            this.logger.info("Find list account from " + start + " to " + end + " in cache.");
-//            account = getCacheLimitObjects(start, end);
-//        } catch (Exception ex) {
-//            this.logger.error("Find list account error: " + ex, ex);
-//        }
-//        if ((account != null) && (!account.isEmpty())) {
-//            this.logger.debug("Total get " + account.size() + " accounts.");
-//            return account;
-//        }
-//        return new ArrayList();
-//    }
     public AccountDomain findByEmailAndPassword(String email, String password) {
         AccountDomain account = null;
         try {

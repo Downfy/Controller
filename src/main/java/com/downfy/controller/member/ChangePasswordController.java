@@ -22,7 +22,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -31,6 +30,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import com.downfy.common.ErrorMessage;
+import com.downfy.common.Utils;
 import com.downfy.common.ValidationResponse;
 import com.downfy.controller.AbstractController;
 import com.downfy.controller.MyResourceMessage;
@@ -42,9 +42,9 @@ import org.springframework.mobile.device.Device;
 
 /*
  * ChangePasswordController.java
- * 
+ *
  * Change password account controller
- * 
+ *
  * Modification Logs:
  *  DATE            AUTHOR      DESCRIPTION
  *  --------------------------------------------------------
@@ -61,8 +61,6 @@ public class ChangePasswordController extends AbstractController {
     AccountService accountService;
     @Autowired
     MyResourceMessage resourceMessage;
-    @Autowired
-    ShaPasswordEncoder passwordEncoder;
 
     @PreAuthorize("isAuthenticated()")
     @RequestMapping(value = {"/json"}, method = {org.springframework.web.bind.annotation.RequestMethod.POST})
@@ -93,7 +91,7 @@ public class ChangePasswordController extends AbstractController {
             return view(device, "member/changepassword");
         }
         try {
-            this.accountService.changePassword(getUsername(), this.passwordEncoder.encodePassword(form.getNewPassword(), null));
+            this.accountService.changePassword(getUsername(), Utils.toMd5(form.getNewPassword()));
             return view(device, "member/successchangepassword");
         } catch (Exception ex) {
             logger.error("Change password for user " + getUsername() + " error.", ex);

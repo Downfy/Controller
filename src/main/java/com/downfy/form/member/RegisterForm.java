@@ -18,19 +18,9 @@ package com.downfy.form.member;
 
 public class RegisterForm {
 
-    private String username;
     private String password;
     private String rePassword;
     private String email;
-    private String mobile;
-
-    public String getUsername() {
-        return this.username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
 
     public String getPassword() {
         return this.password;

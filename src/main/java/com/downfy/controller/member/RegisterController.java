@@ -16,7 +16,6 @@
  */
 package com.downfy.controller.member;
 
-import com.downfy.persistence.domain.AccountDomain;
 import com.downfy.service.AccountService;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,17 +23,18 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import com.downfy.common.ErrorMessage;
+import com.downfy.common.Utils;
 import com.downfy.common.ValidationResponse;
 import com.downfy.controller.AbstractController;
 import com.downfy.controller.MyResourceMessage;
 import com.downfy.form.member.RegisterForm;
 import com.downfy.form.validator.member.RegisterValidator;
+import com.downfy.persistence.domain.AccountDomain;
 import org.springframework.mobile.device.Device;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,7 +42,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
-@RequestMapping({"/signin"})
+@RequestMapping("/signup")
 public class RegisterController extends AbstractController {
 
     private final Logger logger = LoggerFactory.getLogger(RegisterController.class);
@@ -51,15 +51,11 @@ public class RegisterController extends AbstractController {
     @Autowired
     MyResourceMessage resourceMessage;
     @Autowired
-    ShaPasswordEncoder passwordEncoder;
-    @Autowired
     AccountService accountService;
 
     @RequestMapping(method = {RequestMethod.GET})
     public String registerMemberForm(Device device, Model model) {
         model.addAttribute("registerForm", new RegisterForm());
-        model.addAttribute("title", "Đăng ký thành viên");
-        model.addAttribute("description", "Hãy đăng ký thành viên và tham gia vào mạng xã hội tuyển dụng. Hàng ngàn công việc phù hợp với bạn");
         return view(device, "member/create");
     }
 
@@ -82,8 +78,9 @@ public class RegisterController extends AbstractController {
         return res;
     }
 
-    @RequestMapping(method = {RequestMethod.POST})
+    @RequestMapping(method = RequestMethod.POST)
     public String registerMember(Device device, @ModelAttribute("registerForm") RegisterForm form, BindingResult bindingResult, Model model) {
+        logger.info("Register member start");
         this.validator.validate(form, bindingResult);
         if (bindingResult.hasErrors()) {
             model.addAttribute("registerForm", form);
@@ -92,11 +89,12 @@ public class RegisterController extends AbstractController {
         try {
             AccountDomain account = new AccountDomain();
             account.setId(System.currentTimeMillis());
-            account.setPassword(this.passwordEncoder.encodePassword(form.getPassword(), null));
+            account.setPassword(Utils.toMd5(form.getPassword()));
             account.setEmail(form.getEmail());
             account.setEnabled(true);
             if (this.accountService.save(account)) {
                 model.addAttribute("email", form.getEmail());
+                logger.info("Register member end");
                 return view(device, "member/successregister");
             }
         } catch (Exception ex) {

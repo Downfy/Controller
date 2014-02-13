@@ -2,4 +2,6 @@
     <users id="1" password="21232f297a57a5a743894a0e4a801fc3" email="admin@admin.com" enabled="1"/>
     <users id="2" password="098f6bcd4621d373cade4e832627b4f6" email="test@test.com" enabled="1"/>
     <users id="3" password="22af645d1859cb5ca6da0c484f1f37ea" email="new@new.com" enabled="1"/>
+    <categories parent="GAMES" name="Action" url="action" enabled="1" sort="0"/>
+    <categories parent="APPLICATIONS" name="Social" url="social" enabled="1" sort="0"/>
 </dataset>

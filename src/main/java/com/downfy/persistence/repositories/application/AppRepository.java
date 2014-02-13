@@ -22,9 +22,9 @@ import org.apache.ibatis.annotations.Param;
 
 /*
  * AppRepository.java
- * 
+ *
  * App repository
- * 
+ *
  * Modification Logs:
  *  DATE            AUTHOR      DESCRIPTION
  *  --------------------------------------------------------
@@ -34,7 +34,7 @@ public interface AppRepository {
 
     public List<AppDomain> findAll();
 
-    public AppDomain findById(@Param("appId") long appId);
+    public AppDomain findById(long appId);
 
     public List<AppDomain> findByDeveloper(@Param("developerId") long developerId);
 
@@ -50,9 +50,9 @@ public interface AppRepository {
 
     public void updateAppDownload(AppDomain domain);
 
-    public void publish(@Param("appId") long appId);
+    public void publish(long appId);
 
-    public void block(@Param("appId") long appId);
+    public void block(long appId);
 
-    public void delete(@Param("appId") long appId);
+    public void delete(long appId);
 }

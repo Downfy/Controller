@@ -64,8 +64,13 @@ public class HomeController extends AbstractController {
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(AuthenticationCredentialsNotFoundException.class)
-    public String handleBadRequest(Device device, Model model, AuthenticationCredentialsNotFoundException ex) {
-//        return "accessDenied";
+    public String handleAuthenticationCredentialsNotFoundException(Device device, Model model, AuthenticationCredentialsNotFoundException ex) {
+        return view(device, "maintenance");
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(Exception.class)
+    public String handleException(Device device, Model model, Exception ex) {
         return view(device, "maintenance");
     }
 }

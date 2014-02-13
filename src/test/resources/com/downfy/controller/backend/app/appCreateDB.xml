@@ -3,4 +3,5 @@
     <users id="2" password="098f6bcd4621d373cade4e832627b4f6" email="test@test.com" enabled="1"/>
     <categories parent="GAMES" name="Action" url="action" enabled="1" sort="0"/>
     <categories parent="APPLICATIONS" name="Social" url="social" enabled="1" sort="0"/>
+    <apps app_id="1234567890" app_name="App name" app_category="action" creater="1"/>
 </dataset>

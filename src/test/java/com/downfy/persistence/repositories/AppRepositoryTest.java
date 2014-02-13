@@ -18,7 +18,6 @@ package com.downfy.persistence.repositories;
 
 import com.downfy.persistence.repositories.application.AppRepository;
 import junit.framework.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,9 +26,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /*
  * AppRepositoryTest.java
- * 
+ *
  * App repository test
- * 
+ *
  * Modification Logs:
  *  DATE            AUTHOR      DESCRIPTION
  *  --------------------------------------------------------

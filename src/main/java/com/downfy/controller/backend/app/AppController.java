@@ -102,11 +102,7 @@ public class AppController extends AbstractController {
         try {
             AppDomain appDomain = appService.findById(appId);
             CategoryDomain categoryDomain = categoryService.findByURL(appDomain.getAppCategory());
-            AppDetailForm form = new AppDetailForm();
-            form.setAppId(appId);
-            form.fromAppDomain(appDomain);
-            form.setAppCategoryParent(categoryDomain.getParent());
-            form.setAppCategories(categoryService.findBySelectorParent(categoryDomain.getParent()));
+            AppDetailForm form = getAppDetailForm(appId, appDomain, categoryDomain);
             uiModel.addAttribute("app", form);
             return view(device, "backend/application/detail");
         } catch (Exception ex) {
@@ -252,5 +248,14 @@ public class AppController extends AbstractController {
 
         }
         return files;
+    }
+
+    private AppDetailForm getAppDetailForm(long appId, AppDomain appDomain, CategoryDomain categoryDomain) {
+        AppDetailForm form = new AppDetailForm();
+        form.setAppId(appId);
+        form.fromAppDomain(appDomain);
+        form.setAppCategoryParent(categoryDomain.getParent());
+        form.setAppCategories(categoryService.findBySelectorParent(categoryDomain.getParent()));
+        return form;
     }
 }

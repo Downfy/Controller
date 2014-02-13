@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <beans:beans xmlns="http://www.springframework.org/schema/security"
-             xmlns:beans="http://www.springframework.org/schema/beans" 
+             xmlns:beans="http://www.springframework.org/schema/beans"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="http://www.springframework.org/schema/beans
                         http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
-                        http://www.springframework.org/schema/security 
+                        http://www.springframework.org/schema/security
                         http://www.springframework.org/schema/security/spring-security-3.2.xsd">
 
     <!-- HTTP security configurations -->
@@ -23,41 +23,18 @@
         <intercept-url pattern="/backend" access="isAuthenticated()" />
         <intercept-url pattern="/resources/**" access="permitAll" />
         <intercept-url pattern="/login**" access="permitAll" />
+        <intercept-url pattern="/signup" access="permitAll" />
         <intercept-url pattern="/accessDenied" access="permitAll" />
         <intercept-url pattern="/**" access="permitAll" />
         <access-denied-handler error-page="/accessDenied" />
-        <csrf />
-        <headers>
-            <content-type-options />
-            <hsts />
-            <frame-options />
-            <xss-protection />
-        </headers>
     </http>
 
     <!-- Configure Authentication mechanism -->
     <authentication-manager alias="authenticationManager">
-        <authentication-provider ref="daoAuthenticationProvider" />
-        <authentication-provider>
-            <user-service>
-                <user name="tuanta" password="tuanta" authorities="ROLE_MANAGER" />
-            </user-service>
+        <authentication-provider user-service-ref="myUserDetailsService">
+            <password-encoder hash="md5"/>
         </authentication-provider>
     </authentication-manager>
 
     <beans:bean id="myUserDetailsService" class="com.downfy.security.MyUserDetailsService" />
-    
-    <beans:bean id="saltSource" class="com.downfy.security.MySaltSource" />
-    
-    <beans:bean id="daoAuthenticationProvider"
-                class="org.springframework.security.authentication.dao.DaoAuthenticationProvider">
-        <beans:property name="userDetailsService" ref="myUserDetailsService" />
-        <beans:property name="passwordEncoder" ref="passwordEncoder" />
-    </beans:bean>
-
-    <beans:bean id="passwordEncoder"
-                class="org.springframework.security.authentication.encoding.ShaPasswordEncoder">
-        <beans:constructor-arg index="0" value="512" />
-        <beans:property name="encodeHashAsBase64" value="true"/>
-    </beans:bean>
 </beans:beans>

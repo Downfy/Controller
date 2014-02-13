@@ -64,34 +64,25 @@ public class AccountServiceTest {
     public void testFindAll() {
         service.clearCache();
         List<AccountDomain> accounts = service.findAll();
-        Assert.assertEquals(accounts.size(), 3);
+        Assert.assertEquals(accounts.size(), 2);
     }
 
-//    @Test
-//    @DatabaseSetup("userDB.xml")
-//    public void testFindByLimit() {
-//        service.clearCache();
-//        List<AccountDomain> accounts = service.findAll();
-//        Assert.assertEquals(3, accounts.size());
-//        accounts = service.findByLimit(0, 2);
-//        Assert.assertEquals(2, accounts.size());
-//    }
     @Test
     @DatabaseSetup("userDB.xml")
     @ExpectedDatabase(value = "userDB-add-expected.xml", assertionMode = DatabaseAssertionMode.NON_STRICT)
     public void testSave() {
         service.clearCache();
         List<AccountDomain> accounts = service.findAll();
-        Assert.assertEquals(3, accounts.size());
+        Assert.assertEquals(2, accounts.size());
         AccountDomain account = new AccountDomain();
-        account.setId(4);
-        account.setPassword("new");
+        account.setId(3);
+        account.setPassword("22af645d1859cb5ca6da0c484f1f37ea");
         account.setEmail("new@new.com");
         account.setEnabled(true);
         Assert.assertTrue(service.save(account));
         accounts = service.findAll();
-        Assert.assertEquals(4, accounts.size());
-        Assert.assertTrue(service.isExsit(4l));
+        Assert.assertEquals(3, accounts.size());
+        Assert.assertTrue(service.isExsit(3));
     }
 
     @Test
@@ -106,14 +97,14 @@ public class AccountServiceTest {
     @DatabaseSetup("userDB.xml")
     @ExpectedDatabase(value = "userDB-changepassword-expected.xml", assertionMode = DatabaseAssertionMode.NON_STRICT)
     public void testChangePassword() {
-        Assert.assertTrue(service.changePassword("test@test.com", "test001"));
+        Assert.assertTrue(service.changePassword("test@test.com", "fa820cc1ad39a4e99283e9fa555035ec"));
     }
 
     @Test
     @DatabaseSetup("userDB.xml")
     public void testFindByEmailAndPassword() {
         service.clearCache();
-        Assert.assertNotNull(service.findByEmailAndPassword("test@test.com", "test"));
+        Assert.assertNotNull(service.findByEmailAndPassword("test@test.com", "098f6bcd4621d373cade4e832627b4f6"));
     }
 
     @Test
@@ -145,6 +136,5 @@ public class AccountServiceTest {
         Assert.assertEquals(false, service.isExsit(0l));
         Assert.assertEquals(true, service.isExsit(1l));
         Assert.assertEquals(true, service.isExsit(2l));
-        Assert.assertEquals(true, service.isExsit(3l));
     }
 }

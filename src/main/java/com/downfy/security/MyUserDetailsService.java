@@ -33,13 +33,13 @@ import org.springframework.security.core.GrantedAuthority;
 
 /*
  * MyUserDetailsService.java
- * 
+ *
  * Version 1.0
  *
  * Date 26/11/2013
- * 
+ *
  * User details service
- * 
+ *
  * Modification Logs:
  *  DATE            AUTHOR      DESCRIPTION
  *  --------------------------------------------------------
@@ -58,7 +58,7 @@ public class MyUserDetailsService
         List<GrantedAuthority> granterdAuthorities = new ArrayList();
         granterdAuthorities.add(new SimpleGrantedAuthority("ROLE_USER"));
 
-        if ("tk1cntt@gmail.com".equals(username)) {
+        if ("admin@admin.com".equals(username)) {
             granterdAuthorities.add(new SimpleGrantedAuthority("ROLE_MANAGER"));
         }
 

@@ -6,6 +6,9 @@
 -- Generation Time: Jan 17, 2014 at 01:58 PM
 -- Server version: 5.5.34-0ubuntu0.13.10.1
 -- PHP Version: 5.5.3-1ubuntu2.1
+DROP DATABASE mystoredb;
+CREATE DATABASE mystoredb;
+USE mystoredb;
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";

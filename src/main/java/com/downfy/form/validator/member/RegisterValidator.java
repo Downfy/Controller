@@ -17,6 +17,7 @@
 package com.downfy.form.validator.member;
 
 import com.downfy.common.RegexpUtils;
+import com.downfy.controller.member.RegisterController;
 import com.downfy.persistence.domain.AccountDomain;
 import com.downfy.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,8 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import com.downfy.form.member.RegisterForm;
 import com.google.common.base.Strings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /*
  * RegisterValidator.java
@@ -40,6 +43,7 @@ import com.google.common.base.Strings;
 public class RegisterValidator
         implements Validator {
 
+    private final Logger logger = LoggerFactory.getLogger(RegisterValidator.class);
     @Autowired
     AccountService accountService;
 
@@ -51,27 +55,6 @@ public class RegisterValidator
     @Override
     public void validate(Object target, Errors errors) {
         RegisterForm form = (RegisterForm) target;
-
-        if (Strings.isNullOrEmpty(form.getUsername())) {
-            errors.rejectValue("username", "user.usernamenotnull");
-        } else if (!RegexpUtils.validateUsername(form.getUsername())) {
-            errors.rejectValue("username", "user.usernamenotmatch");
-        } else {
-            AccountDomain account = this.accountService.findByEmail(form.getUsername());
-            if (account != null) {
-                errors.rejectValue("username", "user.usernamenotavaiable");
-            }
-        }
-        if (Strings.isNullOrEmpty(form.getPassword())) {
-            errors.rejectValue("password", "user.passwordnotnull");
-        }
-        if (Strings.isNullOrEmpty(form.getRePassword())) {
-            errors.rejectValue("rePassword", "user.passwordnotnull");
-        }
-        if (!form.getPassword().equals(form.getRePassword())) {
-            errors.rejectValue("password", "user.passwordnotmatch");
-            errors.rejectValue("rePassword", "user.passwordnotmatch");
-        }
         if (Strings.isNullOrEmpty(form.getEmail())) {
             errors.rejectValue("email", "user.emailnotnull");
         } else if (!RegexpUtils.validateEmail(form.getEmail())) {
@@ -81,6 +64,16 @@ public class RegisterValidator
             if (account != null) {
                 errors.rejectValue("email", "user.emailnotavaiable");
             }
+        }
+        if (Strings.isNullOrEmpty(form.getPassword())) {
+            errors.rejectValue("password", "user.passwordnotnull");
+        }
+        if (Strings.isNullOrEmpty(form.getRePassword())) {
+            errors.rejectValue("rePassword", "user.passwordnotnull");
+        }
+        if (!Strings.isNullOrEmpty(form.getPassword()) && !Strings.isNullOrEmpty(form.getRePassword()) && !form.getPassword().equals(form.getRePassword())) {
+            errors.rejectValue("password", "user.passwordnotmatch");
+            errors.rejectValue("rePassword", "user.passwordnotmatch");
         }
     }
 }

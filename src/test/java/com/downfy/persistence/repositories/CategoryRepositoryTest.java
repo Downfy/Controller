@@ -16,7 +16,6 @@
 package com.downfy.persistence.repositories;
 
 import com.downfy.persistence.repositories.category.CategoryRepository;
-import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,13 +23,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.downfy.persistence.domain.category.CategoryDomain;
-import org.springframework.dao.DuplicateKeyException;
+import com.github.springtestdbunit.DbUnitTestExecutionListener;
+import com.github.springtestdbunit.annotation.DatabaseSetup;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
 /*
  * CategoryRepositoryTest.java
- * 
+ *
  * Category repository test
- * 
+ *
  * Modification Logs:
  *  DATE            AUTHOR      DESCRIPTION
  *  --------------------------------------------------------
@@ -38,6 +42,10 @@ import org.springframework.dao.DuplicateKeyException;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:applicationContext-mybatis.xml"})
+@TestExecutionListeners({DependencyInjectionTestExecutionListener.class,
+    DirtiesContextTestExecutionListener.class,
+    TransactionalTestExecutionListener.class,
+    DbUnitTestExecutionListener.class})
 public class CategoryRepositoryTest {
 
     @Autowired
@@ -49,22 +57,31 @@ public class CategoryRepositoryTest {
     }
 
     @Test
+    @DatabaseSetup("repositoryDB.xml")
     public void testSave() {
-        try {
-            CategoryDomain domain = new CategoryDomain();
-            domain.setName("Arcade & Action");
-            domain.setUrl("Arcade-Action");
-            repository.save(domain);
-        } catch (DuplicateKeyException dkex) {
-        }
+        CategoryDomain domain = new CategoryDomain();
+        domain.setName("Arcade & Action");
+        domain.setUrl("Arcade-Action");
+        repository.save(domain);
     }
 
     @Test
+    @DatabaseSetup("repositoryDB.xml")
     public void testUpdateUrl() {
-        List<CategoryDomain> domains = repository.findAll();
-        for (CategoryDomain category : domains) {
-            category.setUrl(System.currentTimeMillis() + "");
-            repository.update(category);
-        }
+        CategoryDomain category = repository.findByUrl("action");
+        Assert.assertNotNull(category);
+        category.setName("New-Action");
+        repository.update(category);
+        category = repository.findByUrl("action");
+        Assert.assertNotNull(category);
+        Assert.assertEquals(category.getName(), "New-Action");
+    }
+
+    @Test
+    @DatabaseSetup("repositoryDB.xml")
+    public void testFindByUrl() {
+        CategoryDomain domain = repository.findByUrl("action");
+        Assert.assertEquals(domain.getName(), "Action");
+        Assert.assertEquals(domain.getUrl(), "action");
     }
 }
