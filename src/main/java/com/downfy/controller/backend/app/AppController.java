@@ -16,6 +16,7 @@
  */
 package com.downfy.controller.backend.app;
 
+import com.downfy.common.Utils;
 import com.downfy.controller.AbstractController;
 import com.downfy.controller.MyResourceMessage;
 import com.downfy.form.backend.application.AppCreateForm;
@@ -42,7 +43,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mobile.device.Device;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.FileCopyUtils;
@@ -143,13 +143,12 @@ public class AppController extends AbstractController {
         MultipartFile mpf = request.getFile("appIconFile");
         AppFileMetaDomain fileMeta = null;
         try {
-            Md5PasswordEncoder encoder = new Md5PasswordEncoder();
-            String appIconName = encoder.encodePassword(System.currentTimeMillis() + "", null);
+            String appIconName = Utils.toMd5(System.currentTimeMillis() + "");
             // copy file to local disk (make sure the path "e.g. D:/temp/files" exists)
             File f = new File(context.getRealPath("/"));
-            String absolutePath = "/icon/" + encoder.encodePassword(getUsername(), null)
+            String absolutePath = File.separator + "icon" + File.separator + Utils.toMd5(getUsername())
                     + "/" + appIconName + ".png";
-            String localPath = f.getCanonicalPath() + "/" + encoder.encodePassword("data", null)
+            String localPath = f.getCanonicalPath() + File.separator + Utils.toMd5("data")
                     + absolutePath;
             f = new File(localPath);
             Files.createParentDirs(f);
@@ -176,13 +175,12 @@ public class AppController extends AbstractController {
         MultipartFile mpf = request.getFile("appAPKFile");
         AppFileMetaDomain fileMeta = null;
         try {
-            Md5PasswordEncoder encoder = new Md5PasswordEncoder();
-            String appIconName = encoder.encodePassword(System.currentTimeMillis() + "", null);
+            String appIconName = Utils.toMd5(System.currentTimeMillis() + "");
             // copy file to local disk (make sure the path "e.g. D:/temp/files" exists)
             File f = new File(context.getRealPath("/"));
-            String absolutePath = "/apk/" + encoder.encodePassword(getUsername(), null)
-                    + "/" + appIconName + ".apk";
-            String localPath = f.getCanonicalPath() + "/" + encoder.encodePassword("data", null)
+            String absolutePath = File.separator + "apk" + File.separator + Utils.toMd5(getUsername())
+                    + File.separator + appIconName + ".apk";
+            String localPath = f.getCanonicalPath() + File.separator + Utils.toMd5("data")
                     + absolutePath;
             f = new File(localPath);
             Files.createParentDirs(f);
@@ -219,11 +217,10 @@ public class AppController extends AbstractController {
                 files.pop();
             }
 
-            Md5PasswordEncoder encoder = new Md5PasswordEncoder();
-            String appIconName = encoder.encodePassword(System.currentTimeMillis() + "", null);
+            String appIconName = Utils.toMd5(System.currentTimeMillis() + "");
             // copy file to local disk (make sure the path "e.g. D:/temp/files" exists)
             File f = new File(context.getRealPath("/"));
-            String absolutePath = "/screenshoots/" + encoder.encodePassword(getUsername(), null)
+            String absolutePath = File.separator + "screenshoots" + File.separator + Utils.toMd5(getUsername())
                     + "/" + appIconName + ".png";
 
             //2.3 create new fileMeta
@@ -233,7 +230,7 @@ public class AppController extends AbstractController {
             fileMeta.setFileType(mpf.getContentType());
 
             try {
-                String localPath = f.getCanonicalPath() + "/" + encoder.encodePassword("data", null)
+                String localPath = f.getCanonicalPath() + File.separator + Utils.toMd5("data")
                         + absolutePath;
                 f = new File(localPath);
                 Files.createParentDirs(f);
