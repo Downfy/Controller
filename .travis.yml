@@ -5,7 +5,8 @@ jdk:
   - openjdk6
   
 before_script:
-  - sh -c "mysql -u travis < src/test/resources/db.sql"
+  - mysql -e 'create database mystoredb;'
+  - sh -c "mysql -u travis mystoredb < src/test/resources/db.sql"  
 
 services:
   - redis-server
