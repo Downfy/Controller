@@ -187,6 +187,7 @@ public class AppDomain implements DomainObject {
         StringBuilder sb = new StringBuilder();
         sb.append("[App:").append(getAppId()).append(",");
         sb.append("Name:").append(getAppName()).append(",");
+        sb.append("Description:").append(getAppDescription()).append(",");
         sb.append("AppPath:").append(getAppPath()).append(",");
         sb.append("AppIcon:").append(getAppIcon()).append(",");
         sb.append("Category:").append(getAppCategory()).append("]");

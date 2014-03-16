@@ -101,6 +101,7 @@ public class AppController extends AbstractController {
     public String detail(@PathVariable("id") long appId, HttpServletRequest request, Device device, Model uiModel) {
         try {
             AppDomain appDomain = appService.findById(appId);
+            logger.debug("==> Load app " + appDomain.toString());
             CategoryDomain categoryDomain = categoryService.findByURL(appDomain.getAppCategory());
             AppDetailForm form = getAppDetailForm(appId, appDomain, categoryDomain);
             uiModel.addAttribute("app", form);
