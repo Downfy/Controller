@@ -68,8 +68,14 @@ public class GeoRedirectFilter implements Filter {
         }
 
         CityResponse client = geo.getCity(ipAddress);
-        if (client != null && !StringUtils.endsWith("US", client.getCountry().getName())) {
-            response.sendRedirect("http://" + client.getCountry().getName().toLowerCase() + ".downfy.com" + servletPath);
+        if (client != null) {
+            if (StringUtils.endsWith("vn", client.getCountry().getName().toLowerCase())) {
+                response.sendRedirect("http://vn.downfy.com" + servletPath);
+            } else if (StringUtils.endsWith("jp", client.getCountry().getName().toLowerCase())) {
+                response.sendRedirect("http://jp.downfy.com" + servletPath);
+            } else {
+                chain.doFilter(request, response);
+            }
         } else {
             chain.doFilter(request, response);
         }
