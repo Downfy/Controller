@@ -44,7 +44,11 @@ public interface AppRepository {
 
     public void save(AppDomain domain);
 
-    public void update(AppDomain domain);
+    public void updateAppInfo(AppDomain domain);
+
+    public void updateAppFile(AppDomain domain);
+
+    public void updateAppScreenShoot(AppDomain domain);
 
     public void updateAppView(AppDomain domain);
 

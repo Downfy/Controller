@@ -23,9 +23,9 @@ import java.util.List;
 
 /*
  * AppStatusDomain.java
- * 
+ *
  * App status domain
- * 
+ *
  * Modification Logs:
  *  DATE            AUTHOR      DESCRIPTION
  *  --------------------------------------------------------
@@ -187,6 +187,8 @@ public class AppDomain implements DomainObject {
         StringBuilder sb = new StringBuilder();
         sb.append("[App:").append(getAppId()).append(",");
         sb.append("Name:").append(getAppName()).append(",");
+        sb.append("AppPath:").append(getAppPath()).append(",");
+        sb.append("AppIcon:").append(getAppIcon()).append(",");
         sb.append("Category:").append(getAppCategory()).append("]");
         return sb.toString();
     }

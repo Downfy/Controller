@@ -56,7 +56,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class AppCreateController extends AbstractController {
 
-    private Logger logger = LoggerFactory.getLogger(AppCreateController.class);
+    private final Logger logger = LoggerFactory.getLogger(AppCreateController.class);
     @Autowired
     MyResourceMessage resourceMessage;
     @Autowired

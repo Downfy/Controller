@@ -38,6 +38,7 @@ public class AppDetailForm {
     private String appCategory;
     private String appCategoryParent;
     private List<CategorySelectorForm> appCategories;
+    private String appIcon;
 
     public long getAppId() {
         return appId;
@@ -87,11 +88,20 @@ public class AppDetailForm {
         this.appCategories = appCategories;
     }
 
+    public String getAppIcon() {
+        return appIcon;
+    }
+
+    public void setAppIcon(String appIcon) {
+        this.appIcon = appIcon;
+    }
+
     public AppDomain toAppDomain() {
         AppDomain domain = new AppDomain();
         domain.setAppName(getAppName());
         domain.setAppDescription(getAppDescription());
         domain.setAppCategory(getAppCategory());
+        domain.setAppIcon(getAppIcon());
         return domain;
     }
 
@@ -100,5 +110,6 @@ public class AppDetailForm {
         setAppName(domain.getAppName());
         setAppDescription(domain.getAppDescription());
         setAppCategory(domain.getAppCategory());
+        setAppIcon(domain.getAppIcon());
     }
 }

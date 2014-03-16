@@ -68,7 +68,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 @Controller
 public class AppController extends AbstractController {
 
-    private Logger logger = LoggerFactory.getLogger(AppController.class);
+    private final Logger logger = LoggerFactory.getLogger(AppController.class);
     @Autowired
     MyResourceMessage resourceMessage;
     @Autowired
@@ -147,7 +147,7 @@ public class AppController extends AbstractController {
             // copy file to local disk (make sure the path "e.g. D:/temp/files" exists)
             File f = new File(context.getRealPath("/"));
             String absolutePath = File.separator + "icon" + File.separator + Utils.toMd5(getUsername())
-                    + "/" + appIconName + ".png";
+                    + File.separator + appIconName + ".png";
             String localPath = f.getCanonicalPath() + File.separator + Utils.toMd5("data")
                     + absolutePath;
             f = new File(localPath);
@@ -163,7 +163,7 @@ public class AppController extends AbstractController {
             fileMeta.setFileName(absolutePath);
             fileMeta.setFileSize(mpf.getSize() + "");
             fileMeta.setFileType(mpf.getContentType());
-        } catch (Exception ex) {
+        } catch (IOException ex) {
             logger.error("Cannot upload icon application.", ex);
         }
         return fileMeta;
@@ -221,7 +221,7 @@ public class AppController extends AbstractController {
             // copy file to local disk (make sure the path "e.g. D:/temp/files" exists)
             File f = new File(context.getRealPath("/"));
             String absolutePath = File.separator + "screenshoots" + File.separator + Utils.toMd5(getUsername())
-                    + "/" + appIconName + ".png";
+                    + File.separator + appIconName + ".png";
 
             //2.3 create new fileMeta
             fileMeta = new AppFileMetaDomain();

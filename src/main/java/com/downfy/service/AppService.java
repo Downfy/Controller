@@ -229,8 +229,11 @@ public class AppService {
 
     private void putCacheObject(AppDomain domain, long developerId) {
         try {
+            this.logger.debug("Put app " + domain.toString() + " to cache");
             this.getLongRedisTemplate().opsForSet().add(AppTable.KEY + ":" + developerId, domain.getKey());
             this.getAppVersionRedisTemplate().opsForHash().put(AppDomain.OBJECT_KEY, domain.getKey(), domain);
+            this.logger.debug("Update app " + domain.toString() + " to database");
+            repository.updateAppInfo(domain);
         } catch (Exception ex) {
             this.logger.warn("Can't put data to cache", ex);
         }
@@ -279,6 +282,7 @@ public class AppService {
             this.logger.debug("Get all objects " + AppDomain.OBJECT_KEY + " in cache");
             for (Object user : this.getAppVersionRedisTemplate().opsForHash().values(AppDomain.OBJECT_KEY)) {
                 apps.add((AppDomain) user);
+                logger.debug("==> Get object " + ((AppDomain) user).toString());
             }
         } catch (Exception ex) {
             this.logger.warn("Can't get all objects " + AppDomain.OBJECT_KEY + " from Redis", ex);
@@ -288,6 +292,7 @@ public class AppService {
 
     private List<AppDomain> getCacheObjects(long developerId) {
         Collection<Object> keys = getKeys(developerId);
+        logger.debug("All app from developer id " + developerId + " ==> " + keys);
         List<AppDomain> apps = new ArrayList<AppDomain>();
         try {
             this.logger.debug("Get all objects " + AppDomain.OBJECT_KEY + " in cache");
@@ -358,7 +363,7 @@ public class AppService {
     private Collection<Object> getKeys(long developerId) {
         Collection<Object> keys = new ArrayList<Object>();
         try {
-            Set<String> appIds = this.getLongRedisTemplate().opsForSet().members(developerId + "");
+            Set<String> appIds = this.getLongRedisTemplate().opsForSet().members(AppTable.KEY + ":" + developerId);
             keys.addAll(appIds);
         } catch (NullPointerException ex) {
         }
