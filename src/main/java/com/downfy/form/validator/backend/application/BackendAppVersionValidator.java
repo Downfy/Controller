@@ -15,42 +15,43 @@
  */
 package com.downfy.form.validator.backend.application;
 
-import com.downfy.form.backend.application.AppCreateForm;
+import com.downfy.common.RegexpUtils;
+import com.downfy.form.backend.application.AppApkForm;
 import com.google.common.base.Strings;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 /*
- * BackendDeveloperValidator.java
+ * BackendAppVersionValidator.java
  *
- * Backend developer validator
+ * Backend app version validator
  *
  * Modification Logs:
  *  DATE            AUTHOR      DESCRIPTION
  *  --------------------------------------------------------
- *  26-Nov-2013     tuanta      Create first time
+ *  16-Mar-2014     tuanta      Create first time
  */
 @Service
-public class BackendAppValidator
+public class BackendAppVersionValidator
         implements Validator {
 
     @Override
     public boolean supports(Class<?> clazz) {
-        return BackendAppValidator.class.equals(clazz);
+        return BackendAppVersionValidator.class.equals(clazz);
     }
 
     @Override
     public void validate(Object target, Errors errors) {
-        AppCreateForm form = (AppCreateForm) target;
-        if (Strings.isNullOrEmpty(form.getAppName())) {
-            errors.rejectValue("appName", "app.namenotnull");
+        AppApkForm form = (AppApkForm) target;
+        if (Strings.isNullOrEmpty(form.getAppVersion()) || !RegexpUtils.validateVersion(form.getAppVersion())) {
+            errors.rejectValue("appVersion", "app.versionwrongformat");
         }
-        if (Strings.isNullOrEmpty(form.getAppCategory())) {
-            errors.rejectValue("appCategory", "app.categorynotnull");
+        if (Strings.isNullOrEmpty(form.getAppPath())) {
+            errors.rejectValue("appPath", "app.apppathnotnull");
         }
-        if (Strings.isNullOrEmpty(form.getAppCategoryParent())) {
-            errors.rejectValue("appCategoryParent", "app.categoryparentnotnull");
+        if (form.getAppSize() == 0) {
+            errors.rejectValue("appSize", "app.appsizenotnull");
         }
     }
 }

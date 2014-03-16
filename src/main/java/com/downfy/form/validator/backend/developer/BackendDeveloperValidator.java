@@ -24,7 +24,7 @@ import org.springframework.validation.Validator;
 /*
  * BackendDeveloperValidator.java
  *
- * Amin developer validator
+ * Backend developer validator
  *
  * Modification Logs:
  *  DATE            AUTHOR      DESCRIPTION

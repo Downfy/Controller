@@ -8,7 +8,6 @@
         SELECT
         ID,
         APP_ID as appId,
-        APP_NAME as appName,
         APP_PATH as appPath,
         APP_VERSION as appVersion,
         APP_SIZE as appSize,
@@ -24,7 +23,6 @@
         SELECT
         ID,
         APP_ID as appId,
-        APP_NAME as appName,
         APP_PATH as appPath,
         APP_VERSION as appVersion,
         APP_SIZE as appSize,
@@ -41,7 +39,6 @@
         SELECT
         ID,
         APP_ID as appId,
-        APP_NAME as appName,
         APP_PATH as appPath,
         APP_VERSION as appVersion,
         APP_SIZE as appSize,
@@ -66,22 +63,10 @@
     
     <insert id="save" parameterType="AppVersionDomain">
         INSERT INTO app_version
-        (ID, APP_ID, APP_NAME, APP_PATH, APP_VERSION, APP_SIZE, STATUS, CREATER, UPDATED)
+        (ID, APP_ID, APP_PATH, APP_VERSION, APP_SIZE, STATUS, CREATER, UPDATED)
         VALUES
-        (#{id}, #{appId}, #{appName}, #{appPath}, #{appVersion}, #{appSize}, 2, #{creater}, now())
+        (#{id}, #{appId}, #{appPath}, #{appVersion}, #{appSize}, 2, #{creater}, now())
     </insert>
-    
-    <update id="updateAppVersion" parameterType="AppVersionDomain">
-        UPDATE app_version
-        SET
-        APP_NAME = #{appName},
-        APP_VERSION = #{appVersion},
-        APP_PATH = #{appPath},
-        APP_SIZE = #{appSize},
-        UPDATED = now()
-        WHERE ID = #{id}
-        AND STATUS > 0
-    </update>
     
     <update id="publish" parameterType="long">
         UPDATE app_version 

@@ -66,7 +66,6 @@ public class AppVersionServiceTest {
         AppVersionDomain app = new AppVersionDomain();
         app.setId(time);
         app.setAppId(time);
-        app.setAppName("test");
         app.setAppPath("test");
         app.setAppSize(1l);
         app.setAppVersion("1.0.0");

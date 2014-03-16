@@ -22,7 +22,7 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 public class AppFileMetaDomain {
 
     private String fileName;
-    private String fileSize;
+    private long fileSize;
     private String fileType;
     private byte[] bytes;
 
@@ -34,11 +34,11 @@ public class AppFileMetaDomain {
         this.fileName = fileName;
     }
 
-    public String getFileSize() {
+    public long getFileSize() {
         return fileSize;
     }
 
-    public void setFileSize(String fileSize) {
+    public void setFileSize(long fileSize) {
         this.fileSize = fileSize;
     }
 
@@ -57,5 +57,5 @@ public class AppFileMetaDomain {
     public void setBytes(byte[] bytes) {
         this.bytes = bytes;
     }
-    
+
 }

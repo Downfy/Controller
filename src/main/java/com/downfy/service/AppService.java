@@ -122,6 +122,8 @@ public class AppService {
         try {
             this.logger.info("Update app " + domain.toString() + " to cache");
             putCacheObject(domain, developerId);
+            this.logger.debug("Update app " + domain.toString() + " to database");
+            repository.updateAppInfo(domain);
             return true;
         } catch (Exception ex) {
             this.logger.error("Can't update app " + domain.toString(), ex);
@@ -232,8 +234,6 @@ public class AppService {
             this.logger.debug("Put app " + domain.toString() + " to cache");
             this.getLongRedisTemplate().opsForSet().add(AppTable.KEY + ":" + developerId, domain.getKey());
             this.getAppVersionRedisTemplate().opsForHash().put(AppDomain.OBJECT_KEY, domain.getKey(), domain);
-            this.logger.debug("Update app " + domain.toString() + " to database");
-            repository.updateAppInfo(domain);
         } catch (Exception ex) {
             this.logger.warn("Can't put data to cache", ex);
         }

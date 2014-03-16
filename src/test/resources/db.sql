@@ -130,7 +130,6 @@ DROP TABLE IF EXISTS `app_version`;
 CREATE TABLE IF NOT EXISTS `app_version` (
   `id` bigint(20) unsigned NOT NULL,
   `app_id` bigint(20) unsigned NOT NULL,
-  `app_name` varchar(250) NOT NULL,
   `app_path` varchar(200) DEFAULT NULL,
   `app_version` varchar(10) DEFAULT NULL,
   `app_size` bigint(20) unsigned NOT NULL DEFAULT '0',
@@ -140,7 +139,6 @@ CREATE TABLE IF NOT EXISTS `app_version` (
   `creater` bigint(20) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   KEY `app_id` (`app_id`),
-  KEY `app_name` (`app_name`),
   KEY `app_version` (`app_version`),
   KEY `status` (`status`),
   KEY `created` (`created`),

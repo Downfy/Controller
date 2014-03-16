@@ -24,7 +24,7 @@ import org.springframework.validation.Validator;
 /*
  * BackendCategoryValidator.java
  *
- * Admin category validator
+ * Backend category validator
  *
  * Modification Logs:
  *  DATE            AUTHOR      DESCRIPTION

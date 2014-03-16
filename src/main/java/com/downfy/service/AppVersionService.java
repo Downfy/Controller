@@ -97,36 +97,25 @@ public class AppVersionService {
         return getCacheObject(appId + "");
     }
 
-    public List<AppVersionDomain> findByDeveloper(long developerId) {
+    public List<AppVersionDomain> findByDeveloper(long appId) {
         List<AppVersionDomain> apps = null;
         try {
-            this.logger.info("Find all app version of developer " + developerId + " in cache.");
-            apps = getCacheObjects(developerId);
+            this.logger.info("Find all app version of app " + appId + " in cache.");
+            apps = getCacheObjects(appId);
             if (apps.isEmpty()) {
-                this.logger.debug("Find all app version of developer " + developerId + " in database.");
-                apps = this.repository.findByDeveloper(developerId);
+                this.logger.debug("Find all app version of app " + appId + " in database.");
+                apps = this.repository.findByDeveloper(appId);
                 if (!apps.isEmpty()) {
                     setCacheObjects(apps);
                 }
             }
         } catch (Exception ex) {
-            this.logger.error("Find all apapp versionps of developer " + developerId + " error: " + ex, ex);
+            this.logger.error("Find all apapp versionps of app " + appId + " error: " + ex, ex);
         }
         if (apps != null) {
-            this.logger.info("Total get " + apps.size() + " app version of developer " + developerId + ".");
+            this.logger.info("Total get " + apps.size() + " app version of app " + appId + ".");
         }
         return apps;
-    }
-
-    public boolean updateApp(AppVersionDomain domain, long developerId) {
-        try {
-            this.logger.info("Update app version " + domain.toString() + " to cache");
-            putCacheObject(domain, developerId);
-            return true;
-        } catch (Exception ex) {
-            this.logger.error("Can't update app version " + domain.toString(), ex);
-        }
-        return false;
     }
 
     /**
@@ -145,7 +134,7 @@ public class AppVersionService {
             AppVersionDomain app = getCacheObject(key + "");
             if (app != null) {
                 app.setStatus(AppCommon.PUBLISHED);
-                putCacheObject(app, app.getCreater());
+                putCacheObject(app, app.getAppId());
                 this.logger.debug("Publish app version " + key + " to database");
                 this.repository.publish(key);
                 this.logger.info("Publish success app version " + key);
@@ -163,7 +152,7 @@ public class AppVersionService {
             AppVersionDomain app = getCacheObject(key + "");
             if (app != null) {
                 app.setStatus(AppCommon.BLOCKED);
-                putCacheObject(app, app.getCreater());
+                putCacheObject(app, app.getAppId());
                 this.logger.debug("Block app version " + key + " to database");
                 this.repository.block(key);
                 this.logger.info("Block success app version " + key);
@@ -180,12 +169,12 @@ public class AppVersionService {
         return account != null;
     }
 
-    public long count(long developerId) {
+    public long count(long appId) {
         try {
-            long count = countCacheObject(developerId);
-            this.logger.info("Total " + count + " app version of developer " + developerId + " in cache.");
+            long count = countCacheObject(appId);
+            this.logger.info("Total " + count + " app version of app " + appId + " in cache.");
         } catch (Exception ex) {
-            this.logger.error("Count total app version of developer " + developerId + " error.", ex);
+            this.logger.error("Count total app version of app " + appId + " error.", ex);
         }
         return 0;
     }
@@ -205,7 +194,7 @@ public class AppVersionService {
             this.logger.info("Save app version " + domain.toString() + " to database");
             this.repository.save(domain);
             this.logger.debug("Save app version " + domain.toString() + " to cache");
-            putCacheObject(domain, domain.getCreater());
+            putCacheObject(domain, domain.getAppId());
             return true;
         } catch (Exception ex) {
             this.logger.error("Can't save app version " + domain.toString(), ex);
@@ -227,9 +216,9 @@ public class AppVersionService {
         return true;
     }
 
-    private void putCacheObject(AppVersionDomain domain, long developerId) {
+    private void putCacheObject(AppVersionDomain domain, long appId) {
         try {
-            this.getLongRedisTemplate().opsForSet().add(AppVersionTable.KEY + ":" + developerId, domain.getKey());
+            this.getLongRedisTemplate().opsForSet().add(AppVersionTable.KEY + ":" + appId, domain.getKey());
             this.getAppVersionRedisTemplate().opsForHash().put(AppVersionDomain.OBJECT_KEY, domain.getKey(), domain);
         } catch (Exception ex) {
             this.logger.warn("Can't put data to cache", ex);
@@ -254,11 +243,11 @@ public class AppVersionService {
         return domain;
     }
 
-    private void removeCacheObject(String key, long developerId) {
+    private void removeCacheObject(String key, long appId) {
         try {
             this.logger.debug("Remove key " + key + " object " + AppVersionDomain.OBJECT_KEY + " in cache");
             this.getAppVersionRedisTemplate().opsForHash().delete(AppVersionDomain.OBJECT_KEY, key);
-            this.getLongRedisTemplate().opsForSet().pop(AppVersionTable.KEY + ":" + developerId);
+            this.getLongRedisTemplate().opsForSet().pop(AppVersionTable.KEY + ":" + appId);
         } catch (Exception ex) {
             this.logger.warn("Can't remove from Redis", ex);
         }
@@ -286,8 +275,8 @@ public class AppVersionService {
         return apps;
     }
 
-    private List<AppVersionDomain> getCacheObjects(long developerId) {
-        Collection<Object> keys = getKeys(developerId);
+    private List<AppVersionDomain> getCacheObjects(long appId) {
+        Collection<Object> keys = getKeys(appId);
         List<AppVersionDomain> apps = new ArrayList<AppVersionDomain>();
         try {
             this.logger.debug("Get all objects " + AppVersionDomain.OBJECT_KEY + " in cache");
@@ -310,10 +299,10 @@ public class AppVersionService {
         return 0;
     }
 
-    private long countCacheObject(long developerId) {
+    private long countCacheObject(long appId) {
         try {
             this.logger.debug("Count objects " + AppVersionDomain.OBJECT_KEY + " in cache");
-            return this.getLongRedisTemplate().opsForSet().size(AppVersionTable.KEY + ":" + developerId);
+            return this.getLongRedisTemplate().opsForSet().size(AppVersionTable.KEY + ":" + appId);
         } catch (Exception ex) {
             this.logger.warn("Can't count objects " + AppVersionDomain.OBJECT_KEY + " from Redis", ex);
         }
@@ -331,12 +320,12 @@ public class AppVersionService {
         }
     }
 
-    public void clearCache(long developerId) {
+    public void clearCache(long appId) {
         try {
             this.logger.debug("Clear objects " + AppVersionDomain.OBJECT_KEY + " in cache");
             List<AppVersionDomain> objects = getCacheObjects();
             for (AppVersionDomain appVersionDomain : objects) {
-                removeCacheObject(appVersionDomain.getKey(), developerId);
+                removeCacheObject(appVersionDomain.getKey(), appId);
             }
         } catch (Exception ex) {
             this.logger.warn("Can't count objects " + AppVersionDomain.OBJECT_KEY + " from Redis", ex);
@@ -355,10 +344,10 @@ public class AppVersionService {
         }
     }
 
-    private Collection<Object> getKeys(long developerId) {
+    private Collection<Object> getKeys(long appId) {
         Collection<Object> keys = new ArrayList<Object>();
         try {
-            Set<String> appIds = this.getLongRedisTemplate().opsForSet().members(developerId + "");
+            Set<String> appIds = this.getLongRedisTemplate().opsForSet().members(AppVersionTable.KEY + ":" + appId);
             keys.addAll(appIds);
         } catch (NullPointerException ex) {
         }

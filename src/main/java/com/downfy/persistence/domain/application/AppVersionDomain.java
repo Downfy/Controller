@@ -23,9 +23,9 @@ import java.util.Date;
 
 /*
  * AppNewDomain.java
- * 
+ *
  * App new domain
- * 
+ *
  * Modification Logs:
  *  DATE            AUTHOR      DESCRIPTION
  *  --------------------------------------------------------
@@ -36,10 +36,8 @@ public class AppVersionDomain implements DomainObject {
     public static final String OBJECT_KEY = ObjectKey.APP_VERSION;
     private long id;
     private long appId;
-    private String appName;
     private String appPath;
     private String appVersion;
-    private String appIcon;
     private long appSize;
     private int status;
     private Date created;
@@ -62,14 +60,6 @@ public class AppVersionDomain implements DomainObject {
         this.appId = appId;
     }
 
-    public String getAppName() {
-        return appName;
-    }
-
-    public void setAppName(String appName) {
-        this.appName = appName;
-    }
-
     public String getAppPath() {
         return appPath;
     }
@@ -84,14 +74,6 @@ public class AppVersionDomain implements DomainObject {
 
     public void setAppVersion(String appVersion) {
         this.appVersion = appVersion;
-    }
-
-    public String getAppIcon() {
-        return appIcon;
-    }
-
-    public void setAppIcon(String appIcon) {
-        this.appIcon = appIcon;
     }
 
     public long getAppSize() {
