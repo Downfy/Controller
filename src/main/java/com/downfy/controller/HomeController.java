@@ -43,7 +43,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @Controller
 public class HomeController extends AbstractController {
 
-    private Logger logger = LoggerFactory.getLogger(HomeController.class);
+    private final Logger logger = LoggerFactory.getLogger(HomeController.class);
     @Autowired
     MyResourceMessage resourceMessage;
 
