@@ -17,7 +17,9 @@ package com.downfy.form.validator.backend.application;
 
 import com.downfy.common.RegexpUtils;
 import com.downfy.form.backend.application.AppApkForm;
+import com.downfy.service.AppVersionService;
 import com.google.common.base.Strings;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -36,6 +38,9 @@ import org.springframework.validation.Validator;
 public class BackendAppVersionValidator
         implements Validator {
 
+    @Autowired
+    AppVersionService appVersionService;
+
     @Override
     public boolean supports(Class<?> clazz) {
         return BackendAppVersionValidator.class.equals(clazz);
@@ -44,7 +49,8 @@ public class BackendAppVersionValidator
     @Override
     public void validate(Object target, Errors errors) {
         AppApkForm form = (AppApkForm) target;
-        if (Strings.isNullOrEmpty(form.getAppVersion()) || !RegexpUtils.validateVersion(form.getAppVersion())) {
+        String version = Strings.nullToEmpty(form.getAppVersion());
+        if (Strings.isNullOrEmpty(form.getAppVersion()) || !RegexpUtils.validateVersion(version)) {
             errors.rejectValue("appVersion", "app.versionwrongformat");
         }
         if (Strings.isNullOrEmpty(form.getAppPath())) {
@@ -52,6 +58,9 @@ public class BackendAppVersionValidator
         }
         if (form.getAppSize() == 0) {
             errors.rejectValue("appSize", "app.appsizenotnull");
+        }
+        if (appVersionService.isExsit(form.getAppId(), version)) {
+            errors.rejectValue("appVersion", "app.appversionexist");
         }
     }
 }

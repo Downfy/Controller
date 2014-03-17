@@ -120,13 +120,13 @@ public class AppService {
 
     public boolean updateApp(AppDomain domain, long developerId) {
         try {
-            this.logger.info("Update app " + domain.toString() + " to cache");
+            this.logger.info("Update app " + domain + " to cache");
             putCacheObject(domain, developerId);
-            this.logger.debug("Update app " + domain.toString() + " to database");
+            this.logger.debug("Update app " + domain + " to database");
             repository.updateAppInfo(domain);
             return true;
         } catch (Exception ex) {
-            this.logger.error("Can't update app " + domain.toString(), ex);
+            this.logger.error("Can't update app " + domain, ex);
         }
         return false;
     }
@@ -204,13 +204,13 @@ public class AppService {
 
     public boolean save(AppDomain domain) {
         try {
-            this.logger.info("Save app " + domain.toString() + " to database");
+            this.logger.info("Save app " + domain + " to database");
             this.repository.save(domain);
-            this.logger.debug("Save app " + domain.toString() + " to cache");
+            this.logger.debug("Save app " + domain + " to cache");
             putCacheObject(domain, domain.getCreater());
             return true;
         } catch (Exception ex) {
-            this.logger.error("Can't save app " + domain.toString(), ex);
+            this.logger.error("Can't save app " + domain, ex);
         }
         return false;
     }
@@ -231,7 +231,7 @@ public class AppService {
 
     private void putCacheObject(AppDomain domain, long developerId) {
         try {
-            this.logger.debug("Put app " + domain.toString() + " to cache");
+            this.logger.debug("Put app " + domain + " to cache");
             this.getLongRedisTemplate().opsForSet().add(AppTable.KEY + ":" + developerId, domain.getKey());
             this.getAppVersionRedisTemplate().opsForHash().put(AppDomain.OBJECT_KEY, domain.getKey(), domain);
         } catch (Exception ex) {

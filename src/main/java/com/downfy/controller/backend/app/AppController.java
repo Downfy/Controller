@@ -125,7 +125,7 @@ public class AppController extends AbstractController {
             AppDomain curentApp = appService.findById(appId);
             uiModel.addAttribute("app", curentApp);
             List<AppVersionDownloadForm> apps = new ArrayList<AppVersionDownloadForm>();
-            List<AppVersionDomain> versions = appVersionService.findByDeveloper(getUserId());
+            List<AppVersionDomain> versions = appVersionService.findByAppId(appId);
             for (AppVersionDomain appVersionDomain : versions) {
                 AppDomain appDomain_ = appService.findById(appVersionDomain.getAppId());
                 AppVersionDownloadForm appVersionDownloadForm = new AppVersionDownloadForm();
@@ -201,7 +201,8 @@ public class AppController extends AbstractController {
         MultipartFile mpf = request.getFile("appAPKFile");
         AppFileMetaDomain fileMeta = new AppFileMetaDomain();
         try {
-            if (Objects.equal("application/vnd.android.package-archive", mpf.getContentType())) {
+            if (Objects.equal("application/vnd.android.package-archive", mpf.getContentType())
+                    || Objects.equal("application/octet-stream", mpf.getContentType())) {
                 String appIconName = Utils.toMd5(System.currentTimeMillis() + "");
                 // copy file to local disk (make sure the path "e.g. D:/temp/files" exists)
                 File f = new File(context.getRealPath("/"));
@@ -223,7 +224,7 @@ public class AppController extends AbstractController {
             }
             fileMeta.setFileType(mpf.getContentType());
         } catch (IOException ex) {
-            logger.error("Cannot upload icon application.", ex);
+            logger.error("Cannot upload apk application.", ex);
         }
         return fileMeta;
     }
