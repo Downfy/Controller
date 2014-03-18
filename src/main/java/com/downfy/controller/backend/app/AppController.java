@@ -141,13 +141,11 @@ public class AppController extends AbstractController {
         return view(device, "maintenance");
     }
 
-    @RequestMapping(value = "/{id}/screenshoot", method = RequestMethod.GET)
+    @RequestMapping(value = "/{id}/screenshoots", method = RequestMethod.GET)
     public String screenshoots(@PathVariable("id") long appId, HttpServletRequest request, Device device, Model uiModel) {
         try {
-            AppDomain appDomain = appService.findById(appId);
-            AppDetailForm form = new AppDetailForm();
-            form.fromAppDomain(appDomain);
-            uiModel.addAttribute("app", form);
+            AppDomain currentApp = appService.findById(appId);
+            uiModel.addAttribute("app", currentApp);
             return view(device, "backend/application/screenshoots");
         } catch (Exception ex) {
             logger.error("Cannot upload screenshoot application.", ex);
