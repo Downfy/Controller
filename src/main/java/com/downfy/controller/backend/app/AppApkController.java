@@ -16,6 +16,7 @@
  */
 package com.downfy.controller.backend.app;
 
+import com.downfy.common.AppCommon;
 import com.downfy.common.ErrorMessage;
 import com.downfy.common.ValidationResponse;
 import com.downfy.controller.AbstractController;
@@ -96,6 +97,7 @@ public class AppApkController extends AbstractController {
             logger.debug("Upload apk version " + appVersionDomain.toString());
             appVersionDomain.setId(System.currentTimeMillis());
             appVersionDomain.setCreater(getUserId());
+            appVersionDomain.setStatus(AppCommon.PENDING);
             if (appVersionService.save(appVersionDomain)) {
                 return "redirect:/backend/application/" + domain.getAppId() + "/apk.html";
             }

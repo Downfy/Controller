@@ -22,9 +22,9 @@ import org.apache.ibatis.annotations.Param;
 
 /*
  * AppVersionRepository.java
- * 
+ *
  * App version repository
- * 
+ *
  * Modification Logs:
  *  DATE            AUTHOR      DESCRIPTION
  *  --------------------------------------------------------
@@ -37,6 +37,8 @@ public interface AppVersionRepository {
     public AppVersionDomain findById(@Param("id") long id);
 
     public List<AppVersionDomain> findByDeveloper(@Param("developerId") long developerId);
+
+    public List<AppVersionDomain> findByApp(@Param("appId") long developerId);
 
     public long count();
 

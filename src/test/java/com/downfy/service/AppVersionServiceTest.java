@@ -72,15 +72,15 @@ public class AppVersionServiceTest {
         app.setCreater(1234567890);
         app.setCreated(new Date());
         app.setUpdated(new Date());
-        List<AppVersionDomain> apps = service.findByAppId(1234567890);
+        List<AppVersionDomain> apps = service.findByApp(1234567890);
         Assert.assertTrue(apps.isEmpty());
         Assert.assertTrue(service.save(app));
-        apps = service.findByAppId(1234567890);
+        apps = service.findByApp(1234567890);
         Assert.assertTrue(!apps.isEmpty());
         for (AppVersionDomain appDomain : apps) {
             Assert.assertTrue(service.delete(appDomain.getId(), 1234567890));
         }
-        apps = service.findByAppId(1234567890);
+        apps = service.findByApp(1234567890);
         Assert.assertTrue(apps.isEmpty());
     }
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.downfy.persistence.repositories.application.AppVersionRepository">
@@ -18,7 +18,7 @@
         FROM app_version
         ORDER BY CREATED DESC
     </select>
-    
+
     <select id="findByDeveloper" parameterType="long" resultType="AppVersionDomain">
         SELECT
         ID,
@@ -34,7 +34,23 @@
         WHERE CREATER = #{developerId}
         AND STATUS > 0
     </select>
-    
+
+    <select id="findByApp" parameterType="long" resultType="AppVersionDomain">
+        SELECT
+        ID,
+        APP_ID as appId,
+        APP_PATH as appPath,
+        APP_VERSION as appVersion,
+        APP_SIZE as appSize,
+        STATUS,
+        CREATED,
+        CREATER,
+        UPDATED
+        FROM app_version
+        WHERE APP_ID = #{appId}
+        AND STATUS > 0
+    </select>
+
     <select id="findById" parameterType="long" resultType="AppVersionDomain">
         SELECT
         ID,
@@ -50,47 +66,47 @@
         WHERE ID = #{id}
         LIMIT 0, 1
     </select>
-    
+
     <select id="count" resultType="long">
         SELECT count(*) FROM app_version
     </select>
-    
+
     <select id="countByDeveloper" resultType="long">
         SELECT count(*) FROM app_version
         WHERE CREATER = #{developerId}
         AND STATUS > 0
     </select>
-    
+
     <insert id="save" parameterType="AppVersionDomain">
         INSERT INTO app_version
         (ID, APP_ID, APP_PATH, APP_VERSION, APP_SIZE, STATUS, CREATER, UPDATED)
         VALUES
         (#{id}, #{appId}, #{appPath}, #{appVersion}, #{appSize}, 2, #{creater}, now())
     </insert>
-    
+
     <update id="publish" parameterType="long">
-        UPDATE app_version 
-        SET 
+        UPDATE app_version
+        SET
         STATUS = 3,
-        UPDATED = now() 
+        UPDATED = now()
         WHERE ID = #{id}
         AND STATUS > 0
     </update>
-    
+
     <update id="block" parameterType="long">
-        UPDATE app_version 
-        SET 
+        UPDATE app_version
+        SET
         STATUS = 1,
-        UPDATED = now() 
+        UPDATED = now()
         WHERE ID = #{id}
         AND STATUS > 0
     </update>
-    
+
     <delete id="delete" parameterType="long">
-        UPDATE app_version 
-        SET 
+        UPDATE app_version
+        SET
         STATUS = 0,
-        UPDATED = now() 
+        UPDATED = now()
         WHERE ID = #{id}
     </delete>
 </mapper>

@@ -125,7 +125,7 @@ public class AppController extends AbstractController {
             AppDomain curentApp = appService.findById(appId);
             uiModel.addAttribute("app", curentApp);
             List<AppVersionDownloadForm> apps = new ArrayList<AppVersionDownloadForm>();
-            List<AppVersionDomain> versions = appVersionService.findByAppId(appId);
+            List<AppVersionDomain> versions = appVersionService.findByApp(appId);
             for (AppVersionDomain appVersionDomain : versions) {
                 AppDomain appDomain_ = appService.findById(appVersionDomain.getAppId());
                 AppVersionDownloadForm appVersionDownloadForm = new AppVersionDownloadForm();

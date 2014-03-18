@@ -98,15 +98,15 @@ public class AppVersionService {
         return getCacheObject(appId + "");
     }
 
-    public List<AppVersionDomain> findByAppId(long appId) {
-        List<AppVersionDomain> apps = null;
+    public List<AppVersionDomain> findByApp(long appId) {
+        List<AppVersionDomain> apps = new ArrayList<AppVersionDomain>();
         try {
             this.logger.info("Find all app version of app " + appId);
-            this.logger.debug("Find all in cache.");
+            this.logger.debug("Find all version in cache.");
             apps = getCacheObjects(appId);
             if (apps.isEmpty()) {
-                this.logger.debug("Find all in database.");
-                apps = this.repository.findByDeveloper(appId);
+                this.logger.debug("Find all version in database.");
+                apps = this.repository.findByApp(appId);
                 if (!apps.isEmpty()) {
                     setCacheObjects(apps);
                 }
@@ -114,9 +114,7 @@ public class AppVersionService {
         } catch (Exception ex) {
             this.logger.error("Find all apapp versionps of app " + appId + " error: " + ex, ex);
         }
-        if (apps != null) {
-            this.logger.info("Total get " + apps.size() + " app version of app " + appId + ".");
-        }
+        this.logger.info("Total get " + apps.size() + " app version of app " + appId + ".");
         return apps;
     }
 
@@ -329,7 +327,7 @@ public class AppVersionService {
         try {
             this.logger.debug("Set " + domains.size() + " objects " + AppVersionDomain.OBJECT_KEY + " to cache");
             for (AppVersionDomain domain : domains) {
-                putCacheObject(domain, domain.getCreater());
+                putCacheObject(domain, domain.getAppId());
             }
         } catch (Exception ex) {
             this.logger.warn("Can't set objects " + AppVersionDomain.OBJECT_KEY + " to Redis", ex);
@@ -361,8 +359,10 @@ public class AppVersionService {
     }
 
     private Collection<Object> getKeys(long appId) {
+        logger.info("Get list version of app " + appId);
         Collection<Object> keys = new ArrayList<Object>();
         try {
+            logger.debug("Load app version from cache");
             Set<String> appIds = this.getLongRedisTemplate().opsForSet().members(AppVersionTable.KEY + ":" + appId);
             keys.addAll(appIds);
         } catch (NullPointerException ex) {
