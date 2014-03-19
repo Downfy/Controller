@@ -32,9 +32,9 @@ import org.springframework.stereotype.Service;
 
 /*
  * CategoryService.java
- * 
+ *
  * Category service
- * 
+ *
  * Modification Logs:
  *  DATE            AUTHOR      DESCRIPTION
  *  --------------------------------------------------------
@@ -84,7 +84,7 @@ public class CategoryService implements CacheService<CategoryDomain> {
     }
 
     public List<CategoryDomain> findByParent(String parent) {
-        List<CategoryDomain> categories = new ArrayList<CategoryDomain>();
+        List<CategoryDomain> categoryByParent = new ArrayList<CategoryDomain>();
         List<CategoryDomain> current;
         try {
             this.logger.debug("Find all categories by parent " + parent + " in cache.");
@@ -92,14 +92,26 @@ public class CategoryService implements CacheService<CategoryDomain> {
             if (!current.isEmpty()) {
                 for (CategoryDomain categoryDomain : current) {
                     if (categoryDomain.getParent().equals(parent)) {
-                        categories.add(categoryDomain);
+                        categoryByParent.add(categoryDomain);
+                    }
+                }
+            } else {
+                this.logger.debug("Find all categories in database.");
+                current = this.repository.findAll();
+                if (!current.isEmpty()) {
+                    //Set data to cache
+                    setCacheObjects(current);
+                    for (CategoryDomain categoryDomain : current) {
+                        if (categoryDomain.getParent().equals(parent)) {
+                            categoryByParent.add(categoryDomain);
+                        }
                     }
                 }
             }
         } catch (Exception ex) {
             this.logger.error("Find all categories error: " + ex, ex);
         }
-        return categories;
+        return categoryByParent;
     }
 
     public List<CategorySelectorForm> findBySelectorParent(String parent) {
