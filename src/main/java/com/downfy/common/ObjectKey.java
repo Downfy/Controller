@@ -33,6 +33,7 @@ public class ObjectKey {
     public static final String APP_HOT = "APP-HOT";
     public static final String APP_NEW = "APP-NEW";
     public static final String APP_DOWNLOAD = "APP-DOWNLOAD";
+    public static final String APP_UPLOADED = "APP-UPLOADED";
     public static final String APP_VERSION = "APP-VERSION";
     public static final String APP_VIEW = "APP-VIEW";
     public static final String APP_VOTE = "APP-VOTE";

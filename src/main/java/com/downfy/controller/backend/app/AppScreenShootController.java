@@ -16,26 +16,21 @@
  */
 package com.downfy.controller.backend.app;
 
-import com.downfy.common.AppCommon;
 import com.downfy.common.ErrorMessage;
 import com.downfy.common.ValidationResponse;
 import com.downfy.controller.AbstractController;
 import com.downfy.controller.MyResourceMessage;
-import com.downfy.form.backend.application.AppApkForm;
 import com.downfy.form.backend.application.AppScreenShootForm;
 import com.downfy.form.validator.backend.application.BackendAppVersionValidator;
-import com.downfy.persistence.domain.application.AppVersionDomain;
-import com.downfy.service.AppVersionService;
+import com.downfy.service.application.AppVersionService;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mobile.device.Device;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ModelAttribute;

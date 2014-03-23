@@ -21,32 +21,23 @@ import com.downfy.persistence.domain.DomainObject;
 import java.util.Date;
 
 /*
- * AppNewDomain.java
- * 
- * App new domain
- * 
+ * AppUploadedDomain.java
+ *
+ * App uploaded domain
+ *
  * Modification Logs:
  *  DATE            AUTHOR      DESCRIPTION
  *  --------------------------------------------------------
  *  29-Nov-2013     tuanta      Create first time
  */
-public class AppScreenShootDomain implements DomainObject {
+public class AppUploadedDomain implements DomainObject {
 
-    public static final String OBJECT_KEY = ObjectKey.APP_SCREEN_SHOOT;
+    public static final String OBJECT_KEY = ObjectKey.APP_UPLOADED;
     private long id;
-    private long appId;
-    private String appScreenShoot;
+    private String appPath;
     private int status;
     private Date created;
     private long creater;
-
-    public long getAppId() {
-        return appId;
-    }
-
-    public void setAppId(long appId) {
-        this.appId = appId;
-    }
 
     public long getId() {
         return id;
@@ -56,12 +47,12 @@ public class AppScreenShootDomain implements DomainObject {
         this.id = id;
     }
 
-    public String getAppScreenShoot() {
-        return appScreenShoot;
+    public String getAppPath() {
+        return appPath;
     }
 
-    public void setAppScreenShoot(String appScreenShoot) {
-        this.appScreenShoot = appScreenShoot;
+    public void setAppPath(String appPath) {
+        this.appPath = appPath;
     }
 
     public int getStatus() {

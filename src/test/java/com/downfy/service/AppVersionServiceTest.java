@@ -16,6 +16,7 @@
 package com.downfy.service;
 
 import com.downfy.persistence.domain.application.AppVersionDomain;
+import com.downfy.service.application.AppVersionService;
 import java.util.Date;
 import java.util.List;
 import org.junit.Assert;
@@ -91,12 +92,12 @@ public class AppVersionServiceTest {
 
     @Test
     public void testPublish() {
-        Assert.assertEquals(false, service.publishApp(1234567890));
+        Assert.assertEquals(false, service.publish(1234567890));
     }
 
     @Test
     public void testBlock() {
-        Assert.assertEquals(false, service.blockApp(1234567890));
+        Assert.assertEquals(false, service.block(1234567890));
     }
 
     @Test

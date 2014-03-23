@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.downfy.service;
+package com.downfy.service.application;
 
 import com.downfy.common.AppCommon;
 import com.downfy.persistence.domain.application.AppDomain;
@@ -251,7 +251,7 @@ public class AppService {
                     this.logger.debug("App " + key + " object " + AppDomain.OBJECT_KEY + " not found");
                 }
             }
-        } catch (Exception ex) {
+        } catch (NumberFormatException ex) {
             this.logger.warn("Can't get from Redis", ex);
         }
         return domain;

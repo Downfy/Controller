@@ -23,7 +23,7 @@ import com.downfy.controller.MyResourceMessage;
 import com.downfy.form.backend.application.AppCreateForm;
 import com.downfy.form.validator.backend.application.BackendAppValidator;
 import com.downfy.persistence.domain.application.AppDomain;
-import com.downfy.service.AppService;
+import com.downfy.service.application.AppService;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;

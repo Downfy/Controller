@@ -22,9 +22,9 @@ import java.util.Date;
 import java.util.List;
 
 /*
- * AppStatusDomain.java
+ * AppDomain.java
  *
- * App status domain
+ * App domain
  *
  * Modification Logs:
  *  DATE            AUTHOR      DESCRIPTION

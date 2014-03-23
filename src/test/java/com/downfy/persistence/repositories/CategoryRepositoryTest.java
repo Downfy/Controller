@@ -15,17 +15,17 @@
  */
 package com.downfy.persistence.repositories;
 
+import com.downfy.persistence.domain.category.CategoryDomain;
 import com.downfy.persistence.repositories.category.CategoryRepository;
+import com.github.springtestdbunit.DbUnitTestExecutionListener;
+import com.github.springtestdbunit.annotation.DatabaseSetup;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import com.downfy.persistence.domain.category.CategoryDomain;
-import com.github.springtestdbunit.DbUnitTestExecutionListener;
-import com.github.springtestdbunit.annotation.DatabaseSetup;
 import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
@@ -74,14 +74,14 @@ public class CategoryRepositoryTest {
         repository.update(category);
         category = repository.findByUrl("action");
         Assert.assertNotNull(category);
-        Assert.assertEquals(category.getName(), "New-Action");
+        Assert.assertEquals("New-Action", category.getName());
     }
 
     @Test
     @DatabaseSetup("repositoryDB.xml")
     public void testFindByUrl() {
         CategoryDomain domain = repository.findByUrl("action");
-        Assert.assertEquals(domain.getName(), "Action");
-        Assert.assertEquals(domain.getUrl(), "action");
+        Assert.assertEquals("Action", domain.getName());
+        Assert.assertEquals("action", domain.getUrl());
     }
 }

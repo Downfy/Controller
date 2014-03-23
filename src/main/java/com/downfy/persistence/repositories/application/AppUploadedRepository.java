@@ -16,7 +16,7 @@
  */
 package com.downfy.persistence.repositories.application;
 
-import com.downfy.persistence.domain.application.AppVersionDomain;
+import com.downfy.persistence.domain.application.AppUploadedDomain;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
@@ -30,29 +30,19 @@ import org.apache.ibatis.annotations.Param;
  *  --------------------------------------------------------
  *  1-Dec-2013     tuanta      Create first time
  */
-public interface AppVersionRepository {
+public interface AppUploadedRepository {
 
-    public List<AppVersionDomain> findAll();
+    public List<AppUploadedDomain> findAll();
 
-    public AppVersionDomain findById(@Param("id") long id);
+    public AppUploadedDomain findById(@Param("id") long id);
 
-    public List<AppVersionDomain> findByDeveloper(@Param("developerId") long developerId);
-
-    public List<AppVersionDomain> findByApp(@Param("appId") long developerId);
+    public List<AppUploadedDomain> findByDeveloper(@Param("developerId") long developerId);
 
     public long count();
 
     public long countByDeveloper(@Param("developerId") long developerId);
 
-    public long save(AppVersionDomain domain);
-
-    public void updateAppVersion(AppVersionDomain domain);
-
-    public void publish(@Param("id") long id);
-
-    public void approve(@Param("id") long id);
-
-    public void block(@Param("id") long id);
+    public long save(AppUploadedDomain domain);
 
     public void delete(@Param("id") long id);
 }

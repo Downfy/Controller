@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.downfy.service;
+package com.downfy.service.application;
 
 import com.downfy.common.AppCommon;
 import com.downfy.persistence.domain.application.AppVersionDomain;
@@ -32,9 +32,9 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 /*
- * AppDownloadService.java
+ * AppVersionService.java
  *
- * App download service
+ * App version service
  *
  * Modification Logs:
  *  DATE            AUTHOR      DESCRIPTION
@@ -128,7 +128,7 @@ public class AppVersionService {
      * @param key Application ID
      * @return
      */
-    public boolean publishApp(long key) {
+    public boolean publish(long key) {
         try {
             this.logger.info("Publish app version " + key);
             this.logger.debug("Publish to cache");
@@ -147,7 +147,25 @@ public class AppVersionService {
         return false;
     }
 
-    public boolean blockApp(long key) {
+    public boolean approve(long key) {
+        try {
+            this.logger.info("Approve app version " + key);
+            AppVersionDomain app = getCacheObject(key + "");
+            if (app != null) {
+                app.setStatus(AppCommon.PENDING);
+                putCacheObject(app, app.getAppId());
+                this.logger.debug("Approve app version " + key + " to database");
+                this.repository.block(key);
+                this.logger.info("Approve success app version " + key);
+                return true;
+            }
+        } catch (Exception ex) {
+            this.logger.error("Can't approve app version " + key, ex);
+        }
+        return false;
+    }
+
+    public boolean block(long key) {
         try {
             this.logger.info("Block app version " + key);
             AppVersionDomain app = getCacheObject(key + "");
@@ -172,10 +190,7 @@ public class AppVersionService {
 
     public boolean isExsit(long appId, String version) {
         Set<String> appIds = this.getLongRedisTemplate().opsForSet().members(AppVersionTable.KEY + ":" + appId + ":" + version);
-        if (appIds != null && !appIds.isEmpty()) {
-            return true;
-        }
-        return false;
+        return appIds != null && !appIds.isEmpty();
     }
 
     public long count(long appId) {
@@ -250,7 +265,7 @@ public class AppVersionService {
                     this.logger.debug("App " + key + " object " + AppVersionDomain.OBJECT_KEY + " not found");
                 }
             }
-        } catch (Exception ex) {
+        } catch (NumberFormatException ex) {
             this.logger.warn("Can't get from Redis", ex);
         }
         return domain;

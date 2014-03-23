@@ -24,7 +24,7 @@ import com.downfy.controller.MyResourceMessage;
 import com.downfy.form.backend.application.AppApkForm;
 import com.downfy.form.validator.backend.application.BackendAppVersionValidator;
 import com.downfy.persistence.domain.application.AppVersionDomain;
-import com.downfy.service.AppVersionService;
+import com.downfy.service.application.AppVersionService;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
@@ -97,7 +97,7 @@ public class AppApkController extends AbstractController {
             logger.debug("Upload apk version " + appVersionDomain.toString());
             appVersionDomain.setId(System.currentTimeMillis());
             appVersionDomain.setCreater(getUserId());
-            appVersionDomain.setStatus(AppCommon.PENDING);
+            appVersionDomain.setStatus(AppCommon.CREATED);
             if (appVersionService.save(appVersionDomain)) {
                 return "redirect:/backend/application/" + domain.getAppId() + "/apk.html";
             }

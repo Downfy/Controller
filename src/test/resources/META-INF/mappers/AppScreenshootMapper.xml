@@ -2,90 +2,82 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.downfy.persistence.repositories.application.AppVersionRepository">
+<mapper namespace="com.downfy.persistence.repositories.application.AppScreenshootRepository">
 
-    <select id="findAll" resultType="AppVersionDomain">
+    <select id="findAll" resultType="AppScreenshootDomain">
         SELECT
         ID,
         APP_ID as appId,
-        APP_PATH as appPath,
-        APP_VERSION as appVersion,
-        APP_SIZE as appSize,
+        APP_SCREEN_SHOOT as appScreenShoot,
         STATUS,
         CREATED,
         CREATER,
         UPDATED
-        FROM app_version
+        FROM app_screen_shoots
         ORDER BY CREATED DESC
     </select>
 
-    <select id="findByDeveloper" parameterType="long" resultType="AppVersionDomain">
+    <select id="findByDeveloper" parameterType="long" resultType="AppScreenshootDomain">
         SELECT
         ID,
         APP_ID as appId,
-        APP_PATH as appPath,
-        APP_VERSION as appVersion,
-        APP_SIZE as appSize,
+        APP_SCREEN_SHOOT as appScreenShoot,
         STATUS,
         CREATED,
-        CREATER,
-        UPDATED
-        FROM app_version
+        CREATER
+        FROM app_screen_shoots
         WHERE CREATER = #{developerId}
         AND STATUS > 0
     </select>
 
-    <select id="findByApp" parameterType="long" resultType="AppVersionDomain">
+    <select id="findByApp" parameterType="long" resultType="AppScreenshootDomain">
         SELECT
         ID,
         APP_ID as appId,
-        APP_PATH as appPath,
-        APP_VERSION as appVersion,
-        APP_SIZE as appSize,
+        APP_SCREEN_SHOOT as appScreenShoot,
         STATUS,
         CREATED,
-        CREATER,
-        UPDATED
-        FROM app_version
+        CREATER
+        FROM app_screen_shoots
         WHERE APP_ID = #{appId}
         AND STATUS > 0
     </select>
 
-    <select id="findById" parameterType="long" resultType="AppVersionDomain">
+    <select id="findById" parameterType="long" resultType="AppScreenshootDomain">
         SELECT
         ID,
         APP_ID as appId,
-        APP_PATH as appPath,
+        APP_SCREEN_SHOOT as appScreenShoot,
         APP_VERSION as appVersion,
         APP_SIZE as appSize,
         STATUS,
         CREATED,
         CREATER,
         UPDATED
-        FROM app_version
+        FROM app_screen_shoots
         WHERE ID = #{id}
         LIMIT 0, 1
     </select>
 
     <select id="count" resultType="long">
-        SELECT count(*) FROM app_version
+        SELECT count(*) FROM app_screen_shoots
     </select>
 
-    <select id="countByDeveloper" resultType="long">
-        SELECT count(*) FROM app_version
-        WHERE CREATER = #{developerId}
+    <select id="countByApp" resultType="long">
+        SELECT count(*) FROM app_screen_shoots
+        WHERE CREATER = #{appId}
         AND STATUS > 0
     </select>
 
-    <insert id="save" parameterType="AppVersionDomain">
-        INSERT INTO app_version
-        (ID, APP_ID, APP_PATH, APP_VERSION, APP_SIZE, STATUS, CREATER, UPDATED)
+    <insert id="save" parameterType="AppScreenshootDomain">
+        INSERT INTO app_screen_shoots
+        (ID, APP_ID, APP_SCREEN_SHOOT, STATUS, CREATER, UPDATED)
         VALUES
-        (#{id}, #{appId}, #{appPath}, #{appVersion}, #{appSize}, 2, #{creater}, now())
+        (#{id}, #{appId}, #{appScreenShoot}, 2, #{creater}, now())
     </insert>
 
     <update id="publish" parameterType="long">
-        UPDATE app_version
+        UPDATE app_screen_shoots
         SET
         STATUS = 4,
         UPDATED = now()
@@ -94,7 +86,7 @@
     </update>
     
     <update id="approve" parameterType="long">
-        UPDATE app_version
+        UPDATE app_screen_shoots
         SET
         STATUS = 3,
         UPDATED = now()
@@ -103,7 +95,7 @@
     </update>
 
     <update id="block" parameterType="long">
-        UPDATE app_version
+        UPDATE app_screen_shoots
         SET
         STATUS = 1,
         UPDATED = now()
@@ -112,7 +104,7 @@
     </update>
 
     <delete id="delete" parameterType="long">
-        UPDATE app_version
+        UPDATE app_screen_shoots
         SET
         STATUS = 0,
         UPDATED = now()

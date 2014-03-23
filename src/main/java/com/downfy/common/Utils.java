@@ -17,6 +17,8 @@
 package com.downfy.common;
 
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Random;
 import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 
@@ -292,5 +294,14 @@ public class Utils {
     public static String toMd5(String data) {
         Md5PasswordEncoder encoder = new Md5PasswordEncoder();
         return encoder.encodePassword(data, null);
+    }
+
+    /**
+     * Create folder by current time
+     *
+     * @return Format folder yyyy/MM/dd
+     */
+    public static String folderByCurrentTime() {
+        return new SimpleDateFormat("yyyy/MM/dd").format(new Date());
     }
 }

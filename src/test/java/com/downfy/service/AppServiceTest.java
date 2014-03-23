@@ -15,6 +15,7 @@
  */
 package com.downfy.service;
 
+import com.downfy.service.application.AppService;
 import com.downfy.persistence.domain.application.AppDomain;
 import java.util.Date;
 import java.util.List;

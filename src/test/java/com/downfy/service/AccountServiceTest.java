@@ -64,7 +64,7 @@ public class AccountServiceTest {
     public void testFindAll() {
         service.clearCache();
         List<AccountDomain> accounts = service.findAll();
-        Assert.assertEquals(accounts.size(), 2);
+        Assert.assertEquals(2, accounts.size());
     }
 
     @Test

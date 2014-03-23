@@ -27,8 +27,9 @@ import com.downfy.persistence.domain.AppFileMetaDomain;
 import com.downfy.persistence.domain.application.AppDomain;
 import com.downfy.persistence.domain.application.AppVersionDomain;
 import com.downfy.persistence.domain.category.CategoryDomain;
-import com.downfy.service.AppService;
-import com.downfy.service.AppVersionService;
+import com.downfy.service.application.AppScreenshootService;
+import com.downfy.service.application.AppService;
+import com.downfy.service.application.AppVersionService;
 import com.downfy.service.category.CategoryService;
 import com.google.api.client.repackaged.com.google.common.base.Objects;
 import com.google.common.io.Files;
@@ -82,6 +83,8 @@ public class AppController extends AbstractController {
     AppService appService;
     @Autowired
     AppVersionService appVersionService;
+    @Autowired
+    AppScreenshootService appScreenshootService;
     @Autowired
     CategoryService categoryService;
     @Autowired
@@ -166,7 +169,9 @@ public class AppController extends AbstractController {
                 String appIconName = Utils.toMd5(System.currentTimeMillis() + "");
                 // copy file to local disk (make sure the path "e.g. D:/temp/files" exists)
                 File f = new File(context.getRealPath("/"));
-                String absolutePath = File.separator + "icon" + File.separator + Utils.toMd5(getUsername())
+                String absolutePath = File.separator + "icon"
+                        + File.separator + Utils.folderByCurrentTime()
+                        + File.separator + Utils.toMd5(getUsername())
                         + File.separator + appIconName + ".png";
                 String localPath = f.getCanonicalPath() + File.separator + Utils.toMd5("data")
                         + absolutePath;
@@ -204,7 +209,9 @@ public class AppController extends AbstractController {
                 String appIconName = Utils.toMd5(System.currentTimeMillis() + "");
                 // copy file to local disk (make sure the path "e.g. D:/temp/files" exists)
                 File f = new File(context.getRealPath("/"));
-                String absolutePath = File.separator + "apk" + File.separator + Utils.toMd5(getUsername())
+                String absolutePath = File.separator + "apk"
+                        + File.separator + Utils.folderByCurrentTime()
+                        + File.separator + Utils.toMd5(getUsername())
                         + File.separator + appIconName + ".apk";
                 String localPath = f.getCanonicalPath() + File.separator + Utils.toMd5("data")
                         + absolutePath;
@@ -254,7 +261,9 @@ public class AppController extends AbstractController {
                 String appIconName = Utils.toMd5(System.currentTimeMillis() + "");
                 // copy file to local disk (make sure the path "e.g. D:/temp/files" exists)
                 File f = new File(context.getRealPath("/"));
-                String absolutePath = File.separator + "screenshoots" + File.separator + Utils.toMd5(getUsername())
+                String absolutePath = File.separator + "screenshoots"
+                        + File.separator + Utils.folderByCurrentTime()
+                        + File.separator + Utils.toMd5(getUsername())
                         + File.separator + appIconName + ".png";
 
                 //2.3 create new fileMeta
@@ -269,11 +278,15 @@ public class AppController extends AbstractController {
                     f = new File(localPath);
                     Files.createParentDirs(f);
                     logger.debug("Create app screenshoot " + localPath);
-                    FileCopyUtils.copy(mpf.getInputStream(), new FileOutputStream(localPath));
+                    Thumbnails.of(mpf.getInputStream())
+                            .crop(Positions.CENTER)
+                            .size(240, 320)
+                            .outputFormat("png")
+                            .toFile(localPath);
 
                     //2.4 add to files
                     files.add(fileMeta);
-                } catch (IOException ex) {
+                } catch (Exception ex) {
                     logger.error("Cannot upload screenshoot application.", ex);
                 }
             } else {
