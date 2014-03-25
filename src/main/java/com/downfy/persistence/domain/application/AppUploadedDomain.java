@@ -18,6 +18,7 @@ package com.downfy.persistence.domain.application;
 
 import com.downfy.common.ObjectKey;
 import com.downfy.persistence.domain.DomainObject;
+import com.google.api.client.repackaged.com.google.common.base.Objects;
 import java.util.Date;
 
 /*
@@ -34,8 +35,10 @@ public class AppUploadedDomain implements DomainObject {
 
     public static final String OBJECT_KEY = ObjectKey.APP_UPLOADED;
     private long id;
+    private long appId;
     private String appPath;
-    private int status;
+    private long size;
+    private int type;
     private Date created;
     private long creater;
 
@@ -47,6 +50,14 @@ public class AppUploadedDomain implements DomainObject {
         this.id = id;
     }
 
+    public long getAppId() {
+        return appId;
+    }
+
+    public void setAppId(long appId) {
+        this.appId = appId;
+    }
+
     public String getAppPath() {
         return appPath;
     }
@@ -55,12 +66,20 @@ public class AppUploadedDomain implements DomainObject {
         this.appPath = appPath;
     }
 
-    public int getStatus() {
-        return status;
+    public int getType() {
+        return type;
     }
 
-    public void setStatus(int status) {
-        this.status = status;
+    public void setType(int type) {
+        this.type = type;
+    }
+
+    public long getSize() {
+        return size;
+    }
+
+    public void setSize(long size) {
+        this.size = size;
     }
 
     public Date getCreated() {
@@ -77,6 +96,15 @@ public class AppUploadedDomain implements DomainObject {
 
     public void setCreater(long creater) {
         this.creater = creater;
+    }
+
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this.getClass())
+                .add("appId", getAppId())
+                .add("appPath", getAppPath())
+                .add("type", getType())
+                .toString();
     }
 
     @Override

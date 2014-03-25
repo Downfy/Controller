@@ -16,6 +16,7 @@
  */
 package com.downfy.controller.backend.app;
 
+import com.downfy.common.AppCommon;
 import com.downfy.common.Utils;
 import com.downfy.controller.AbstractController;
 import com.downfy.controller.MyResourceMessage;
@@ -25,10 +26,12 @@ import com.downfy.form.backend.application.AppVersionDownloadForm;
 import com.downfy.form.validator.backend.application.BackendAppValidator;
 import com.downfy.persistence.domain.AppFileMetaDomain;
 import com.downfy.persistence.domain.application.AppDomain;
+import com.downfy.persistence.domain.application.AppUploadedDomain;
 import com.downfy.persistence.domain.application.AppVersionDomain;
 import com.downfy.persistence.domain.category.CategoryDomain;
 import com.downfy.service.application.AppScreenshootService;
 import com.downfy.service.application.AppService;
+import com.downfy.service.application.AppUploadedService;
 import com.downfy.service.application.AppVersionService;
 import com.downfy.service.category.CategoryService;
 import com.google.api.client.repackaged.com.google.common.base.Objects;
@@ -37,6 +40,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -85,6 +89,8 @@ public class AppController extends AbstractController {
     AppVersionService appVersionService;
     @Autowired
     AppScreenshootService appScreenshootService;
+    @Autowired
+    AppUploadedService appUploadedService;
     @Autowired
     CategoryService categoryService;
     @Autowired
@@ -149,6 +155,7 @@ public class AppController extends AbstractController {
         try {
             AppDomain currentApp = appService.findById(appId);
             uiModel.addAttribute("app", currentApp);
+            uiModel.addAttribute("screenshoots", appUploadedService.findByType(appId, AppCommon.FILE_SCREENSHOOT));
             return view(device, "backend/application/screenshoots");
         } catch (Exception ex) {
             logger.error("Cannot upload screenshoot application.", ex);
@@ -186,6 +193,9 @@ public class AppController extends AbstractController {
                 //Create new fileMeta
                 fileMeta.setFileName(absolutePath);
                 fileMeta.setFileSize(mpf.getSize());
+
+                //Save info of file uploaded
+                saveUploadFile(appId, mpf.getSize(), absolutePath, AppCommon.FILE_ICON);
             } else {
                 logger.debug("Don't support format icon content type: " + mpf.getContentType());
                 fileMeta.setFileName("");
@@ -222,6 +232,10 @@ public class AppController extends AbstractController {
                 //Create new fileMeta
                 fileMeta.setFileName(absolutePath);
                 fileMeta.setFileSize(mpf.getSize());
+
+                //Save info of file uploaded
+                saveUploadFile(appId, mpf.getSize(), absolutePath, AppCommon.FILE_APK);
+
             } else {
                 logger.debug("Don't support format apk content type: " + mpf.getContentType());
                 fileMeta.setFileName("");
@@ -284,6 +298,9 @@ public class AppController extends AbstractController {
                             .outputFormat("png")
                             .toFile(localPath);
 
+                    //Save info of file uploaded
+                    saveUploadFile(appId, mpf.getSize(), absolutePath, AppCommon.FILE_SCREENSHOOT);
+
                     //2.4 add to files
                     files.add(fileMeta);
                 } catch (Exception ex) {
@@ -303,5 +320,18 @@ public class AppController extends AbstractController {
         form.setAppCategoryParent(categoryDomain.getParent());
         form.setAppCategories(categoryService.findBySelectorParent(categoryDomain.getParent()));
         return form;
+    }
+
+    private void saveUploadFile(long appId, long size, String localPath, int type) {
+        AppUploadedDomain appUploadDomain = new AppUploadedDomain();
+        appUploadDomain.setId(System.currentTimeMillis());
+        appUploadDomain.setAppId(appId);
+        appUploadDomain.setAppPath(localPath);
+        appUploadDomain.setCreater(getUserId());
+        appUploadDomain.setCreated(new Date());
+        appUploadDomain.setType(type);
+        appUploadDomain.setSize(size);
+
+        appUploadedService.save(appUploadDomain);
     }
 }
