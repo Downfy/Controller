@@ -44,7 +44,6 @@ public class GeoLite {
 
     public CityResponse getCity(String ip) {
         try {
-            logger.debug("Check geo from client ip " + ip);
             // A File object pointing to your GeoIP2 or GeoLite2 database
             File database = new File(dbPath);
 
@@ -56,9 +55,7 @@ public class GeoLite {
 
             return response;
         } catch (IOException ex) {
-            logger.error(ex.getMessage());
         } catch (GeoIp2Exception ex) {
-            logger.info(ex.getMessage());
         }
         return null;
     }

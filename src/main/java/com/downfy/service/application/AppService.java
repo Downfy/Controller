@@ -22,6 +22,8 @@ import com.downfy.persistence.repositories.application.AppRepository;
 import com.downfy.persistence.table.AppTable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import org.slf4j.Logger;
@@ -74,10 +76,8 @@ public class AppService {
     public List<AppDomain> findAll() {
         List<AppDomain> apps = null;
         try {
-            this.logger.info("Find all app in cache.");
             apps = this.getCacheObjects();
             if (apps.isEmpty()) {
-                this.logger.debug("Find all app in database.");
                 apps = this.repository.findAll();
                 if (!apps.isEmpty()) {
                     this.setCacheObjects(apps);
@@ -93,17 +93,14 @@ public class AppService {
     }
 
     public AppDomain findById(long appId) {
-        this.logger.info("Find app " + appId + " in cache.");
         return getCacheObject(appId + "");
     }
 
     public List<AppDomain> findByDeveloper(long developerId) {
         List<AppDomain> apps = null;
         try {
-            this.logger.info("Find all app of developer " + developerId + " in cache.");
             apps = getCacheObjects(developerId);
             if (apps.isEmpty()) {
-                this.logger.debug("Find all app of developer " + developerId + " in database.");
                 apps = this.repository.findByDeveloper(developerId);
                 if (!apps.isEmpty()) {
                     setCacheObjects(apps);
@@ -120,9 +117,7 @@ public class AppService {
 
     public boolean updateApp(AppDomain domain, long developerId) {
         try {
-            this.logger.info("Update app " + domain + " to cache");
             putCacheObject(domain, developerId);
-            this.logger.debug("Update app " + domain + " to database");
             repository.updateAppInfo(domain);
             return true;
         } catch (Exception ex) {
@@ -143,12 +138,10 @@ public class AppService {
      */
     public boolean publishApp(long key) {
         try {
-            this.logger.info("Publish app " + key + " to cache");
             AppDomain app = getCacheObject(key + "");
             if (app != null) {
                 app.setStatus(AppCommon.PUBLISHED);
                 putCacheObject(app, app.getCreater());
-                this.logger.debug("Publish app " + key + " to database");
                 this.repository.publish(key);
                 this.logger.info("Publish success app " + key);
                 return true;
@@ -161,12 +154,10 @@ public class AppService {
 
     public boolean blockApp(long key) {
         try {
-            this.logger.info("Block app " + key + " to cache");
             AppDomain app = getCacheObject(key + "");
             if (app != null) {
                 app.setStatus(AppCommon.BLOCKED);
                 putCacheObject(app, app.getCreater());
-                this.logger.debug("Block app " + key + " to database");
                 this.repository.block(key);
                 this.logger.info("Block success app " + key);
                 return true;
@@ -204,9 +195,7 @@ public class AppService {
 
     public boolean save(AppDomain domain) {
         try {
-            this.logger.info("Save app " + domain + " to database");
             this.repository.save(domain);
-            this.logger.debug("Save app " + domain + " to cache");
             putCacheObject(domain, domain.getCreater());
             return true;
         } catch (Exception ex) {
@@ -217,9 +206,7 @@ public class AppService {
 
     public boolean delete(long key, long developerId) {
         try {
-            this.logger.info("Delete app " + key + " in cache.");
             removeCacheObject(key + "", developerId);
-            this.logger.debug("Delete app " + key + " in database.");
             this.repository.delete(key);
             this.logger.info("Delete success app " + key);
         } catch (Exception ex) {
@@ -242,10 +229,8 @@ public class AppService {
     private AppDomain getCacheObject(String key) {
         AppDomain domain = null;
         try {
-            this.logger.debug("Get key " + key + " object " + AppDomain.OBJECT_KEY + " in cache");
             domain = (AppDomain) this.getAppVersionRedisTemplate().opsForHash().get(AppDomain.OBJECT_KEY, key);
             if (domain == null) {
-                this.logger.debug("Get key " + key + " object " + AppDomain.OBJECT_KEY + " in database");
                 domain = repository.findById(Long.valueOf(key));
                 if (domain == null) {
                     this.logger.debug("App " + key + " object " + AppDomain.OBJECT_KEY + " not found");
@@ -261,7 +246,7 @@ public class AppService {
         try {
             this.logger.debug("Remove key " + key + " object " + AppDomain.OBJECT_KEY + " in cache");
             this.getAppVersionRedisTemplate().opsForHash().delete(AppDomain.OBJECT_KEY, key);
-            this.getLongRedisTemplate().opsForSet().pop(AppTable.KEY + ":" + developerId);
+            this.getLongRedisTemplate().opsForSet().remove(AppTable.KEY + ":" + developerId, key);
         } catch (Exception ex) {
             this.logger.warn("Can't remove from Redis", ex);
         }
@@ -279,10 +264,8 @@ public class AppService {
     private List<AppDomain> getCacheObjects() {
         List<AppDomain> apps = new ArrayList<AppDomain>();
         try {
-            this.logger.debug("Get all objects " + AppDomain.OBJECT_KEY + " in cache");
             for (Object user : this.getAppVersionRedisTemplate().opsForHash().values(AppDomain.OBJECT_KEY)) {
                 apps.add((AppDomain) user);
-                logger.debug("==> Get object " + ((AppDomain) user).toString());
             }
         } catch (Exception ex) {
             this.logger.warn("Can't get all objects " + AppDomain.OBJECT_KEY + " from Redis", ex);
@@ -295,7 +278,6 @@ public class AppService {
         logger.debug("All app from developer id " + developerId + " ==> " + keys);
         List<AppDomain> apps = new ArrayList<AppDomain>();
         try {
-            this.logger.debug("Get all objects " + AppDomain.OBJECT_KEY + " in cache");
             for (Object user : this.getAppVersionRedisTemplate().opsForHash().multiGet(AppDomain.OBJECT_KEY, keys)) {
                 apps.add((AppDomain) user);
             }
@@ -307,7 +289,6 @@ public class AppService {
 
     private long countCacheObject() {
         try {
-            this.logger.debug("Count objects " + AppDomain.OBJECT_KEY + " in cache");
             return this.getAppVersionRedisTemplate().opsForHash().size(AppDomain.OBJECT_KEY);
         } catch (Exception ex) {
             this.logger.warn("Can't count objects " + AppDomain.OBJECT_KEY + " from Redis", ex);
@@ -317,7 +298,6 @@ public class AppService {
 
     private long countCacheObject(long developerId) {
         try {
-            this.logger.debug("Count objects " + AppDomain.OBJECT_KEY + " in cache");
             return this.getLongRedisTemplate().opsForSet().size(AppTable.KEY + ":" + developerId);
         } catch (Exception ex) {
             this.logger.warn("Can't count objects " + AppDomain.OBJECT_KEY + " from Redis", ex);
@@ -327,7 +307,6 @@ public class AppService {
 
     private void setCacheObjects(List<AppDomain> domains) {
         try {
-            this.logger.debug("Set " + domains.size() + " objects " + AppDomain.OBJECT_KEY + " to cache");
             for (AppDomain domain : domains) {
                 putCacheObject(domain, domain.getCreater());
             }
@@ -364,7 +343,15 @@ public class AppService {
         Collection<Object> keys = new ArrayList<Object>();
         try {
             Set<String> appIds = this.getLongRedisTemplate().opsForSet().members(AppTable.KEY + ":" + developerId);
-            keys.addAll(appIds);
+            List<String> myList = new ArrayList<String>(appIds);
+            Collections.sort(myList, new Comparator<String>() {
+                @Override
+                public int compare(String id01, String id02) {
+                    return id01.compareTo(id02);
+                }
+            });
+            logger.debug("Get keys from developer " + developerId + " ==> " + appIds);
+            keys.addAll(myList);
         } catch (NullPointerException ex) {
         }
         return keys;

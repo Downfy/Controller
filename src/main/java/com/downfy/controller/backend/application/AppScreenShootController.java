@@ -147,6 +147,6 @@ public class AppScreenShootController extends AbstractController {
         uiModel.addAttribute("verifyscreenshoots", appScreenshootService.findByApp(domain.getAppId()));
         uiModel.addAttribute("app", currentApp);
         uiModel.addAttribute("screenshoots", appUploadedService.findByType(domain.getAppId(), AppCommon.FILE_SCREENSHOOT));
-        return view(device, "backend/application/screenshoots");
+        return "redirect:/backend/application/" + domain.getAppId() + "/screenshoots.html";
     }
 }

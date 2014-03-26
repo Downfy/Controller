@@ -72,18 +72,15 @@ public class AppUploadedService {
     }
 
     public AppUploadedDomain findById(long id) {
-        this.logger.info("Find app uploaded by " + id);
         return getCacheObject(id + "");
     }
 
     public List<AppUploadedDomain> findByType(long appId, int type) {
-        this.logger.info("Find app uploaded by " + appId + " with type " + type);
         return getCacheObjects(appId, type);
     }
 
     public boolean save(AppUploadedDomain domain) {
         try {
-            this.logger.info("Save app uploaded " + domain);
             putCacheObject(domain, domain.getAppId());
             return true;
         } catch (Exception ex) {
@@ -97,9 +94,10 @@ public class AppUploadedService {
         try {
             this.logger.info("Delete app uploaded " + key);
             AppUploadedDomain domain = getCacheObject(key + "");
-            FileUtils.deleteQuietly(new File(domain.getAppPath()));
+            if (domain != null) {
+                FileUtils.deleteQuietly(new File(domain.getAppPath()));
+            }
             removeCacheObject(key + "", appId, type);
-            this.logger.info("Delete success app uploaded " + key);
         } catch (Exception ex) {
             this.logger.error("Can't delete app uploaded " + key, ex);
             return false;
@@ -109,7 +107,7 @@ public class AppUploadedService {
 
     private void putCacheObject(AppUploadedDomain domain, long appId) {
         try {
-            this.logger.debug("Put to cache " + AppUploadedTable.KEY + ":" + domain.getType() + ":" + appId);
+            this.logger.debug("Put to cache " + AppUploadedTable.KEY + ":" + domain.getType() + ":" + appId + " ==> " + domain.getKey());
             this.getLongRedisTemplate().opsForSet().add(AppUploadedTable.KEY + ":" + domain.getType() + ":" + appId, domain.getKey());
             this.getAppUploadedRedisTemplate().opsForHash().put(AppUploadedDomain.OBJECT_KEY, domain.getKey(), domain);
         } catch (Exception ex) {
@@ -130,7 +128,6 @@ public class AppUploadedService {
     private AppUploadedDomain getCacheObject(String key) {
         AppUploadedDomain domain = null;
         try {
-            this.logger.debug("Get key " + key + " object " + AppUploadedDomain.OBJECT_KEY + " in cache");
             domain = (AppUploadedDomain) this.getAppUploadedRedisTemplate().opsForHash().get(AppUploadedDomain.OBJECT_KEY, key);
             if (domain == null) {
                 this.logger.debug("App " + key + " object " + AppUploadedDomain.OBJECT_KEY + " not found");
@@ -145,7 +142,6 @@ public class AppUploadedService {
         Collection<Object> keys = getKeys(appId, type);
         List<AppUploadedDomain> apps = new ArrayList<AppUploadedDomain>();
         try {
-            this.logger.debug("Get all objects " + AppUploadedDomain.OBJECT_KEY + " in cache");
             for (Object user : this.getAppUploadedRedisTemplate().opsForHash().multiGet(AppUploadedDomain.OBJECT_KEY, keys)) {
                 apps.add((AppUploadedDomain) user);
             }
@@ -168,10 +164,8 @@ public class AppUploadedService {
     }
 
     private Collection<Object> getKeys(long appId, int type) {
-        logger.info("Get list file uploaded of app " + appId);
         Collection<Object> keys = new ArrayList<Object>();
         try {
-            logger.debug("Load file uploaded of app from cache " + AppUploadedTable.KEY + ":" + type + ":" + appId);
             Set<String> appIds = this.getLongRedisTemplate().opsForSet().members(AppUploadedTable.KEY + ":" + type + ":" + appId);
             List<String> myList = new ArrayList<String>(appIds);
             Collections.sort(myList, new Comparator<String>() {

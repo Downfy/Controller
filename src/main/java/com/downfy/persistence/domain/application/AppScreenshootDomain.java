@@ -18,6 +18,7 @@ package com.downfy.persistence.domain.application;
 
 import com.downfy.common.ObjectKey;
 import com.downfy.persistence.domain.DomainObject;
+import com.google.api.client.repackaged.com.google.common.base.Objects;
 import java.util.Date;
 
 /*
@@ -95,6 +96,14 @@ public class AppScreenshootDomain implements DomainObject {
 
     public void setCreater(long creater) {
         this.creater = creater;
+    }
+
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this.getClass())
+                .add("appId", getAppId())
+                .add("appPath", getAppScreenShoot())
+                .toString();
     }
 
     @Override

@@ -131,6 +131,7 @@ public class AppController extends AbstractController {
     @RequestMapping(value = "/{id}/apk", method = RequestMethod.GET)
     public String apk(@PathVariable("id") long appId, HttpServletRequest request, Device device, Model uiModel) {
         try {
+            logger.info("Load apk of app " + appId);
             AppDomain curentApp = appService.findById(appId);
             uiModel.addAttribute("app", curentApp);
             List<AppVersionDownloadForm> apps = new ArrayList<AppVersionDownloadForm>();
@@ -153,6 +154,7 @@ public class AppController extends AbstractController {
     @RequestMapping(value = "/{id}/screenshoots", method = RequestMethod.GET)
     public String screenshoots(@PathVariable("id") long appId, HttpServletRequest request, Device device, Model uiModel) {
         try {
+            logger.info("Load screenshoot of app " + appId);
             AppDomain currentApp = appService.findById(appId);
             uiModel.addAttribute("verifyscreenshoots", appScreenshootService.findByApp(appId));
             uiModel.addAttribute("app", currentApp);

@@ -22,6 +22,8 @@ import com.downfy.persistence.repositories.application.AppVersionRepository;
 import com.downfy.persistence.table.AppVersionTable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import org.slf4j.Logger;
@@ -74,11 +76,8 @@ public class AppVersionService {
     public List<AppVersionDomain> findAll() {
         List<AppVersionDomain> apps = null;
         try {
-            this.logger.info("Find all app version");
-            this.logger.debug("Find all in cache.");
             apps = this.getCacheObjects();
             if (apps.isEmpty()) {
-                this.logger.debug("Find all in database.");
                 apps = this.repository.findAll();
                 if (!apps.isEmpty()) {
                     this.setCacheObjects(apps);
@@ -94,18 +93,14 @@ public class AppVersionService {
     }
 
     public AppVersionDomain findById(long appId) {
-        this.logger.info("Find app version " + appId);
         return getCacheObject(appId + "");
     }
 
     public List<AppVersionDomain> findByApp(long appId) {
         List<AppVersionDomain> apps = new ArrayList<AppVersionDomain>();
         try {
-            this.logger.info("Find all app version of app " + appId);
-            this.logger.debug("Find all version in cache.");
             apps = getCacheObjects(appId);
             if (apps.isEmpty()) {
-                this.logger.debug("Find all version in database.");
                 apps = this.repository.findByApp(appId);
                 if (!apps.isEmpty()) {
                     setCacheObjects(apps);
@@ -130,13 +125,10 @@ public class AppVersionService {
      */
     public boolean publish(long key) {
         try {
-            this.logger.info("Publish app version " + key);
-            this.logger.debug("Publish to cache");
             AppVersionDomain app = getCacheObject(key + "");
             if (app != null) {
                 app.setStatus(AppCommon.PUBLISHED);
                 putCacheObject(app, app.getAppId());
-                this.logger.debug("Publish to database");
                 this.repository.publish(key);
                 this.logger.info("Publish success app version " + key);
                 return true;
@@ -149,7 +141,6 @@ public class AppVersionService {
 
     public boolean approve(long key) {
         try {
-            this.logger.info("Approve app version " + key);
             AppVersionDomain app = getCacheObject(key + "");
             if (app != null) {
                 app.setStatus(AppCommon.PENDING);
@@ -167,7 +158,6 @@ public class AppVersionService {
 
     public boolean block(long key) {
         try {
-            this.logger.info("Block app version " + key);
             AppVersionDomain app = getCacheObject(key + "");
             if (app != null) {
                 app.setStatus(AppCommon.BLOCKED);
@@ -215,8 +205,6 @@ public class AppVersionService {
 
     public boolean save(AppVersionDomain domain) {
         try {
-            this.logger.info("Save app version " + domain);
-            this.logger.debug("Save to database");
             this.repository.save(domain);
             putCacheObject(domain, domain.getAppId());
             return true;
@@ -256,7 +244,6 @@ public class AppVersionService {
     private AppVersionDomain getCacheObject(String key) {
         AppVersionDomain domain = null;
         try {
-            this.logger.debug("Get key " + key + " object " + AppVersionDomain.OBJECT_KEY + " in cache");
             domain = (AppVersionDomain) this.getAppVersionRedisTemplate().opsForHash().get(AppVersionDomain.OBJECT_KEY, key);
             if (domain == null) {
                 this.logger.debug("Get key " + key + " object " + AppVersionDomain.OBJECT_KEY + " in database");
@@ -273,9 +260,8 @@ public class AppVersionService {
 
     private void removeCacheObject(String key, long appId) {
         try {
-            this.logger.debug("Remove key " + key + " object " + AppVersionDomain.OBJECT_KEY + " in cache");
             this.getAppVersionRedisTemplate().opsForHash().delete(AppVersionDomain.OBJECT_KEY, key);
-            this.getLongRedisTemplate().opsForSet().pop(AppVersionTable.KEY + ":" + appId);
+            this.getLongRedisTemplate().opsForSet().remove(AppVersionTable.KEY + ":" + appId, key);
         } catch (Exception ex) {
             this.logger.warn("Can't remove from Redis", ex);
         }
@@ -283,7 +269,6 @@ public class AppVersionService {
 
     private void removeCacheObject(String key) {
         try {
-            this.logger.debug("Remove key " + key + " object " + AppVersionDomain.OBJECT_KEY + " in cache");
             this.getAppVersionRedisTemplate().opsForHash().delete(AppVersionDomain.OBJECT_KEY, key);
         } catch (Exception ex) {
             this.logger.warn("Can't remove from Redis", ex);
@@ -293,7 +278,6 @@ public class AppVersionService {
     private List<AppVersionDomain> getCacheObjects() {
         List<AppVersionDomain> apps = new ArrayList<AppVersionDomain>();
         try {
-            this.logger.debug("Get all objects " + AppVersionDomain.OBJECT_KEY + " in cache");
             for (Object user : this.getAppVersionRedisTemplate().opsForHash().values(AppVersionDomain.OBJECT_KEY)) {
                 apps.add((AppVersionDomain) user);
             }
@@ -308,7 +292,6 @@ public class AppVersionService {
         logger.debug("Get list app version of app " + appId + " ==> " + keys);
         List<AppVersionDomain> apps = new ArrayList<AppVersionDomain>();
         try {
-            this.logger.debug("Get all objects " + AppVersionDomain.OBJECT_KEY + " in cache");
             for (Object user : this.getAppVersionRedisTemplate().opsForHash().multiGet(AppVersionDomain.OBJECT_KEY, keys)) {
                 apps.add((AppVersionDomain) user);
             }
@@ -320,7 +303,6 @@ public class AppVersionService {
 
     private long countCacheObject() {
         try {
-            this.logger.debug("Count objects " + AppVersionDomain.OBJECT_KEY + " in cache");
             return this.getAppVersionRedisTemplate().opsForHash().size(AppVersionDomain.OBJECT_KEY);
         } catch (Exception ex) {
             this.logger.warn("Can't count objects " + AppVersionDomain.OBJECT_KEY + " from Redis", ex);
@@ -330,7 +312,6 @@ public class AppVersionService {
 
     private long countCacheObject(long appId) {
         try {
-            this.logger.debug("Count objects " + AppVersionDomain.OBJECT_KEY + " in cache");
             return this.getLongRedisTemplate().opsForSet().size(AppVersionTable.KEY + ":" + appId);
         } catch (Exception ex) {
             this.logger.warn("Can't count objects " + AppVersionDomain.OBJECT_KEY + " from Redis", ex);
@@ -340,7 +321,6 @@ public class AppVersionService {
 
     private void setCacheObjects(List<AppVersionDomain> domains) {
         try {
-            this.logger.debug("Set " + domains.size() + " objects " + AppVersionDomain.OBJECT_KEY + " to cache");
             for (AppVersionDomain domain : domains) {
                 putCacheObject(domain, domain.getAppId());
             }
@@ -374,12 +354,18 @@ public class AppVersionService {
     }
 
     private Collection<Object> getKeys(long appId) {
-        logger.info("Get list version of app " + appId);
         Collection<Object> keys = new ArrayList<Object>();
         try {
-            logger.debug("Load app version from cache");
             Set<String> appIds = this.getLongRedisTemplate().opsForSet().members(AppVersionTable.KEY + ":" + appId);
-            keys.addAll(appIds);
+            List<String> myList = new ArrayList<String>(appIds);
+            Collections.sort(myList, new Comparator<String>() {
+                @Override
+                public int compare(String id01, String id02) {
+                    return id01.compareTo(id02);
+                }
+            });
+            logger.debug("Get keys from app " + appId + " ==> " + appIds);
+            keys.addAll(myList);
         } catch (NullPointerException ex) {
         }
         return keys;

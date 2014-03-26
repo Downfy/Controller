@@ -19,11 +19,16 @@ package com.downfy.service.application;
 import com.downfy.common.AppCommon;
 import com.downfy.persistence.domain.application.AppScreenshootDomain;
 import com.downfy.persistence.repositories.application.AppScreenshootRepository;
+import com.downfy.persistence.table.AppScreenshootTable;
 import com.downfy.persistence.table.AppVersionTable;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +67,7 @@ public class AppScreenshootService {
         return longRedisTemplate;
     }
 
-    public RedisTemplate<String, AppScreenshootDomain> getAppVersionRedisTemplate() {
+    public RedisTemplate<String, AppScreenshootDomain> getAppScreenshootRedisTemplate() {
         if (appScreenshootRedisTemplate == null) {
             this.appScreenshootRedisTemplate = new RedisTemplate<String, AppScreenshootDomain>();
             this.appScreenshootRedisTemplate.setConnectionFactory(jedisConnectionFactory);
@@ -74,11 +79,8 @@ public class AppScreenshootService {
     public List<AppScreenshootDomain> findAll() {
         List<AppScreenshootDomain> apps = null;
         try {
-            this.logger.info("Find all app screen shoot");
-            this.logger.debug("Find all in cache.");
             apps = this.getCacheObjects();
             if (apps.isEmpty()) {
-                this.logger.debug("Find all in database.");
                 apps = this.repository.findAll();
                 if (!apps.isEmpty()) {
                     this.setCacheObjects(apps);
@@ -101,11 +103,8 @@ public class AppScreenshootService {
     public List<AppScreenshootDomain> findByApp(long appId) {
         List<AppScreenshootDomain> apps = new ArrayList<AppScreenshootDomain>();
         try {
-            this.logger.info("Find all app screen shoot of app " + appId);
-            this.logger.debug("Find all version in cache.");
             apps = getCacheObjects(appId);
             if (apps.isEmpty()) {
-                this.logger.debug("Find all version in database.");
                 apps = this.repository.findByApp(appId);
                 if (!apps.isEmpty()) {
                     setCacheObjects(apps);
@@ -130,13 +129,10 @@ public class AppScreenshootService {
      */
     public boolean publish(long key) {
         try {
-            this.logger.info("Publish app screen shoot " + key);
-            this.logger.debug("Publish to cache");
             AppScreenshootDomain app = getCacheObject(key + "");
             if (app != null) {
                 app.setStatus(AppCommon.PUBLISHED);
                 putCacheObject(app, app.getAppId());
-                this.logger.debug("Publish to database");
                 this.repository.publish(key);
                 this.logger.info("Publish success app screen shoot " + key);
                 return true;
@@ -149,13 +145,10 @@ public class AppScreenshootService {
 
     public boolean approve(long key) {
         try {
-            this.logger.info("Approve app screen shoot " + key);
-            this.logger.debug("Approve to cache");
             AppScreenshootDomain app = getCacheObject(key + "");
             if (app != null) {
                 app.setStatus(AppCommon.PENDING);
                 putCacheObject(app, app.getAppId());
-                this.logger.debug("Approve to database");
                 this.repository.publish(key);
                 this.logger.info("Approve success app screen shoot " + key);
                 return true;
@@ -168,12 +161,10 @@ public class AppScreenshootService {
 
     public boolean block(long key) {
         try {
-            this.logger.info("Block app screen shoot " + key);
             AppScreenshootDomain app = getCacheObject(key + "");
             if (app != null) {
                 app.setStatus(AppCommon.BLOCKED);
                 putCacheObject(app, app.getAppId());
-                this.logger.debug("Block app screen shoot " + key + " to database");
                 this.repository.block(key);
                 this.logger.info("Block success app screen shoot " + key);
                 return true;
@@ -211,8 +202,6 @@ public class AppScreenshootService {
 
     public boolean save(AppScreenshootDomain domain) {
         try {
-            this.logger.info("Save app screen shoot " + domain);
-            this.logger.debug("Save to database");
             this.repository.save(domain);
             putCacheObject(domain, domain.getAppId());
             return true;
@@ -225,11 +214,12 @@ public class AppScreenshootService {
 
     public boolean delete(long key, long appId) {
         try {
-            this.logger.info("Delete app screen shoot " + key);
-            this.logger.debug("Delete in cache.");
             removeCacheObject(key + "", appId);
-            this.logger.debug("Delete in database.");
             this.repository.delete(key);
+            AppScreenshootDomain domain = getCacheObject(key + "");
+            if (domain != null) {
+                FileUtils.deleteQuietly(new File(domain.getAppScreenShoot()));
+            }
             this.logger.info("Delete success app screen shoot " + key);
         } catch (Exception ex) {
             this.logger.error("Can't delete app screen shoot " + key, ex);
@@ -241,8 +231,8 @@ public class AppScreenshootService {
     private void putCacheObject(AppScreenshootDomain domain, long appId) {
         try {
             this.logger.debug("Put to cache " + domain);
-            this.getLongRedisTemplate().opsForSet().add(AppVersionTable.KEY + ":" + appId, domain.getKey());
-            this.getAppVersionRedisTemplate().opsForHash().put(AppScreenshootDomain.OBJECT_KEY, domain.getKey(), domain);
+            this.getLongRedisTemplate().opsForSet().add(AppScreenshootTable.KEY + ":" + appId, domain.getKey());
+            this.getAppScreenshootRedisTemplate().opsForHash().put(AppScreenshootDomain.OBJECT_KEY, domain.getKey(), domain);
         } catch (Exception ex) {
             this.logger.warn("Can't put data to cache", ex);
         }
@@ -251,10 +241,8 @@ public class AppScreenshootService {
     private AppScreenshootDomain getCacheObject(String key) {
         AppScreenshootDomain domain = null;
         try {
-            this.logger.debug("Get key " + key + " object " + AppScreenshootDomain.OBJECT_KEY + " in cache");
-            domain = (AppScreenshootDomain) this.getAppVersionRedisTemplate().opsForHash().get(AppScreenshootDomain.OBJECT_KEY, key);
+            domain = (AppScreenshootDomain) this.getAppScreenshootRedisTemplate().opsForHash().get(AppScreenshootDomain.OBJECT_KEY, key);
             if (domain == null) {
-                this.logger.debug("Get key " + key + " object " + AppScreenshootDomain.OBJECT_KEY + " in database");
                 domain = repository.findById(Long.valueOf(key));
                 if (domain == null) {
                     this.logger.debug("App " + key + " object " + AppScreenshootDomain.OBJECT_KEY + " not found");
@@ -269,17 +257,8 @@ public class AppScreenshootService {
     private void removeCacheObject(String key, long appId) {
         try {
             this.logger.debug("Remove key " + key + " object " + AppScreenshootDomain.OBJECT_KEY + " in cache");
-            this.getAppVersionRedisTemplate().opsForHash().delete(AppScreenshootDomain.OBJECT_KEY, key);
-            this.getLongRedisTemplate().opsForSet().pop(AppVersionTable.KEY + ":" + appId);
-        } catch (Exception ex) {
-            this.logger.warn("Can't remove from Redis", ex);
-        }
-    }
-
-    private void removeCacheObject(String key) {
-        try {
-            this.logger.debug("Remove key " + key + " object " + AppScreenshootDomain.OBJECT_KEY + " in cache");
-            this.getAppVersionRedisTemplate().opsForHash().delete(AppScreenshootDomain.OBJECT_KEY, key);
+            this.getAppScreenshootRedisTemplate().opsForHash().delete(AppScreenshootDomain.OBJECT_KEY, key);
+            this.getLongRedisTemplate().opsForSet().remove(AppScreenshootTable.KEY + ":" + appId, key);
         } catch (Exception ex) {
             this.logger.warn("Can't remove from Redis", ex);
         }
@@ -288,8 +267,7 @@ public class AppScreenshootService {
     private List<AppScreenshootDomain> getCacheObjects() {
         List<AppScreenshootDomain> apps = new ArrayList<AppScreenshootDomain>();
         try {
-            this.logger.debug("Get all objects " + AppScreenshootDomain.OBJECT_KEY + " in cache");
-            for (Object user : this.getAppVersionRedisTemplate().opsForHash().values(AppScreenshootDomain.OBJECT_KEY)) {
+            for (Object user : this.getAppScreenshootRedisTemplate().opsForHash().values(AppScreenshootDomain.OBJECT_KEY)) {
                 apps.add((AppScreenshootDomain) user);
             }
         } catch (Exception ex) {
@@ -300,11 +278,9 @@ public class AppScreenshootService {
 
     private List<AppScreenshootDomain> getCacheObjects(long appId) {
         Collection<Object> keys = getKeys(appId);
-        logger.debug("Get list app screen shoot of app " + appId + " ==> " + keys);
         List<AppScreenshootDomain> apps = new ArrayList<AppScreenshootDomain>();
         try {
-            this.logger.debug("Get all objects " + AppScreenshootDomain.OBJECT_KEY + " in cache");
-            for (Object user : this.getAppVersionRedisTemplate().opsForHash().multiGet(AppScreenshootDomain.OBJECT_KEY, keys)) {
+            for (Object user : this.getAppScreenshootRedisTemplate().opsForHash().multiGet(AppScreenshootDomain.OBJECT_KEY, keys)) {
                 apps.add((AppScreenshootDomain) user);
             }
         } catch (Exception ex) {
@@ -316,7 +292,7 @@ public class AppScreenshootService {
     private long countCacheObject() {
         try {
             this.logger.debug("Count objects " + AppScreenshootDomain.OBJECT_KEY + " in cache");
-            return this.getAppVersionRedisTemplate().opsForHash().size(AppScreenshootDomain.OBJECT_KEY);
+            return this.getAppScreenshootRedisTemplate().opsForHash().size(AppScreenshootDomain.OBJECT_KEY);
         } catch (Exception ex) {
             this.logger.warn("Can't count objects " + AppScreenshootDomain.OBJECT_KEY + " from Redis", ex);
         }
@@ -335,7 +311,6 @@ public class AppScreenshootService {
 
     private void setCacheObjects(List<AppScreenshootDomain> domains) {
         try {
-            this.logger.debug("Set " + domains.size() + " objects " + AppScreenshootDomain.OBJECT_KEY + " to cache");
             for (AppScreenshootDomain domain : domains) {
                 putCacheObject(domain, domain.getAppId());
             }
@@ -356,25 +331,19 @@ public class AppScreenshootService {
         }
     }
 
-    public void clearCache() {
-        try {
-            this.logger.debug("Clear objects " + AppScreenshootDomain.OBJECT_KEY + " in cache");
-            List<AppScreenshootDomain> objects = getCacheObjects();
-            for (AppScreenshootDomain appVersionDomain : objects) {
-                removeCacheObject(appVersionDomain.getKey());
-            }
-        } catch (Exception ex) {
-            this.logger.warn("Can't count objects " + AppScreenshootDomain.OBJECT_KEY + " from Redis", ex);
-        }
-    }
-
     private Collection<Object> getKeys(long appId) {
-        logger.info("Get list version of app " + appId);
         Collection<Object> keys = new ArrayList<Object>();
         try {
-            logger.debug("Load app screen shoot from cache");
-            Set<String> appIds = this.getLongRedisTemplate().opsForSet().members(AppVersionTable.KEY + ":" + appId);
-            keys.addAll(appIds);
+            Set<String> appIds = this.getLongRedisTemplate().opsForSet().members(AppScreenshootTable.KEY + ":" + appId);
+            List<String> myList = new ArrayList<String>(appIds);
+            Collections.sort(myList, new Comparator<String>() {
+                @Override
+                public int compare(String id01, String id02) {
+                    return id01.compareTo(id02);
+                }
+            });
+            logger.debug("Get keys from app " + appId + " ==> " + appIds);
+            keys.addAll(myList);
         } catch (NullPointerException ex) {
         }
         return keys;

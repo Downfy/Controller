@@ -9,6 +9,7 @@
         ID,
         APP_ID as appId,
         APP_SCREEN_SHOOT as appScreenShoot,
+        SIZE,
         STATUS,
         CREATED,
         CREATER
@@ -21,6 +22,7 @@
         ID,
         APP_ID as appId,
         APP_SCREEN_SHOOT as appScreenShoot,
+        SIZE,
         STATUS,
         CREATED
         FROM app_screen_shoots
@@ -33,6 +35,7 @@
         ID,
         APP_ID as appId,
         APP_SCREEN_SHOOT as appScreenShoot,
+        SIZE,
         STATUS,
         CREATED
         FROM app_screen_shoots
@@ -45,8 +48,7 @@
         ID,
         APP_ID as appId,
         APP_SCREEN_SHOOT as appScreenShoot,
-        APP_VERSION as appVersion,
-        APP_SIZE as appSize,
+        SIZE,
         STATUS,
         CREATED,
         CREATER
@@ -67,9 +69,9 @@
 
     <insert id="save" parameterType="AppScreenshootDomain">
         INSERT INTO app_screen_shoots
-        (ID, APP_ID, APP_SCREEN_SHOOT, STATUS, CREATER)
+        (ID, APP_ID, APP_SCREEN_SHOOT, SIZE, STATUS, CREATER)
         VALUES
-        (#{id}, #{appId}, #{appScreenShoot}, 2, #{creater})
+        (#{id}, #{appId}, #{appScreenShoot}, #{size}, 2, #{creater})
     </insert>
 
     <update id="publish" parameterType="long">
@@ -97,9 +99,7 @@
     </update>
 
     <delete id="delete" parameterType="long">
-        UPDATE app_screen_shoots
-        SET
-        STATUS = 0
+        DELETE FROM app_screen_shoots
         WHERE ID = #{id}
     </delete>
 </mapper>

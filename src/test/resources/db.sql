@@ -108,8 +108,9 @@ CREATE TABLE IF NOT EXISTS `app_download` (
 DROP TABLE IF EXISTS `app_screen_shoots`;
 CREATE TABLE IF NOT EXISTS `app_screen_shoots` (
   `id` bigint(20) unsigned NOT NULL,
-  `app_id` bigint(20) NOT NULL,
+  `app_id` bigint(20) unsigned NOT NULL,
   `app_screen_shoot` varchar(200) NOT NULL,
+  `size` bigint(20) unsigned NOT NULL DEFAULT '0',
   `status` int(1) NOT NULL DEFAULT '0',
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `creater` bigint(20) NOT NULL,
