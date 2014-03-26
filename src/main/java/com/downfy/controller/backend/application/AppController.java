@@ -16,6 +16,7 @@
  */
 package com.downfy.controller.backend.application;
 
+import com.downfy.common.AndroidUtils;
 import com.downfy.common.AppCommon;
 import com.downfy.common.Utils;
 import com.downfy.controller.AbstractController;
@@ -166,6 +167,20 @@ public class AppController extends AbstractController {
         return view(device, "maintenance");
     }
 
+    @RequestMapping(value = "/{id}/requestpublish", method = RequestMethod.GET)
+    public String requestPublish(@PathVariable("id") long appId, HttpServletRequest request, Device device, Model uiModel) {
+        try {
+            logger.info("Request publish of app " + appId);
+            AppDomain currentApp = appService.findById(appId);
+            currentApp.setStatus(AppCommon.PENDING);
+            appService.updateApp(currentApp, getUserId());
+            return "redirect:/backend/application.html";
+        } catch (Exception ex) {
+            logger.error("Cannot request publish application.", ex);
+        }
+        return view(device, "maintenance");
+    }
+
     @RequestMapping(value = "/upload/{id}/icon", method = RequestMethod.POST)
     @ResponseBody
     public AppFileMetaDomain icon(@PathVariable("id") long appId, MultipartHttpServletRequest request, Device device, Model uiModel) {
@@ -235,6 +250,8 @@ public class AppController extends AbstractController {
                 //Create new fileMeta
                 fileMeta.setFileName(absolutePath);
                 fileMeta.setFileSize(mpf.getSize());
+
+                AndroidUtils.getVersionFileApk(localPath);
 
                 //Save info of file uploaded
                 saveUploadFile(appId, mpf.getSize(), absolutePath, AppCommon.FILE_APK);
@@ -325,11 +342,11 @@ public class AppController extends AbstractController {
         return form;
     }
 
-    private void saveUploadFile(long appId, long size, String localPath, int type) {
+    private void saveUploadFile(long appId, long size, String absolutePath, int type) {
         AppUploadedDomain appUploadDomain = new AppUploadedDomain();
         appUploadDomain.setId(System.currentTimeMillis());
         appUploadDomain.setAppId(appId);
-        appUploadDomain.setAppPath(localPath);
+        appUploadDomain.setAppPath(absolutePath);
         appUploadDomain.setCreater(getUserId());
         appUploadDomain.setCreated(new Date());
         appUploadDomain.setType(type);
