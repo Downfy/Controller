@@ -45,7 +45,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class AppVersionService {
 
-    private final Logger logger = LoggerFactory.getLogger(AppService.class);
+    private final Logger logger = LoggerFactory.getLogger(AppVersionService.class);
     @Autowired
     AppVersionRepository repository;
     @Autowired

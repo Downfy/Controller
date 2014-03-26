@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.downfy.controller.backend.app;
+package com.downfy.controller.backend.application;
 
 import com.downfy.common.AppCommon;
 import com.downfy.common.Utils;
@@ -154,6 +154,7 @@ public class AppController extends AbstractController {
     public String screenshoots(@PathVariable("id") long appId, HttpServletRequest request, Device device, Model uiModel) {
         try {
             AppDomain currentApp = appService.findById(appId);
+            uiModel.addAttribute("verifyscreenshoots", appScreenshootService.findByApp(appId));
             uiModel.addAttribute("app", currentApp);
             uiModel.addAttribute("screenshoots", appUploadedService.findByType(appId, AppCommon.FILE_SCREENSHOOT));
             return view(device, "backend/application/screenshoots");

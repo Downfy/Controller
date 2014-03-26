@@ -18,12 +18,14 @@ package com.downfy.service.application;
 
 import com.downfy.persistence.domain.application.AppUploadedDomain;
 import com.downfy.persistence.table.AppUploadedTable;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,10 +47,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class AppUploadedService {
 
-    private final Logger logger = LoggerFactory.getLogger(AppService.class);
+    private final Logger logger = LoggerFactory.getLogger(AppUploadedService.class);
     @Autowired
     private JedisConnectionFactory jedisConnectionFactory;
-    private RedisTemplate<String, AppUploadedDomain> appScreenshootRedisTemplate;
+    private RedisTemplate<String, AppUploadedDomain> appUploadedRedisTemplate;
     private RedisTemplate<String, String> longRedisTemplate;
 
     public RedisTemplate<String, String> getLongRedisTemplate() {
@@ -60,13 +62,18 @@ public class AppUploadedService {
         return longRedisTemplate;
     }
 
-    public RedisTemplate<String, AppUploadedDomain> getAppVersionRedisTemplate() {
-        if (appScreenshootRedisTemplate == null) {
-            this.appScreenshootRedisTemplate = new RedisTemplate<String, AppUploadedDomain>();
-            this.appScreenshootRedisTemplate.setConnectionFactory(jedisConnectionFactory);
-            this.appScreenshootRedisTemplate.afterPropertiesSet();
+    public RedisTemplate<String, AppUploadedDomain> getAppUploadedRedisTemplate() {
+        if (appUploadedRedisTemplate == null) {
+            this.appUploadedRedisTemplate = new RedisTemplate<String, AppUploadedDomain>();
+            this.appUploadedRedisTemplate.setConnectionFactory(jedisConnectionFactory);
+            this.appUploadedRedisTemplate.afterPropertiesSet();
         }
-        return appScreenshootRedisTemplate;
+        return appUploadedRedisTemplate;
+    }
+
+    public AppUploadedDomain findById(long id) {
+        this.logger.info("Find app uploaded by " + id);
+        return getCacheObject(id + "");
     }
 
     public List<AppUploadedDomain> findByType(long appId, int type) {
@@ -89,6 +96,8 @@ public class AppUploadedService {
     public boolean delete(long key, long appId, int type) {
         try {
             this.logger.info("Delete app uploaded " + key);
+            AppUploadedDomain domain = getCacheObject(key + "");
+            FileUtils.deleteQuietly(new File(domain.getAppPath()));
             removeCacheObject(key + "", appId, type);
             this.logger.info("Delete success app uploaded " + key);
         } catch (Exception ex) {
@@ -102,7 +111,7 @@ public class AppUploadedService {
         try {
             this.logger.debug("Put to cache " + AppUploadedTable.KEY + ":" + domain.getType() + ":" + appId);
             this.getLongRedisTemplate().opsForSet().add(AppUploadedTable.KEY + ":" + domain.getType() + ":" + appId, domain.getKey());
-            this.getAppVersionRedisTemplate().opsForHash().put(AppUploadedDomain.OBJECT_KEY, domain.getKey(), domain);
+            this.getAppUploadedRedisTemplate().opsForHash().put(AppUploadedDomain.OBJECT_KEY, domain.getKey(), domain);
         } catch (Exception ex) {
             this.logger.warn("Can't put data to cache", ex);
         }
@@ -112,10 +121,24 @@ public class AppUploadedService {
         try {
             this.logger.debug("Remove key " + key + " object " + AppUploadedDomain.OBJECT_KEY + " in cache");
             this.getLongRedisTemplate().opsForSet().remove(AppUploadedTable.KEY + ":" + type + ":" + appId, key);
-            this.getAppVersionRedisTemplate().opsForHash().delete(AppUploadedDomain.OBJECT_KEY, key);
+            this.getAppUploadedRedisTemplate().opsForHash().delete(AppUploadedDomain.OBJECT_KEY, key);
         } catch (Exception ex) {
             this.logger.warn("Can't remove from Redis", ex);
         }
+    }
+
+    private AppUploadedDomain getCacheObject(String key) {
+        AppUploadedDomain domain = null;
+        try {
+            this.logger.debug("Get key " + key + " object " + AppUploadedDomain.OBJECT_KEY + " in cache");
+            domain = (AppUploadedDomain) this.getAppUploadedRedisTemplate().opsForHash().get(AppUploadedDomain.OBJECT_KEY, key);
+            if (domain == null) {
+                this.logger.debug("App " + key + " object " + AppUploadedDomain.OBJECT_KEY + " not found");
+            }
+        } catch (NumberFormatException ex) {
+            this.logger.warn("Can't get from Redis", ex);
+        }
+        return domain;
     }
 
     private List<AppUploadedDomain> getCacheObjects(long appId, int type) {
@@ -123,7 +146,7 @@ public class AppUploadedService {
         List<AppUploadedDomain> apps = new ArrayList<AppUploadedDomain>();
         try {
             this.logger.debug("Get all objects " + AppUploadedDomain.OBJECT_KEY + " in cache");
-            for (Object user : this.getAppVersionRedisTemplate().opsForHash().multiGet(AppUploadedDomain.OBJECT_KEY, keys)) {
+            for (Object user : this.getAppUploadedRedisTemplate().opsForHash().multiGet(AppUploadedDomain.OBJECT_KEY, keys)) {
                 apps.add((AppUploadedDomain) user);
             }
         } catch (Exception ex) {

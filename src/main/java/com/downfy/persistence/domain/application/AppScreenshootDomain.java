@@ -36,6 +36,7 @@ public class AppScreenshootDomain implements DomainObject {
     private long id;
     private long appId;
     private String appScreenShoot;
+    private long size;
     private int status;
     private Date created;
     private long creater;
@@ -70,6 +71,14 @@ public class AppScreenshootDomain implements DomainObject {
 
     public void setStatus(int status) {
         this.status = status;
+    }
+
+    public long getSize() {
+        return size;
+    }
+
+    public void setSize(long size) {
+        this.size = size;
     }
 
     public Date getCreated() {

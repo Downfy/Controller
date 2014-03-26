@@ -45,7 +45,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class AppScreenshootService {
 
-    private final Logger logger = LoggerFactory.getLogger(AppService.class);
+    private final Logger logger = LoggerFactory.getLogger(AppScreenshootService.class);
     @Autowired
     AppScreenshootRepository repository;
     @Autowired
@@ -223,11 +223,11 @@ public class AppScreenshootService {
         return false;
     }
 
-    public boolean delete(long key, long developerId) {
+    public boolean delete(long key, long appId) {
         try {
             this.logger.info("Delete app screen shoot " + key);
             this.logger.debug("Delete in cache.");
-            removeCacheObject(key + "", developerId);
+            removeCacheObject(key + "", appId);
             this.logger.debug("Delete in database.");
             this.repository.delete(key);
             this.logger.info("Delete success app screen shoot " + key);

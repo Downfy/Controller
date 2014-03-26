@@ -11,8 +11,7 @@
         APP_SCREEN_SHOOT as appScreenShoot,
         STATUS,
         CREATED,
-        CREATER,
-        UPDATED
+        CREATER
         FROM app_screen_shoots
         ORDER BY CREATED DESC
     </select>
@@ -23,8 +22,7 @@
         APP_ID as appId,
         APP_SCREEN_SHOOT as appScreenShoot,
         STATUS,
-        CREATED,
-        CREATER
+        CREATED
         FROM app_screen_shoots
         WHERE CREATER = #{developerId}
         AND STATUS > 0
@@ -36,8 +34,7 @@
         APP_ID as appId,
         APP_SCREEN_SHOOT as appScreenShoot,
         STATUS,
-        CREATED,
-        CREATER
+        CREATED
         FROM app_screen_shoots
         WHERE APP_ID = #{appId}
         AND STATUS > 0
@@ -52,8 +49,7 @@
         APP_SIZE as appSize,
         STATUS,
         CREATED,
-        CREATER,
-        UPDATED
+        CREATER
         FROM app_screen_shoots
         WHERE ID = #{id}
         LIMIT 0, 1
@@ -71,25 +67,23 @@
 
     <insert id="save" parameterType="AppScreenshootDomain">
         INSERT INTO app_screen_shoots
-        (ID, APP_ID, APP_SCREEN_SHOOT, STATUS, CREATER, UPDATED)
+        (ID, APP_ID, APP_SCREEN_SHOOT, STATUS, CREATER)
         VALUES
-        (#{id}, #{appId}, #{appScreenShoot}, 2, #{creater}, now())
+        (#{id}, #{appId}, #{appScreenShoot}, 2, #{creater})
     </insert>
 
     <update id="publish" parameterType="long">
         UPDATE app_screen_shoots
         SET
-        STATUS = 4,
-        UPDATED = now()
+        STATUS = 4
         WHERE ID = #{id}
         AND STATUS > 0
     </update>
-    
+
     <update id="approve" parameterType="long">
         UPDATE app_screen_shoots
         SET
-        STATUS = 3,
-        UPDATED = now()
+        STATUS = 3
         WHERE ID = #{id}
         AND STATUS > 0
     </update>
@@ -97,8 +91,7 @@
     <update id="block" parameterType="long">
         UPDATE app_screen_shoots
         SET
-        STATUS = 1,
-        UPDATED = now()
+        STATUS = 1
         WHERE ID = #{id}
         AND STATUS > 0
     </update>
@@ -106,8 +99,7 @@
     <delete id="delete" parameterType="long">
         UPDATE app_screen_shoots
         SET
-        STATUS = 0,
-        UPDATED = now()
+        STATUS = 0
         WHERE ID = #{id}
     </delete>
 </mapper>

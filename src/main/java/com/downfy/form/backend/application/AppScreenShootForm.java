@@ -16,6 +16,10 @@
  */
 package com.downfy.form.backend.application;
 
+import com.downfy.common.AppCommon;
+import com.downfy.persistence.domain.application.AppScreenshootDomain;
+import com.downfy.persistence.domain.application.AppUploadedDomain;
+
 /**
  *
  * @author Tran Anh Tuan <tk1cntt@gmail.com>
@@ -23,8 +27,7 @@ package com.downfy.form.backend.application;
 public class AppScreenShootForm {
 
     private long appId;
-    private String appScreenShoot;
-    private int status;
+    private long screenShootId;
 
     public long getAppId() {
         return appId;
@@ -34,19 +37,23 @@ public class AppScreenShootForm {
         this.appId = appId;
     }
 
-    public String getAppScreenShoot() {
-        return appScreenShoot;
+    public long getScreenShootId() {
+        return screenShootId;
     }
 
-    public void setAppScreenShoot(String appScreenShoot) {
-        this.appScreenShoot = appScreenShoot;
+    public void setScreenShootId(long screenShootId) {
+        this.screenShootId = screenShootId;
     }
 
-    public int getStatus() {
-        return status;
-    }
-
-    public void setStatus(int status) {
-        this.status = status;
+    public AppScreenshootDomain fromAppUploadedDomain(AppUploadedDomain domain) {
+        AppScreenshootDomain screenshootDomain = new AppScreenshootDomain();
+        screenshootDomain.setAppId(domain.getAppId());
+        screenshootDomain.setAppScreenShoot(domain.getAppPath());
+        screenshootDomain.setCreated(domain.getCreated());
+        screenshootDomain.setCreater(domain.getCreater());
+        screenshootDomain.setStatus(AppCommon.PENDING);
+        screenshootDomain.setId(domain.getId());
+        screenshootDomain.setSize(domain.getSize());
+        return screenshootDomain;
     }
 }
