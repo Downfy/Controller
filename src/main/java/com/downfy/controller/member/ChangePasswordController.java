@@ -16,7 +16,6 @@
  */
 package com.downfy.controller.member;
 
-import com.downfy.service.AccountService;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
@@ -57,8 +56,6 @@ public class ChangePasswordController extends AbstractController {
     private final Logger logger = LoggerFactory.getLogger(ChangePasswordController.class);
     @Autowired
     ChangePasswordValidator validator;
-    @Autowired
-    AccountService accountService;
     @Autowired
     MyResourceMessage resourceMessage;
 

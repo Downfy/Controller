@@ -25,6 +25,7 @@ import com.downfy.form.backend.application.AppDetailForm;
 import com.downfy.form.backend.application.AppVersionDownloadForm;
 import com.downfy.form.validator.backend.application.BackendAppValidator;
 import com.downfy.persistence.domain.AppFileMetaDomain;
+import com.downfy.persistence.domain.application.AppApkDomain;
 import com.downfy.persistence.domain.application.AppDomain;
 import com.downfy.persistence.domain.application.AppUploadedDomain;
 import com.downfy.persistence.domain.application.AppVersionDomain;
@@ -102,7 +103,7 @@ public class AppController extends AbstractController {
     ServletContext context;
 
     private void setApps(Model uiModel) {
-        List<AppDomain> apps = appService.findByDeveloper(getUserId());
+        List<AppDomain> apps = appService.findByDeveloper(getMyId());
         uiModel.addAttribute("apps", apps);
     }
 
@@ -142,9 +143,12 @@ public class AppController extends AbstractController {
             List<AppVersionDownloadForm> apps = new ArrayList<AppVersionDownloadForm>();
             List<AppVersionDomain> versions = appVersionService.findByApp(appId);
             for (AppVersionDomain appVersionDomain : versions) {
-                AppDomain appDomain_ = appService.findById(appVersionDomain.getAppId());
+                AppApkDomain appDomain_ = appApkService.findById(appVersionDomain.getId());
                 AppVersionDownloadForm appVersionDownloadForm = new AppVersionDownloadForm();
-                appVersionDownloadForm.fromAppDomain(appDomain_);
+                appVersionDownloadForm.setAppId(appVersionDomain.getAppId());
+                if (null != appDomain_) {
+                    appVersionDownloadForm.setAppName(appDomain_.getLabel());
+                }
                 appVersionDownloadForm.fromAppVersionDomain(appVersionDomain);
                 apps.add(appVersionDownloadForm);
             }
@@ -179,7 +183,7 @@ public class AppController extends AbstractController {
             logger.info("Request publish of app " + appId);
             AppDomain currentApp = appService.findById(appId);
             currentApp.setStatus(AppCommon.PENDING);
-            appService.updateApp(currentApp, getUserId());
+            appService.updateApp(currentApp, getMyId());
             return "redirect:/backend/application.html";
         } catch (Exception ex) {
             logger.error("Cannot request publish application.", ex);
@@ -266,27 +270,36 @@ public class AppController extends AbstractController {
                     fileMeta.setFileVersion(apkMeta.getVersionName());
                     fileMeta.setFilePackage(apkMeta.getPackageName());
 
-                    AppUploadedDomain uploadedDomain = appUploadedService.findById(apkMeta.getPackageName(), apkMeta.getVersionName());
-                    if (uploadedDomain == null) {
-                        //Save info of file uploaded
-                        saveUploadFile(appId, apkMeta.getVersionName(), apkMeta.getPackageName(), mpf.getSize(), absolutePath, AppCommon.FILE_APK);
+                    long creater = appApkService.getCreater(apkMeta.getPackageName());
+                    if (creater == 0) {
+                        if (appUploadedService.isExsit(apkMeta.getPackageName(), apkMeta.getVersionName())) {
+                            fileMeta.setFileStatus(AppCommon.UPLOAD_FILE_EXIST);
+                        } else {
+                            //Save info of file uploaded
+                            saveUploadFile(appId, apkMeta.getVersionName(), apkMeta.getPackageName(), mpf.getSize(), absolutePath, AppCommon.FILE_APK);
+                        }
+                    } else if (getMyId() == creater) {
+                        if (!appApkService.isExsit(apkMeta.getPackageName(), apkMeta.getVersionName())) {
+                            saveUploadFile(appId, apkMeta.getVersionName(), apkMeta.getPackageName(), mpf.getSize(), absolutePath, AppCommon.FILE_APK);
+                        } else {
+                            fileMeta.setFileStatus(AppCommon.UPLOAD_FILE_EXIST);
+                        }
                     } else {
-                        fileMeta.setFileStatus(AppCommon.UPLOAD_FILE_EXIST);
+                        fileMeta.setFileStatus(AppCommon.UPLOAD_PACKAGE_AVAILABLE);
                     }
                 } else {
                     fileMeta.setFileStatus(AppCommon.UPLOAD_FILE_NOT_SUPPORT);
-                    logger.debug("File uploaded not support");
                 }
-            } catch (Exception ex) {
+            } catch (IOException ex) {
                 FileUtils.deleteQuietly(f);
                 fileMeta.setFileStatus(AppCommon.UPLOAD_FAILRE);
-                logger.error("Can't upload apk application.", ex);
             }
         } else {
             logger.debug("Don't support format apk content type: " + mpf.getContentType());
             fileMeta.setFileName("");
             fileMeta.setFileSize(0);
         }
+
         fileMeta.setFileType(mpf.getContentType());
 
         return fileMeta;
@@ -372,7 +385,7 @@ public class AppController extends AbstractController {
         appUploadDomain.setId(System.currentTimeMillis());
         appUploadDomain.setAppId(appId);
         appUploadDomain.setAppPath(absolutePath);
-        appUploadDomain.setCreater(getUserId());
+        appUploadDomain.setCreater(getMyId());
         appUploadDomain.setCreated(new Date());
         appUploadDomain.setType(type);
         appUploadDomain.setSize(size);
@@ -385,7 +398,7 @@ public class AppController extends AbstractController {
         appUploadDomain.setId(System.currentTimeMillis());
         appUploadDomain.setAppId(appId);
         appUploadDomain.setAppPath(absolutePath);
-        appUploadDomain.setCreater(getUserId());
+        appUploadDomain.setCreater(getMyId());
         appUploadDomain.setCreated(new Date());
         appUploadDomain.setType(type);
         appUploadDomain.setSize(size);

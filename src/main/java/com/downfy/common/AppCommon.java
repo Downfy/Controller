@@ -37,6 +37,7 @@ public class AppCommon {
     public static final byte UPLOAD_FAILRE = 1;
     public static final byte UPLOAD_FILE_EXIST = 2;
     public static final byte UPLOAD_FILE_NOT_SUPPORT = 3;
+    public static final byte UPLOAD_PACKAGE_AVAILABLE = 4;
     //
     public static final String CATEGORY_APPLICATION = "APPLICATION";
     public static final String CATEGORY_GAME = "GAME";

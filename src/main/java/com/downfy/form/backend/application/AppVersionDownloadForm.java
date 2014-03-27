@@ -29,6 +29,7 @@ public class AppVersionDownloadForm {
     private String appName;
     private long appDownloaded;
     private String appPath;
+    private String appPackage;
     private String appVersion;
     private int status;
 
@@ -72,6 +73,14 @@ public class AppVersionDownloadForm {
         this.appVersion = appVersion;
     }
 
+    public String getAppPackage() {
+        return appPackage;
+    }
+
+    public void setAppPackage(String appPackage) {
+        this.appPackage = appPackage;
+    }
+
     public int getStatus() {
         return status;
     }
@@ -89,5 +98,6 @@ public class AppVersionDownloadForm {
         setAppPath(domain.getAppPath());
         setAppVersion(domain.getAppVersion());
         setStatus(domain.getStatus());
+        setAppPackage(domain.getAppPackage());
     }
 }

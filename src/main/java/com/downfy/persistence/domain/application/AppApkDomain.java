@@ -32,6 +32,7 @@ public class AppApkDomain extends ApkMeta implements DomainObject {
     private long appId;
     private int status;
     private String appPath;
+    private long creater;
 
     public long getId() {
         return id;
@@ -65,6 +66,14 @@ public class AppApkDomain extends ApkMeta implements DomainObject {
         this.appPath = appPath;
     }
 
+    public long getCreater() {
+        return creater;
+    }
+
+    public void setCreater(long creater) {
+        this.creater = creater;
+    }
+
     public AppApkDomain fromAppVersion(AppVersionDomain versionDomain) {
         ApkMeta apkMeta = Utils.getApkMeta(versionDomain.getAppPath());
         if (apkMeta != null) {
@@ -82,6 +91,7 @@ public class AppApkDomain extends ApkMeta implements DomainObject {
             apkDomain.setUseFeatures(apkMeta.getUseFeatures());
             apkDomain.setVersionCode(apkMeta.getVersionCode());
             apkDomain.setVersionName(apkMeta.getVersionName());
+            apkDomain.setCreater(versionDomain.getCreater());
             return apkDomain;
         }
         return null;

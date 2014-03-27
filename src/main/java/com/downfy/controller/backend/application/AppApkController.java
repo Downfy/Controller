@@ -29,6 +29,7 @@ import com.downfy.service.application.AppApkService;
 import com.downfy.service.application.AppUploadedService;
 import com.downfy.service.application.AppVersionService;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.ServletContext;
@@ -48,7 +49,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /*
- * BackendCategoryController.java
+ * AppApkController.java
  *
  * Admin application apk controller
  *
@@ -125,13 +126,14 @@ public class AppApkController extends AbstractController {
                 File f = new File(context.getRealPath("/"));
                 String localPath = f.getCanonicalPath() + File.separator + Utils.toMd5("data")
                         + uploadedDomain.getAppPath();
-                appVersionService.save(domain.toAppVersion(localPath, uploadedDomain));
-                appApkService.save(domain.toAppApk(localPath, uploadedDomain));
+                long id = System.currentTimeMillis();
+                appVersionService.save(domain.toAppVersion(localPath, id, uploadedDomain));
+                appApkService.save(domain.toAppApk(localPath, id, uploadedDomain));
                 appUploadedService.delete(uploadedDomain.getKey(), domain.getAppId(), AppCommon.FILE_APK);
             }
             return "redirect:/backend/application/" + domain.getAppId() + "/apk.html";
-        } catch (Exception ex) {
-            logger.error("Cannot upload screenshoot application.", ex);
+        } catch (IOException ex) {
+            logger.error("Cannot upload apk application.", ex);
         }
         return view(device, "maintenance");
     }
@@ -146,7 +148,7 @@ public class AppApkController extends AbstractController {
             appApkService.delete(domain.getApkId(), domain.getAppId());
             return "redirect:/backend/application/" + domain.getAppId() + "/apk.html";
         } catch (Exception ex) {
-            logger.error("Cannot upload screenshoot application.", ex);
+            logger.error("Cannot upload apk application.", ex);
         }
         return view(device, "maintenance");
     }

@@ -30,9 +30,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 /*
  * ApplicationCreateController.java
- * 
+ *
  * Application create controller
- * 
+ *
  * Modification Logs:
  *  DATE            AUTHOR      DESCRIPTION
  *  --------------------------------------------------------
@@ -42,7 +42,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Controller
 public class ApplicationCreateController extends AbstractController {
 
-    private Logger logger = LoggerFactory.getLogger(ApplicationCreateController.class);
+    private final Logger logger = LoggerFactory.getLogger(ApplicationCreateController.class);
     @Autowired
     MyResourceMessage resourceMessage;
 

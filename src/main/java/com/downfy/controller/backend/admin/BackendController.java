@@ -16,8 +16,7 @@
  */
 package com.downfy.controller.backend.admin;
 
-import com.downfy.service.AccountService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.downfy.controller.AbstractController;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,9 +24,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 /*
  * BackendController.java
- * 
+ *
  * Admin area controller
- * 
+ *
  * Modification Logs:
  *  DATE            AUTHOR      DESCRIPTION
  *  --------------------------------------------------------
@@ -35,10 +34,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  */
 @RequestMapping({"/backend"})
 @Controller
-public class BackendController {
-
-    @Autowired
-    AccountService accountService;
+public class BackendController extends AbstractController {
 
     @PreAuthorize("hasRole('ROLE_MANAGER')")
     @RequestMapping(method = {org.springframework.web.bind.annotation.RequestMethod.GET})

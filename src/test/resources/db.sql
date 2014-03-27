@@ -132,6 +132,7 @@ CREATE TABLE IF NOT EXISTS `app_version` (
   `id` bigint(20) unsigned NOT NULL,
   `app_id` bigint(20) unsigned NOT NULL,
   `app_path` varchar(200) DEFAULT NULL,
+  `app_package` varchar(50) DEFAULT NULL,
   `app_version` varchar(10) DEFAULT NULL,
   `app_size` bigint(20) unsigned NOT NULL DEFAULT '0',
   `status` int(1) NOT NULL DEFAULT '0',

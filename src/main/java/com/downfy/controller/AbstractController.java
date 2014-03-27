@@ -15,12 +15,19 @@
  */
 package com.downfy.controller;
 
+import com.downfy.persistence.domain.AccountDomain;
+import com.downfy.service.AccountService;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mobile.device.Device;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
 public abstract class AbstractController {
+
+    @Autowired
+    protected AccountService accountService;
 
     public String getUsername() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -34,15 +41,23 @@ public abstract class AbstractController {
         return "anonymousUser";
     }
 
-    public long getUserId() {
-        return 1234567890;
+    public long getMyId() {
+        if (StringUtils.equals(getUsername(), "admin")) {
+            return 1234567899;
+        } else if (StringUtils.equals(getUsername(), "tuanta")) {
+            return 1234567890;
+        } else {
+            AccountDomain accountDomain = accountService.findByEmail(getUsername());
+            if (accountDomain != null) {
+                return accountDomain.getId();
+            } else {
+                return 1234567800;
+            }
+        }
     }
 
     public boolean isAuthenticated() {
-        if ((SecurityContextHolder.getContext().getAuthentication() != null) && (SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) && (!getUsername().equals("anonymousUser"))) {
-            return true;
-        }
-        return false;
+        return (SecurityContextHolder.getContext().getAuthentication() != null) && (SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) && (!getUsername().equals("anonymousUser"));
     }
 
     /**
@@ -52,10 +67,7 @@ public abstract class AbstractController {
      * @return
      */
     public boolean isMobile(Device device) {
-        if (device != null && (device.isMobile() || device.isTablet())) {
-            return true;
-        }
-        return false;
+        return device != null && (device.isMobile() || device.isTablet());
     }
 
     /**

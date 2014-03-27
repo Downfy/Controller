@@ -76,8 +76,12 @@ public class AppApkService {
         return appApkRedisTemplate;
     }
 
-    public AppApkDomain findById(String appId) {
-        return getCacheObject(appId);
+    public AppApkDomain findById(long appId) {
+        return getCacheObject(appId + "");
+    }
+
+    public AppApkDomain findById(String appPackage, String appVersion) {
+        return getCacheObject(appPackage, appVersion);
     }
 
     public List<AppApkDomain> findByApp(long appId) {
@@ -160,8 +164,17 @@ public class AppApkService {
         return false;
     }
 
+    public long getCreater(String appPackage) {
+        return getCreaterByPackage(appPackage);
+    }
+
     public boolean isExsit(long appId) {
         AppApkDomain account = getCacheObject(appId + "");
+        return account != null;
+    }
+
+    public boolean isExsit(String appPackage, String appVersion) {
+        AppApkDomain account = getCacheObject(appPackage, appVersion);
         return account != null;
     }
 
@@ -216,6 +229,8 @@ public class AppApkService {
         try {
             this.logger.debug("Put to cache " + domain);
             this.getLongRedisTemplate().opsForSet().add(AppApkTable.KEY + ":" + appId, domain.getKey());
+            this.getLongRedisTemplate().opsForSet().add(AppApkTable.KEY + ":" + domain.getPackageName(), domain.getCreater() + "");
+            this.getAppApkRedisTemplate().opsForHash().put(AppApkDomain.OBJECT_KEY, domain.getPackageName() + ":" + domain.getVersionName(), domain);
             this.getAppApkRedisTemplate().opsForHash().put(AppApkDomain.OBJECT_KEY, domain.getKey(), domain);
         } catch (Exception ex) {
             this.logger.warn("Can't put data to cache", ex);
@@ -228,6 +243,19 @@ public class AppApkService {
             domain = (AppApkDomain) this.getAppApkRedisTemplate().opsForHash().get(AppApkDomain.OBJECT_KEY, key);
             if (domain == null) {
                 this.logger.debug("App " + key + " object " + AppApkDomain.OBJECT_KEY + " not found");
+            }
+        } catch (NumberFormatException ex) {
+            this.logger.warn("Can't get from Redis", ex);
+        }
+        return domain;
+    }
+
+    private AppApkDomain getCacheObject(String appPackage, String appVersion) {
+        AppApkDomain domain = null;
+        try {
+            domain = (AppApkDomain) this.getAppApkRedisTemplate().opsForHash().get(AppApkDomain.OBJECT_KEY, appPackage + ":" + appVersion);
+            if (domain == null) {
+                this.logger.debug("App " + appPackage + ":" + appVersion + " object " + AppApkDomain.OBJECT_KEY + " not found");
             }
         } catch (NumberFormatException ex) {
             this.logger.warn("Can't get from Redis", ex);
@@ -328,5 +356,17 @@ public class AppApkService {
         } catch (NullPointerException ex) {
         }
         return keys;
+    }
+
+    private long getCreaterByPackage(String appPackage) {
+        try {
+            Set<String> appIds = this.getLongRedisTemplate().opsForSet().members(AppApkTable.KEY + ":" + appPackage);
+            if (null != appIds && !appIds.isEmpty()) {
+                List<String> myList = new ArrayList<String>(appIds);
+                return Long.valueOf(myList.get(0));
+            }
+        } catch (NumberFormatException ex) {
+        }
+        return 0;
     }
 }

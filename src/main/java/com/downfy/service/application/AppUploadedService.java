@@ -83,6 +83,16 @@ public class AppUploadedService {
         return getCacheObjects(appId, type);
     }
 
+    public boolean isExsit(long appId) {
+        AppUploadedDomain account = getCacheObject(appId + "");
+        return account != null;
+    }
+
+    public boolean isExsit(String appPackage, String appVersion) {
+        AppUploadedDomain account = getCacheObject(appPackage + ":" + appVersion);
+        return account != null;
+    }
+
     public boolean save(AppUploadedDomain domain) {
         try {
             putCacheObject(domain, domain.getAppId());

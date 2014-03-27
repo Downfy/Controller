@@ -65,7 +65,7 @@ public class AppCreateController extends AbstractController {
     AppService appService;
 
     private void setApps(Model uiModel) {
-        List<AppDomain> apps = appService.findByDeveloper(getUserId());
+        List<AppDomain> apps = appService.findByDeveloper(getMyId());
         uiModel.addAttribute("apps", apps);
     }
 
@@ -111,12 +111,12 @@ public class AppCreateController extends AbstractController {
         }
         try {
             AppDomain appDomain = domain.toAppDomain();
-            appDomain.setUpdater(getUserId());
+            appDomain.setUpdater(getMyId());
             appDomain.setUpdated(new Date());
             if (appDomain.getAppId() != 0) {
-                appService.updateApp(appDomain, getUserId());
+                appService.updateApp(appDomain, getMyId());
             } else {
-                appDomain.setCreater(getUserId());
+                appDomain.setCreater(getMyId());
                 appDomain.setCreated(new Date());
                 appDomain.setAppId(System.currentTimeMillis());
                 appService.save(appDomain);

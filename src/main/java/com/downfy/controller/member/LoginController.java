@@ -29,9 +29,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 /*
  * MobileLoginController.java
- * 
+ *
  * Mobile login controller
- * 
+ *
  * Modification Logs:
  *  DATE            AUTHOR      DESCRIPTION
  *  --------------------------------------------------------
@@ -41,7 +41,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Controller
 public class LoginController extends AbstractController {
 
-    private Logger logger = LoggerFactory.getLogger(LoginController.class);
+    private final Logger logger = LoggerFactory.getLogger(LoginController.class);
     @Autowired
     MyResourceMessage resourceMessage;
 

@@ -16,12 +16,19 @@
  */
 package com.downfy.controller.member;
 
+import com.downfy.common.ErrorMessage;
+import com.downfy.common.ValidationResponse;
+import com.downfy.controller.AbstractController;
+import com.downfy.controller.MyResourceMessage;
+import com.downfy.form.member.LostPasswordForm;
+import com.downfy.form.validator.member.LostPasswordValidator;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mobile.device.Device;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -29,19 +36,12 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import com.downfy.common.ErrorMessage;
-import com.downfy.common.ValidationResponse;
-import com.downfy.controller.AbstractController;
-import com.downfy.controller.MyResourceMessage;
-import com.downfy.form.member.LostPasswordForm;
-import com.downfy.form.validator.member.LostPasswordValidator;
-import org.springframework.mobile.device.Device;
 
 /*
  * LostPasswordController.java
- * 
+ *
  * Forgot password account controller
- * 
+ *
  * Modification Logs:
  *  DATE            AUTHOR      DESCRIPTION
  *  --------------------------------------------------------
@@ -60,8 +60,6 @@ public class LostPasswordController extends AbstractController {
     @RequestMapping(method = {org.springframework.web.bind.annotation.RequestMethod.GET})
     public String lostPasswordForm(Device device, Model model) {
         model.addAttribute("lostPasswordForm", new LostPasswordForm());
-        model.addAttribute("title", "Quên mật khẩu");
-        model.addAttribute("description", "Bạn quên mật khẩu? Hãy lấy lại mật khẩu của bạn một cách đơn giản.");
         return view(device, "member/lostpassword");
     }
 

@@ -37,6 +37,7 @@ public class AppVersionDomain implements DomainObject {
     private long id;
     private long appId;
     private String appPath;
+    private String appPackage;
     private String appVersion;
     private long appSize;
     private int status;
@@ -66,6 +67,14 @@ public class AppVersionDomain implements DomainObject {
 
     public void setAppPath(String appPath) {
         this.appPath = appPath;
+    }
+
+    public String getAppPackage() {
+        return appPackage;
+    }
+
+    public void setAppPackage(String appPackage) {
+        this.appPackage = appPackage;
     }
 
     public String getAppVersion() {

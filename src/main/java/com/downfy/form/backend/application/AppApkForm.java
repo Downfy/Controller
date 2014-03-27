@@ -91,11 +91,11 @@ public class AppApkForm {
         this.appSize = appSize;
     }
 
-    public AppApkDomain toAppApk(String localPath, AppUploadedDomain uploadedDomain) {
+    public AppApkDomain toAppApk(String localPath, long id, AppUploadedDomain uploadedDomain) {
         ApkMeta apkMeta = Utils.getApkMeta(localPath);
-        if (apkMeta != null) {
+        if (null != apkMeta) {
             AppApkDomain apkDomain = new AppApkDomain();
-            apkDomain.setId(System.currentTimeMillis());
+            apkDomain.setId(id);
             apkDomain.setAppId(uploadedDomain.getAppId());
             apkDomain.setAppPath(uploadedDomain.getAppPath());
             apkDomain.setStatus(AppCommon.CREATED);
@@ -109,21 +109,24 @@ public class AppApkForm {
             apkDomain.setUseFeatures(apkMeta.getUseFeatures());
             apkDomain.setVersionCode(apkMeta.getVersionCode());
             apkDomain.setVersionName(apkMeta.getVersionName());
+            apkDomain.setCreater(uploadedDomain.getCreater());
             return apkDomain;
         }
         return null;
     }
 
-    public AppVersionDomain toAppVersion(String localPath, AppUploadedDomain uploadedDomain) {
+    public AppVersionDomain toAppVersion(String localPath, long id, AppUploadedDomain uploadedDomain) {
         ApkMeta apkMeta = Utils.getApkMeta(localPath);
-        if (apkMeta != null) {
+        if (null != apkMeta) {
             AppVersionDomain versionDomain = new AppVersionDomain();
-            versionDomain.setId(System.currentTimeMillis());
+            versionDomain.setId(id);
             versionDomain.setAppId(uploadedDomain.getAppId());
             versionDomain.setAppPath(uploadedDomain.getAppPath());
             versionDomain.setStatus(AppCommon.CREATED);
+            versionDomain.setAppPackage(apkMeta.getPackageName());
             versionDomain.setAppVersion(apkMeta.getVersionName());
             versionDomain.setCreated(new Date());
+            versionDomain.setCreater(uploadedDomain.getCreater());
             return versionDomain;
         }
         return null;

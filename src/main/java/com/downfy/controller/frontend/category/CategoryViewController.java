@@ -32,9 +32,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 /*
  * CategoryViewController.java
- * 
+ *
  * Category view controller
- * 
+ *
  * Modification Logs:
  *  DATE            AUTHOR      DESCRIPTION
  *  --------------------------------------------------------
@@ -43,7 +43,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Controller
 public class CategoryViewController extends AbstractController {
 
-    private Logger logger = LoggerFactory.getLogger(ApplicationViewController.class);
+    private final Logger logger = LoggerFactory.getLogger(ApplicationViewController.class);
     @Autowired
     MyResourceMessage resourceMessage;
 

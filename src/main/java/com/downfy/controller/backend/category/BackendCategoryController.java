@@ -57,7 +57,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class BackendCategoryController extends AbstractController {
 
-    private Logger logger = LoggerFactory.getLogger(BackendCategoryController.class);
+    private final Logger logger = LoggerFactory.getLogger(BackendCategoryController.class);
     @Autowired
     MyResourceMessage resourceMessage;
     @Autowired

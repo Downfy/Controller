@@ -16,7 +16,6 @@
  */
 package com.downfy.controller.member;
 
-import com.downfy.service.AccountService;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
@@ -50,8 +49,6 @@ public class RegisterController extends AbstractController {
     RegisterValidator validator;
     @Autowired
     MyResourceMessage resourceMessage;
-    @Autowired
-    AccountService accountService;
 
     @RequestMapping(method = {RequestMethod.GET})
     public String registerMemberForm(Device device, Model model) {

@@ -16,12 +16,11 @@
  */
 package com.downfy.controller.backend.admin;
 
+import com.downfy.controller.AbstractController;
 import com.downfy.persistence.domain.AccountDomain;
-import com.downfy.service.AccountService;
 import java.util.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,9 +29,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 /*
  * BackendAccountController.java
- * 
+ *
  * Admin account area controller
- * 
+ *
  * Modification Logs:
  *  DATE            AUTHOR      DESCRIPTION
  *  --------------------------------------------------------
@@ -40,11 +39,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
  */
 @RequestMapping({"/backend/account"})
 @Controller
-public class BackendAccountController {
+public class BackendAccountController extends AbstractController {
 
-    private Logger logger = LoggerFactory.getLogger(BackendAccountController.class);
-    @Autowired
-    private AccountService accountService;
+    private final Logger logger = LoggerFactory.getLogger(BackendAccountController.class);
 
     @PreAuthorize("hasRole('ROLE_MANAGER')")
     @RequestMapping(method = {org.springframework.web.bind.annotation.RequestMethod.GET})
