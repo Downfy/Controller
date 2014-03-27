@@ -15,15 +15,15 @@
  */
 package com.downfy.form.validator.backend.application;
 
-import com.downfy.form.backend.application.AppScreenShootForm;
+import com.downfy.form.backend.application.AppApkForm;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 /*
- * BackendAppVersionValidator.java
+ * BackendAppApkValidator.java
  *
- * Backend app version validator
+ * Backend app apk validator
  *
  * Modification Logs:
  *  DATE            AUTHOR      DESCRIPTION
@@ -31,22 +31,22 @@ import org.springframework.validation.Validator;
  *  16-Mar-2014     tuanta      Create first time
  */
 @Service
-public class BackendAppScreenshootValidator
+public class BackendAppApkValidator
         implements Validator {
 
     @Override
     public boolean supports(Class<?> clazz) {
-        return BackendAppScreenshootValidator.class.equals(clazz);
+        return BackendAppApkValidator.class.equals(clazz);
     }
 
     @Override
     public void validate(Object target, Errors errors) {
-        AppScreenShootForm form = (AppScreenShootForm) target;
+        AppApkForm form = (AppApkForm) target;
         if (form.getAppId() == 0) {
-            errors.rejectValue("appId", "app.screenshootappidnotnull");
+            errors.rejectValue("appId", "app.apkappidnotnull");
         }
-        if (form.getScreenShootId() == 0) {
-            errors.rejectValue("screenshootId", "app.screenshootidnotnull");
+        if (form.getApkId() == 0) {
+            errors.rejectValue("apkId", "app.apkidnotnull");
         }
     }
 }

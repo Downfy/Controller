@@ -16,10 +16,14 @@
  */
 package com.downfy.common;
 
+import java.io.File;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
+import net.dongliu.apk.parser.ApkParser;
+import net.dongliu.apk.parser.bean.ApkMeta;
+import org.apache.commons.io.FileUtils;
 import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 
 /*
@@ -303,5 +307,17 @@ public class Utils {
      */
     public static String folderByCurrentTime() {
         return new SimpleDateFormat("yyyy/MM/dd").format(new Date());
+    }
+
+    public static ApkMeta getApkMeta(String localPath) {
+        try {
+            ApkParser apkParser = new ApkParser(new File(localPath));
+            ApkMeta meta = apkParser.getApkMeta();
+            apkParser.close();
+            return meta;
+        } catch (Exception ex) {
+            FileUtils.deleteQuietly(new File(localPath));
+        }
+        return null;
     }
 }

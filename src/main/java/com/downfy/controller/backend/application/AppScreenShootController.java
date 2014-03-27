@@ -23,12 +23,9 @@ import com.downfy.controller.AbstractController;
 import com.downfy.controller.MyResourceMessage;
 import com.downfy.form.backend.application.AppScreenShootForm;
 import com.downfy.form.validator.backend.application.BackendAppScreenshootValidator;
-import com.downfy.persistence.domain.application.AppDomain;
 import com.downfy.persistence.domain.application.AppUploadedDomain;
 import com.downfy.service.application.AppScreenshootService;
-import com.downfy.service.application.AppService;
 import com.downfy.service.application.AppUploadedService;
-import com.downfy.service.application.AppVersionService;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
@@ -67,10 +64,6 @@ public class AppScreenShootController extends AbstractController {
     BackendAppScreenshootValidator validator;
     @Autowired
     AppUploadedService appUploadedService;
-    @Autowired
-    AppService appService;
-    @Autowired
-    AppVersionService appVersionService;
     @Autowired
     AppScreenshootService appScreenshootService;
 
@@ -122,7 +115,7 @@ public class AppScreenShootController extends AbstractController {
             if (uploadedDomain != null) {
                 appScreenshootService.save(domain.fromAppUploadedDomain(uploadedDomain));
             }
-            return showScreenshoots(domain, uiModel, device);
+            return showScreenshoots(domain);
         } catch (Exception ex) {
             logger.error("Cannot upload screenshoot application.", ex);
         }
@@ -134,19 +127,15 @@ public class AppScreenShootController extends AbstractController {
     public String removeScreenShoot(@ModelAttribute("appScreenShootForm") AppScreenShootForm domain, Device device, HttpServletRequest request, BindingResult bindingResult, Model uiModel) {
         try {
             appScreenshootService.delete(domain.getScreenShootId(), domain.getAppId());
-            return showScreenshoots(domain, uiModel, device);
+            return showScreenshoots(domain);
         } catch (Exception ex) {
             logger.error("Cannot upload screenshoot application.", ex);
         }
         return view(device, "maintenance");
     }
 
-    private String showScreenshoots(AppScreenShootForm domain, Model uiModel, Device device) {
-        appUploadedService.delete(domain.getScreenShootId(), domain.getAppId(), AppCommon.FILE_SCREENSHOOT);
-        AppDomain currentApp = appService.findById(domain.getAppId());
-        uiModel.addAttribute("verifyscreenshoots", appScreenshootService.findByApp(domain.getAppId()));
-        uiModel.addAttribute("app", currentApp);
-        uiModel.addAttribute("screenshoots", appUploadedService.findByType(domain.getAppId(), AppCommon.FILE_SCREENSHOOT));
+    private String showScreenshoots(AppScreenShootForm domain) {
+        appUploadedService.delete(domain.getScreenShootId() + "", domain.getAppId(), AppCommon.FILE_SCREENSHOOT);
         return "redirect:/backend/application/" + domain.getAppId() + "/screenshoots.html";
     }
 }

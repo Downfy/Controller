@@ -18,15 +18,20 @@ package com.downfy.controller.backend.application;
 
 import com.downfy.common.AppCommon;
 import com.downfy.common.ErrorMessage;
+import com.downfy.common.Utils;
 import com.downfy.common.ValidationResponse;
 import com.downfy.controller.AbstractController;
 import com.downfy.controller.MyResourceMessage;
 import com.downfy.form.backend.application.AppApkForm;
-import com.downfy.form.validator.backend.application.BackendAppVersionValidator;
-import com.downfy.persistence.domain.application.AppVersionDomain;
+import com.downfy.form.validator.backend.application.BackendAppApkValidator;
+import com.downfy.persistence.domain.application.AppUploadedDomain;
+import com.downfy.service.application.AppApkService;
+import com.downfy.service.application.AppUploadedService;
 import com.downfy.service.application.AppVersionService;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,14 +65,20 @@ public class AppApkController extends AbstractController {
     @Autowired
     MyResourceMessage resourceMessage;
     @Autowired
-    BackendAppVersionValidator validator;
+    BackendAppApkValidator validator;
+    @Autowired
+    AppUploadedService appUploadedService;
+    @Autowired
+    AppApkService appApkService;
     @Autowired
     AppVersionService appVersionService;
+    @Autowired
+    ServletContext context;
 
     @PreAuthorize("hasRole('ROLE_MANAGER')")
-    @RequestMapping(value = "/json", method = RequestMethod.POST)
+    @RequestMapping(value = "/json/verify", method = RequestMethod.POST)
     @ResponseBody
-    public ValidationResponse createApplicationAjaxJson(@ModelAttribute("appApkForm") AppApkForm domain, HttpServletRequest request, BindingResult bindingResult) {
+    public ValidationResponse verifyApkJson(@ModelAttribute("appApkForm") AppApkForm domain, HttpServletRequest request, BindingResult bindingResult) {
         ValidationResponse res = new ValidationResponse();
         this.validator.validate(domain, bindingResult);
         if (!bindingResult.hasErrors()) {
@@ -85,27 +96,58 @@ public class AppApkController extends AbstractController {
     }
 
     @PreAuthorize("hasRole('ROLE_MANAGER')")
-    @RequestMapping(method = RequestMethod.POST)
-    public String uploadApkApplication(Device device, @ModelAttribute("appApkForm") AppApkForm domain, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
+    @RequestMapping(value = "/json/remove", method = RequestMethod.POST)
+    @ResponseBody
+    public ValidationResponse removeApkJson(@ModelAttribute("appApkForm") AppApkForm domain, HttpServletRequest request, BindingResult bindingResult) {
+        ValidationResponse res = new ValidationResponse();
         this.validator.validate(domain, bindingResult);
-        if (bindingResult.hasErrors()) {
-            uiModel.addAttribute("appApkForm", domain);
-            return view(device, "backend/application/apk");
-        }
-        try {
-            AppVersionDomain appVersionDomain = domain.toAppVersion();
-            logger.debug("Upload apk version " + appVersionDomain.toString());
-            appVersionDomain.setId(System.currentTimeMillis());
-            appVersionDomain.setCreater(getUserId());
-            appVersionDomain.setStatus(AppCommon.CREATED);
-            if (appVersionService.save(appVersionDomain)) {
-                return "redirect:/backend/application/" + domain.getAppId() + "/apk.html";
+        if (!bindingResult.hasErrors()) {
+            res.setStatus("SUCCESS");
+        } else {
+            res.setStatus("FAIL");
+            List<FieldError> allErrors = bindingResult.getFieldErrors();
+            List<ErrorMessage> errorMesages = new ArrayList<ErrorMessage>();
+            for (FieldError objectError : allErrors) {
+                errorMesages.add(new ErrorMessage(objectError.getField(), this.resourceMessage.getMessage(objectError.getCode(), request)));
             }
-        } catch (Exception ex) {
-            logger.error("Upload apk application error.", ex);
+            res.setErrorMessageList(errorMesages);
         }
-        bindingResult.reject("app.appapkuploadfailure");
-        uiModel.addAttribute("appApkForm", domain);
-        return view(device, "backend/application/apk");
+        return res;
+    }
+
+    @PreAuthorize("hasRole('ROLE_MANAGER')")
+    @RequestMapping(value = "/verify", method = RequestMethod.POST)
+    public String verifyApk(@ModelAttribute("appApkForm") AppApkForm domain, Device device, HttpServletRequest request, BindingResult bindingResult, Model uiModel) {
+        try {
+            logger.debug("Verify file apk uploaded " + domain.getAppPackage() + ":" + domain.getAppVersion());
+            AppUploadedDomain uploadedDomain = appUploadedService.findById(domain.getAppPackage(), domain.getAppVersion());
+            if (uploadedDomain != null) {
+                File f = new File(context.getRealPath("/"));
+                String localPath = f.getCanonicalPath() + File.separator + Utils.toMd5("data")
+                        + uploadedDomain.getAppPath();
+                appVersionService.save(domain.toAppVersion(localPath, uploadedDomain));
+                appApkService.save(domain.toAppApk(localPath, uploadedDomain));
+                appUploadedService.delete(uploadedDomain.getKey(), domain.getAppId(), AppCommon.FILE_APK);
+            }
+            return "redirect:/backend/application/" + domain.getAppId() + "/apk.html";
+        } catch (Exception ex) {
+            logger.error("Cannot upload screenshoot application.", ex);
+        }
+        return view(device, "maintenance");
+    }
+
+    @PreAuthorize("hasRole('ROLE_MANAGER')")
+    @RequestMapping(value = "/remove", method = RequestMethod.POST)
+    public String removeApk(@ModelAttribute("appApkForm") AppApkForm domain, Device device, HttpServletRequest request, BindingResult bindingResult, Model uiModel) {
+        try {
+            logger.debug("Remove file apk uploaded " + domain.getAppPackage() + ":" + domain.getAppVersion());
+            appVersionService.delete(domain.getApkId(), domain.getAppId());
+            appUploadedService.delete(domain.getAppPackage() + ":" + domain.getAppVersion(), domain.getAppId(), AppCommon.FILE_APK);
+            appApkService.delete(domain.getApkId(), domain.getAppId());
+            return "redirect:/backend/application/" + domain.getAppId() + "/apk.html";
+        } catch (Exception ex) {
+            logger.error("Cannot upload screenshoot application.", ex);
+        }
+        return view(device, "maintenance");
     }
 }

@@ -22,16 +22,22 @@ package com.downfy.common;
  */
 public class AppCommon {
 
+    //App status
     public static final byte DELETED = 0;
     public static final byte BLOCKED = 1;
     public static final byte CREATED = 2;
     public static final byte PENDING = 3;
     public static final byte PUBLISHED = 4;
-
+    //File upload type
     public static final byte FILE_APK = 1;
     public static final byte FILE_SCREENSHOOT = 2;
     public static final byte FILE_ICON = 0;
-
+    //Upload apk status
+    public static final byte UPLOAD_SUCCESS = 0;
+    public static final byte UPLOAD_FAILRE = 1;
+    public static final byte UPLOAD_FILE_EXIST = 2;
+    public static final byte UPLOAD_FILE_NOT_SUPPORT = 3;
+    //
     public static final String CATEGORY_APPLICATION = "APPLICATION";
     public static final String CATEGORY_GAME = "GAME";
 }

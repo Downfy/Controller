@@ -17,9 +17,10 @@
 package com.downfy.service.application;
 
 import com.downfy.common.AppCommon;
-import com.downfy.persistence.domain.application.AppScreenshootDomain;
-import com.downfy.persistence.repositories.application.AppScreenshootRepository;
-import com.downfy.persistence.table.AppScreenshootTable;
+import com.downfy.persistence.domain.application.AppApkDomain;
+import com.downfy.persistence.domain.application.AppVersionDomain;
+import com.downfy.persistence.repositories.application.AppVersionRepository;
+import com.downfy.persistence.table.AppApkTable;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,9 +37,9 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 /*
- * AppScreenshootService.java
+ * AppApkService.java
  *
- * App screen shoot service
+ * App apk service
  *
  * Modification Logs:
  *  DATE            AUTHOR      DESCRIPTION
@@ -47,14 +48,14 @@ import org.springframework.stereotype.Service;
  *  20-Dec-2013     tuanta      Add Developer<->App Version
  */
 @Service
-public class AppScreenshootService {
+public class AppApkService {
 
-    private final Logger logger = LoggerFactory.getLogger(AppScreenshootService.class);
+    private final Logger logger = LoggerFactory.getLogger(AppApkService.class);
     @Autowired
-    AppScreenshootRepository repository;
+    AppVersionRepository repository;
     @Autowired
     private JedisConnectionFactory jedisConnectionFactory;
-    private RedisTemplate<String, AppScreenshootDomain> appScreenshootRedisTemplate;
+    private RedisTemplate<String, AppApkDomain> appApkRedisTemplate;
     private RedisTemplate<String, String> longRedisTemplate;
 
     public RedisTemplate<String, String> getLongRedisTemplate() {
@@ -66,29 +67,38 @@ public class AppScreenshootService {
         return longRedisTemplate;
     }
 
-    public RedisTemplate<String, AppScreenshootDomain> getAppScreenshootRedisTemplate() {
-        if (appScreenshootRedisTemplate == null) {
-            this.appScreenshootRedisTemplate = new RedisTemplate<String, AppScreenshootDomain>();
-            this.appScreenshootRedisTemplate.setConnectionFactory(jedisConnectionFactory);
-            this.appScreenshootRedisTemplate.afterPropertiesSet();
+    public RedisTemplate<String, AppApkDomain> getAppApkRedisTemplate() {
+        if (appApkRedisTemplate == null) {
+            this.appApkRedisTemplate = new RedisTemplate<String, AppApkDomain>();
+            this.appApkRedisTemplate.setConnectionFactory(jedisConnectionFactory);
+            this.appApkRedisTemplate.afterPropertiesSet();
         }
-        return appScreenshootRedisTemplate;
+        return appApkRedisTemplate;
     }
 
-    public List<AppScreenshootDomain> findByApp(long appId) {
-        List<AppScreenshootDomain> apps = new ArrayList<AppScreenshootDomain>();
+    public AppApkDomain findById(String appId) {
+        return getCacheObject(appId);
+    }
+
+    public List<AppApkDomain> findByApp(long appId) {
+        List<AppApkDomain> apps = new ArrayList<AppApkDomain>();
         try {
             apps = getCacheObjects(appId);
             if (apps.isEmpty()) {
-                apps = this.repository.findByApp(appId);
+                List<AppVersionDomain> apps_ = this.repository.findByApp(appId);
+                for (AppVersionDomain appVersionDomain : apps_) {
+                    AppApkDomain apkDomain = new AppApkDomain();
+                    apkDomain.fromAppVersion(appVersionDomain);
+                    apps.add(apkDomain);
+                }
                 if (!apps.isEmpty()) {
                     setCacheObjects(apps);
                 }
             }
         } catch (Exception ex) {
-            this.logger.error("Find all app screen shoot of app " + appId + " error: " + ex, ex);
+            this.logger.error("Find all app apk of app " + appId + " error: " + ex, ex);
         }
-        this.logger.info("Total get " + apps.size() + " app screen shoot of app " + appId + ".");
+        this.logger.info("Total get " + apps.size() + " app apk of app " + appId + ".");
         return apps;
     }
 
@@ -104,63 +114,63 @@ public class AppScreenshootService {
      */
     public boolean publish(long key) {
         try {
-            AppScreenshootDomain app = getCacheObject(key + "");
+            AppApkDomain app = getCacheObject(key + "");
             if (app != null) {
                 app.setStatus(AppCommon.PUBLISHED);
                 putCacheObject(app, app.getAppId());
                 this.repository.publish(key);
-                this.logger.info("Publish success app screen shoot " + key);
+                this.logger.info("Publish success app apk " + key);
                 return true;
             }
         } catch (Exception ex) {
-            this.logger.error("Can't publish app screen shoot " + key, ex);
+            this.logger.error("Can't publish app apk " + key, ex);
         }
         return false;
     }
 
     public boolean approve(long key) {
         try {
-            AppScreenshootDomain app = getCacheObject(key + "");
+            AppApkDomain app = getCacheObject(key + "");
             if (app != null) {
                 app.setStatus(AppCommon.PENDING);
                 putCacheObject(app, app.getAppId());
                 this.repository.publish(key);
-                this.logger.info("Approve success app screen shoot " + key);
+                this.logger.info("Approve success app apk " + key);
                 return true;
             }
         } catch (Exception ex) {
-            this.logger.error("Can't approve app screen shoot " + key, ex);
+            this.logger.error("Can't approve app apk " + key, ex);
         }
         return false;
     }
 
     public boolean block(long key) {
         try {
-            AppScreenshootDomain app = getCacheObject(key + "");
+            AppApkDomain app = getCacheObject(key + "");
             if (app != null) {
                 app.setStatus(AppCommon.BLOCKED);
                 putCacheObject(app, app.getAppId());
                 this.repository.block(key);
-                this.logger.info("Block success app screen shoot " + key);
+                this.logger.info("Block success app apk " + key);
                 return true;
             }
         } catch (Exception ex) {
-            this.logger.error("Can't block app screen shoot " + key, ex);
+            this.logger.error("Can't block app apk " + key, ex);
         }
         return false;
     }
 
     public boolean isExsit(long appId) {
-        AppScreenshootDomain account = getCacheObject(appId + "");
+        AppApkDomain account = getCacheObject(appId + "");
         return account != null;
     }
 
     public long count(long appId) {
         try {
             long count = countCacheObject(appId);
-            this.logger.info("Total " + count + " app screen shoot of app " + appId);
+            this.logger.info("Total " + count + " app apk of app " + appId);
         } catch (Exception ex) {
-            this.logger.error("Count total app screen shoot of app " + appId + " error.", ex);
+            this.logger.error("Count total app apk of app " + appId + " error.", ex);
         }
         return 0;
     }
@@ -168,20 +178,19 @@ public class AppScreenshootService {
     public long count() {
         try {
             long count = countCacheObject();
-            this.logger.info("Total " + count + " app screen shoot");
+            this.logger.info("Total " + count + " app apk");
         } catch (Exception ex) {
-            this.logger.error("Count total app screen shoot error.", ex);
+            this.logger.error("Count total app apk error.", ex);
         }
         return 0;
     }
 
-    public boolean save(AppScreenshootDomain domain) {
+    public boolean save(AppApkDomain domain) {
         try {
-            this.repository.save(domain);
             putCacheObject(domain, domain.getAppId());
             return true;
         } catch (Exception ex) {
-            this.logger.error("Can't save app screen shoot " + domain, ex);
+            this.logger.error("Can't save app apk " + domain, ex);
         }
 
         return false;
@@ -191,37 +200,34 @@ public class AppScreenshootService {
         try {
             removeCacheObject(key + "", appId);
             this.repository.delete(key);
-            AppScreenshootDomain domain = getCacheObject(key + "");
+            AppApkDomain domain = getCacheObject(key + "");
             if (domain != null) {
-                FileUtils.deleteQuietly(new File(domain.getAppScreenShoot()));
+                FileUtils.deleteQuietly(new File(domain.getAppPath()));
             }
-            this.logger.info("Delete success app screen shoot " + key);
+            this.logger.info("Delete success app apk " + key);
         } catch (Exception ex) {
-            this.logger.error("Can't delete app screen shoot " + key, ex);
+            this.logger.error("Can't delete app apk " + key, ex);
             return false;
         }
         return true;
     }
 
-    private void putCacheObject(AppScreenshootDomain domain, long appId) {
+    private void putCacheObject(AppApkDomain domain, long appId) {
         try {
             this.logger.debug("Put to cache " + domain);
-            this.getLongRedisTemplate().opsForSet().add(AppScreenshootTable.KEY + ":" + appId, domain.getKey());
-            this.getAppScreenshootRedisTemplate().opsForHash().put(AppScreenshootDomain.OBJECT_KEY, domain.getKey(), domain);
+            this.getLongRedisTemplate().opsForSet().add(AppApkTable.KEY + ":" + appId, domain.getKey());
+            this.getAppApkRedisTemplate().opsForHash().put(AppApkDomain.OBJECT_KEY, domain.getKey(), domain);
         } catch (Exception ex) {
             this.logger.warn("Can't put data to cache", ex);
         }
     }
 
-    private AppScreenshootDomain getCacheObject(String key) {
-        AppScreenshootDomain domain = null;
+    private AppApkDomain getCacheObject(String key) {
+        AppApkDomain domain = null;
         try {
-            domain = (AppScreenshootDomain) this.getAppScreenshootRedisTemplate().opsForHash().get(AppScreenshootDomain.OBJECT_KEY, key);
+            domain = (AppApkDomain) this.getAppApkRedisTemplate().opsForHash().get(AppApkDomain.OBJECT_KEY, key);
             if (domain == null) {
-                domain = repository.findById(Long.valueOf(key));
-                if (domain == null) {
-                    this.logger.debug("App " + key + " object " + AppScreenshootDomain.OBJECT_KEY + " not found");
-                }
+                this.logger.debug("App " + key + " object " + AppApkDomain.OBJECT_KEY + " not found");
             }
         } catch (NumberFormatException ex) {
             this.logger.warn("Can't get from Redis", ex);
@@ -231,85 +237,85 @@ public class AppScreenshootService {
 
     private void removeCacheObject(String key, long appId) {
         try {
-            this.logger.debug("Remove key " + key + " object " + AppScreenshootDomain.OBJECT_KEY + " in cache");
-            this.getAppScreenshootRedisTemplate().opsForHash().delete(AppScreenshootDomain.OBJECT_KEY, key);
-            this.getLongRedisTemplate().opsForSet().remove(AppScreenshootTable.KEY + ":" + appId, key);
+            this.logger.debug("Remove key " + key + " object " + AppApkDomain.OBJECT_KEY + " in cache");
+            this.getAppApkRedisTemplate().opsForHash().delete(AppApkDomain.OBJECT_KEY, key);
+            this.getLongRedisTemplate().opsForSet().remove(AppApkTable.KEY + ":" + appId, key);
         } catch (Exception ex) {
             this.logger.warn("Can't remove from Redis", ex);
         }
     }
 
-    private List<AppScreenshootDomain> getCacheObjects() {
-        List<AppScreenshootDomain> apps = new ArrayList<AppScreenshootDomain>();
+    private List<AppApkDomain> getCacheObjects() {
+        List<AppApkDomain> apps = new ArrayList<AppApkDomain>();
         try {
-            for (Object user : this.getAppScreenshootRedisTemplate().opsForHash().values(AppScreenshootDomain.OBJECT_KEY)) {
-                apps.add((AppScreenshootDomain) user);
+            for (Object user : this.getAppApkRedisTemplate().opsForHash().values(AppApkDomain.OBJECT_KEY)) {
+                apps.add((AppApkDomain) user);
             }
         } catch (Exception ex) {
-            this.logger.warn("Can't get all objects " + AppScreenshootDomain.OBJECT_KEY + " from Redis", ex);
+            this.logger.warn("Can't get all objects " + AppApkDomain.OBJECT_KEY + " from Redis", ex);
         }
         return apps;
     }
 
-    private List<AppScreenshootDomain> getCacheObjects(long appId) {
+    private List<AppApkDomain> getCacheObjects(long appId) {
         Collection<Object> keys = getKeys(appId);
-        List<AppScreenshootDomain> apps = new ArrayList<AppScreenshootDomain>();
+        List<AppApkDomain> apps = new ArrayList<AppApkDomain>();
         try {
-            for (Object user : this.getAppScreenshootRedisTemplate().opsForHash().multiGet(AppScreenshootDomain.OBJECT_KEY, keys)) {
-                apps.add((AppScreenshootDomain) user);
+            for (Object user : this.getAppApkRedisTemplate().opsForHash().multiGet(AppApkDomain.OBJECT_KEY, keys)) {
+                apps.add((AppApkDomain) user);
             }
         } catch (Exception ex) {
-            this.logger.warn("Can't get all objects " + AppScreenshootDomain.OBJECT_KEY + " from Redis", ex);
+            this.logger.warn("Can't get all objects " + AppApkDomain.OBJECT_KEY + " from Redis", ex);
         }
         return apps;
     }
 
     private long countCacheObject() {
         try {
-            this.logger.debug("Count objects " + AppScreenshootDomain.OBJECT_KEY + " in cache");
-            return this.getAppScreenshootRedisTemplate().opsForHash().size(AppScreenshootDomain.OBJECT_KEY);
+            this.logger.debug("Count objects " + AppApkDomain.OBJECT_KEY + " in cache");
+            return this.getAppApkRedisTemplate().opsForHash().size(AppApkDomain.OBJECT_KEY);
         } catch (Exception ex) {
-            this.logger.warn("Can't count objects " + AppScreenshootDomain.OBJECT_KEY + " from Redis", ex);
+            this.logger.warn("Can't count objects " + AppApkDomain.OBJECT_KEY + " from Redis", ex);
         }
         return 0;
     }
 
     private long countCacheObject(long appId) {
         try {
-            this.logger.debug("Count objects " + AppScreenshootDomain.OBJECT_KEY + " in cache");
-            return this.getLongRedisTemplate().opsForSet().size(AppScreenshootTable.KEY + ":" + appId);
+            this.logger.debug("Count objects " + AppApkDomain.OBJECT_KEY + " in cache");
+            return this.getLongRedisTemplate().opsForSet().size(AppApkTable.KEY + ":" + appId);
         } catch (Exception ex) {
-            this.logger.warn("Can't count objects " + AppScreenshootDomain.OBJECT_KEY + " from Redis", ex);
+            this.logger.warn("Can't count objects " + AppApkDomain.OBJECT_KEY + " from Redis", ex);
         }
         return 0;
     }
 
-    private void setCacheObjects(List<AppScreenshootDomain> domains) {
+    private void setCacheObjects(List<AppApkDomain> domains) {
         try {
-            for (AppScreenshootDomain domain : domains) {
+            for (AppApkDomain domain : domains) {
                 putCacheObject(domain, domain.getAppId());
             }
         } catch (Exception ex) {
-            this.logger.warn("Can't set objects " + AppScreenshootDomain.OBJECT_KEY + " to Redis", ex);
+            this.logger.warn("Can't set objects " + AppApkDomain.OBJECT_KEY + " to Redis", ex);
         }
     }
 
     public void clearCache(long appId) {
         try {
-            this.logger.debug("Clear objects " + AppScreenshootDomain.OBJECT_KEY + " in cache");
-            List<AppScreenshootDomain> objects = getCacheObjects();
-            for (AppScreenshootDomain appVersionDomain : objects) {
+            this.logger.debug("Clear objects " + AppApkDomain.OBJECT_KEY + " in cache");
+            List<AppApkDomain> objects = getCacheObjects();
+            for (AppApkDomain appVersionDomain : objects) {
                 removeCacheObject(appVersionDomain.getKey(), appId);
             }
         } catch (Exception ex) {
-            this.logger.warn("Can't count objects " + AppScreenshootDomain.OBJECT_KEY + " from Redis", ex);
+            this.logger.warn("Can't count objects " + AppApkDomain.OBJECT_KEY + " from Redis", ex);
         }
     }
 
     private Collection<Object> getKeys(long appId) {
         Collection<Object> keys = new ArrayList<Object>();
         try {
-            Set<String> appIds = this.getLongRedisTemplate().opsForSet().members(AppScreenshootTable.KEY + ":" + appId);
+            Set<String> appIds = this.getLongRedisTemplate().opsForSet().members(AppApkTable.KEY + ":" + appId);
             List<String> myList = new ArrayList<String>(appIds);
             Collections.sort(myList, new Comparator<String>() {
                 @Override

@@ -16,7 +16,6 @@
  */
 package com.downfy.controller.backend.application;
 
-import com.downfy.common.AndroidUtils;
 import com.downfy.common.AppCommon;
 import com.downfy.common.Utils;
 import com.downfy.controller.AbstractController;
@@ -30,6 +29,7 @@ import com.downfy.persistence.domain.application.AppDomain;
 import com.downfy.persistence.domain.application.AppUploadedDomain;
 import com.downfy.persistence.domain.application.AppVersionDomain;
 import com.downfy.persistence.domain.category.CategoryDomain;
+import com.downfy.service.application.AppApkService;
 import com.downfy.service.application.AppScreenshootService;
 import com.downfy.service.application.AppService;
 import com.downfy.service.application.AppUploadedService;
@@ -49,6 +49,8 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import net.coobird.thumbnailator.Thumbnails;
 import net.coobird.thumbnailator.geometry.Positions;
+import net.dongliu.apk.parser.bean.ApkMeta;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,6 +94,8 @@ public class AppController extends AbstractController {
     AppScreenshootService appScreenshootService;
     @Autowired
     AppUploadedService appUploadedService;
+    @Autowired
+    AppApkService appApkService;
     @Autowired
     CategoryService categoryService;
     @Autowired
@@ -145,6 +149,8 @@ public class AppController extends AbstractController {
                 apps.add(appVersionDownloadForm);
             }
             uiModel.addAttribute("apps", apps);
+            uiModel.addAttribute("apks", appApkService.findByApp(appId));
+            uiModel.addAttribute("files", appUploadedService.findByType(appId, AppCommon.FILE_APK));
             return view(device, "backend/application/apk");
         } catch (Exception ex) {
             logger.error("Cannot upload application.", ex);
@@ -218,6 +224,7 @@ public class AppController extends AbstractController {
                 logger.debug("Don't support format icon content type: " + mpf.getContentType());
                 fileMeta.setFileName("");
                 fileMeta.setFileSize(0);
+                fileMeta.setFileStatus(AppCommon.UPLOAD_FAILRE);
             }
             fileMeta.setFileType(mpf.getContentType());
         } catch (IOException ex) {
@@ -231,40 +238,57 @@ public class AppController extends AbstractController {
     public AppFileMetaDomain apk(@PathVariable("id") long appId, MultipartHttpServletRequest request, Device device, Model uiModel) {
         MultipartFile mpf = request.getFile("appAPKFile");
         AppFileMetaDomain fileMeta = new AppFileMetaDomain();
-        try {
-            if (Objects.equal("application/vnd.android.package-archive", mpf.getContentType())
-                    || Objects.equal("application/octet-stream", mpf.getContentType())) {
-                String appIconName = Utils.toMd5(System.currentTimeMillis() + "");
-                // copy file to local disk (make sure the path "e.g. D:/temp/files" exists)
-                File f = new File(context.getRealPath("/"));
-                String absolutePath = File.separator + "apk"
-                        + File.separator + Utils.folderByCurrentTime()
-                        + File.separator + Utils.toMd5(getUsername())
-                        + File.separator + appIconName + ".apk";
+        if (Objects.equal("application/vnd.android.package-archive", mpf.getContentType())
+                || Objects.equal("application/octet-stream", mpf.getContentType())) {
+            String appIconName = Utils.toMd5(System.currentTimeMillis() + "");
+            // copy file to local disk (make sure the path "e.g. D:/temp/files" exists)
+            File f = new File(context.getRealPath("/"));
+            String absolutePath = File.separator + "apk"
+                    + File.separator + Utils.folderByCurrentTime()
+                    + File.separator + Utils.toMd5(getUsername())
+                    + File.separator + appIconName + ".apk";
+
+            //Create new fileMeta
+            fileMeta.setFileName(absolutePath);
+            fileMeta.setFileSize(mpf.getSize());
+
+            try {
                 String localPath = f.getCanonicalPath() + File.separator + Utils.toMd5("data")
                         + absolutePath;
                 f = new File(localPath);
                 Files.createParentDirs(f);
+
                 logger.debug("Create app apk " + localPath);
                 FileCopyUtils.copy(mpf.getInputStream(), new FileOutputStream(localPath));
-                //Create new fileMeta
-                fileMeta.setFileName(absolutePath);
-                fileMeta.setFileSize(mpf.getSize());
 
-                AndroidUtils.getVersionFileApk(localPath);
+                ApkMeta apkMeta = Utils.getApkMeta(localPath);
+                if (apkMeta != null) {
+                    fileMeta.setFileVersion(apkMeta.getVersionName());
+                    fileMeta.setFilePackage(apkMeta.getPackageName());
 
-                //Save info of file uploaded
-                saveUploadFile(appId, mpf.getSize(), absolutePath, AppCommon.FILE_APK);
-
-            } else {
-                logger.debug("Don't support format apk content type: " + mpf.getContentType());
-                fileMeta.setFileName("");
-                fileMeta.setFileSize(0);
+                    AppUploadedDomain uploadedDomain = appUploadedService.findById(apkMeta.getPackageName(), apkMeta.getVersionName());
+                    if (uploadedDomain == null) {
+                        //Save info of file uploaded
+                        saveUploadFile(appId, apkMeta.getVersionName(), apkMeta.getPackageName(), mpf.getSize(), absolutePath, AppCommon.FILE_APK);
+                    } else {
+                        fileMeta.setFileStatus(AppCommon.UPLOAD_FILE_EXIST);
+                    }
+                } else {
+                    fileMeta.setFileStatus(AppCommon.UPLOAD_FILE_NOT_SUPPORT);
+                    logger.debug("File uploaded not support");
+                }
+            } catch (Exception ex) {
+                FileUtils.deleteQuietly(f);
+                fileMeta.setFileStatus(AppCommon.UPLOAD_FAILRE);
+                logger.error("Can't upload apk application.", ex);
             }
-            fileMeta.setFileType(mpf.getContentType());
-        } catch (IOException ex) {
-            logger.error("Cannot upload apk application.", ex);
+        } else {
+            logger.debug("Don't support format apk content type: " + mpf.getContentType());
+            fileMeta.setFileName("");
+            fileMeta.setFileSize(0);
         }
+        fileMeta.setFileType(mpf.getContentType());
+
         return fileMeta;
     }
 
@@ -324,6 +348,7 @@ public class AppController extends AbstractController {
                     //2.4 add to files
                     files.add(fileMeta);
                 } catch (Exception ex) {
+                    FileUtils.deleteQuietly(f);
                     logger.error("Cannot upload screenshoot application.", ex);
                 }
             } else {
@@ -351,6 +376,21 @@ public class AppController extends AbstractController {
         appUploadDomain.setCreated(new Date());
         appUploadDomain.setType(type);
         appUploadDomain.setSize(size);
+
+        appUploadedService.save(appUploadDomain);
+    }
+
+    private void saveUploadFile(long appId, String appVersion, String appPackage, long size, String absolutePath, int type) {
+        AppUploadedDomain appUploadDomain = new AppUploadedDomain();
+        appUploadDomain.setId(System.currentTimeMillis());
+        appUploadDomain.setAppId(appId);
+        appUploadDomain.setAppPath(absolutePath);
+        appUploadDomain.setCreater(getUserId());
+        appUploadDomain.setCreated(new Date());
+        appUploadDomain.setType(type);
+        appUploadDomain.setSize(size);
+        appUploadDomain.setAppVersion(appVersion);
+        appUploadDomain.setAppPackage(appPackage);
 
         appUploadedService.save(appUploadDomain);
     }

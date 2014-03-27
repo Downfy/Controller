@@ -23,7 +23,10 @@ public class AppFileMetaDomain {
 
     private String fileName;
     private long fileSize;
+    private String fileVersion;
+    private String filePackage;
     private String fileType;
+    private int fileSatus;
     private byte[] bytes;
 
     public String getFileName() {
@@ -42,6 +45,30 @@ public class AppFileMetaDomain {
         this.fileSize = fileSize;
     }
 
+    public String getFileVersion() {
+        return fileVersion;
+    }
+
+    public void setFileVersion(String fileVersion) {
+        this.fileVersion = fileVersion;
+    }
+
+    public String getFilePackage() {
+        return filePackage;
+    }
+
+    public void setFilePackage(String filePackage) {
+        this.filePackage = filePackage;
+    }
+
+    public int getFileStatus() {
+        return fileSatus;
+    }
+
+    public void setFileStatus(int fileSatus) {
+        this.fileSatus = fileSatus;
+    }
+
     public String getFileType() {
         return fileType;
     }
@@ -57,5 +84,4 @@ public class AppFileMetaDomain {
     public void setBytes(byte[] bytes) {
         this.bytes = bytes;
     }
-
 }

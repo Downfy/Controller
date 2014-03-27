@@ -215,12 +215,9 @@ public class AppVersionService {
         return false;
     }
 
-    public boolean delete(long key, long developerId) {
+    public boolean delete(long key, long appId) {
         try {
-            this.logger.info("Delete app version " + key);
-            this.logger.debug("Delete in cache.");
-            removeCacheObject(key + "", developerId);
-            this.logger.debug("Delete in database.");
+            removeCacheObject(key + "", appId);
             this.repository.delete(key);
             this.logger.info("Delete success app version " + key);
         } catch (Exception ex) {

@@ -75,6 +75,10 @@ public class AppUploadedService {
         return getCacheObject(id + "");
     }
 
+    public AppUploadedDomain findById(String appPackage, String appVersion) {
+        return getCacheObject(appPackage + ":" + appVersion);
+    }
+
     public List<AppUploadedDomain> findByType(long appId, int type) {
         return getCacheObjects(appId, type);
     }
@@ -90,10 +94,10 @@ public class AppUploadedService {
         return false;
     }
 
-    public boolean delete(long key, long appId, int type) {
+    public boolean delete(String key, long appId, int type) {
         try {
             this.logger.info("Delete app uploaded " + key);
-            AppUploadedDomain domain = getCacheObject(key + "");
+            AppUploadedDomain domain = getCacheObject(key);
             if (domain != null) {
                 FileUtils.deleteQuietly(new File(domain.getAppPath()));
             }

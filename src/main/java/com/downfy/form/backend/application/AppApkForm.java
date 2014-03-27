@@ -16,7 +16,13 @@
  */
 package com.downfy.form.backend.application;
 
+import com.downfy.common.AppCommon;
+import com.downfy.common.Utils;
+import com.downfy.persistence.domain.application.AppApkDomain;
+import com.downfy.persistence.domain.application.AppUploadedDomain;
 import com.downfy.persistence.domain.application.AppVersionDomain;
+import java.util.Date;
+import net.dongliu.apk.parser.bean.ApkMeta;
 
 /*
  * AppApkForm.java
@@ -30,10 +36,20 @@ import com.downfy.persistence.domain.application.AppVersionDomain;
  */
 public class AppApkForm {
 
+    private long apkId;
     private long appId;
     private String appVersion;
+    private String appPackage;
     private String appPath;
     private long appSize;
+
+    public long getApkId() {
+        return apkId;
+    }
+
+    public void setApkId(long apkId) {
+        this.apkId = apkId;
+    }
 
     public long getAppId() {
         return appId;
@@ -49,6 +65,14 @@ public class AppApkForm {
 
     public void setAppVersion(String appVersion) {
         this.appVersion = appVersion;
+    }
+
+    public String getAppPackage() {
+        return appPackage;
+    }
+
+    public void setAppPackage(String appPackage) {
+        this.appPackage = appPackage;
     }
 
     public String getAppPath() {
@@ -67,13 +91,41 @@ public class AppApkForm {
         this.appSize = appSize;
     }
 
-    public AppVersionDomain toAppVersion() {
-        AppVersionDomain versionDomain = new AppVersionDomain();
-        versionDomain.setAppId(getAppId());
-        versionDomain.setAppPath(getAppPath());
-        versionDomain.setAppSize(getAppSize());
-        versionDomain.setAppVersion(getAppVersion());
-        return versionDomain;
+    public AppApkDomain toAppApk(String localPath, AppUploadedDomain uploadedDomain) {
+        ApkMeta apkMeta = Utils.getApkMeta(localPath);
+        if (apkMeta != null) {
+            AppApkDomain apkDomain = new AppApkDomain();
+            apkDomain.setId(System.currentTimeMillis());
+            apkDomain.setAppId(uploadedDomain.getAppId());
+            apkDomain.setAppPath(uploadedDomain.getAppPath());
+            apkDomain.setStatus(AppCommon.CREATED);
+            apkDomain.setGlEsVersion(apkMeta.getGlEsVersion());
+            apkDomain.setLabel(apkMeta.getLabel());
+            apkDomain.setMaxSdkVersion(apkMeta.getMaxSdkVersion());
+            apkDomain.setMinSdkVersion(apkMeta.getMinSdkVersion());
+            apkDomain.setTargetSdkVersion(apkMeta.getTargetSdkVersion());
+            apkDomain.setPackageName(apkMeta.getPackageName());
+            apkDomain.setPermissions(apkMeta.getPermissions());
+            apkDomain.setUseFeatures(apkMeta.getUseFeatures());
+            apkDomain.setVersionCode(apkMeta.getVersionCode());
+            apkDomain.setVersionName(apkMeta.getVersionName());
+            return apkDomain;
+        }
+        return null;
     }
 
+    public AppVersionDomain toAppVersion(String localPath, AppUploadedDomain uploadedDomain) {
+        ApkMeta apkMeta = Utils.getApkMeta(localPath);
+        if (apkMeta != null) {
+            AppVersionDomain versionDomain = new AppVersionDomain();
+            versionDomain.setId(System.currentTimeMillis());
+            versionDomain.setAppId(uploadedDomain.getAppId());
+            versionDomain.setAppPath(uploadedDomain.getAppPath());
+            versionDomain.setStatus(AppCommon.CREATED);
+            versionDomain.setAppVersion(apkMeta.getVersionName());
+            versionDomain.setCreated(new Date());
+            return versionDomain;
+        }
+        return null;
+    }
 }

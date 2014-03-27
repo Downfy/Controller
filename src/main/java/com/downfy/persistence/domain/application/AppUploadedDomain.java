@@ -19,6 +19,7 @@ package com.downfy.persistence.domain.application;
 import com.downfy.common.ObjectKey;
 import com.downfy.persistence.domain.DomainObject;
 import com.google.api.client.repackaged.com.google.common.base.Objects;
+import com.google.api.client.repackaged.com.google.common.base.Strings;
 import java.util.Date;
 
 /*
@@ -37,6 +38,8 @@ public class AppUploadedDomain implements DomainObject {
     private long id;
     private long appId;
     private String appPath;
+    private String appVersion;
+    private String appPackage;
     private long size;
     private int type;
     private Date created;
@@ -64,6 +67,22 @@ public class AppUploadedDomain implements DomainObject {
 
     public void setAppPath(String appPath) {
         this.appPath = appPath;
+    }
+
+    public String getAppVersion() {
+        return appVersion;
+    }
+
+    public void setAppVersion(String appVersion) {
+        this.appVersion = appVersion;
+    }
+
+    public String getAppPackage() {
+        return appPackage;
+    }
+
+    public void setAppPackage(String appPackage) {
+        this.appPackage = appPackage;
     }
 
     public int getType() {
@@ -109,7 +128,10 @@ public class AppUploadedDomain implements DomainObject {
 
     @Override
     public String getKey() {
-        return getId() + "";
+        if (Strings.isNullOrEmpty(getAppPackage()) || Strings.isNullOrEmpty(getAppVersion())) {
+            return getId() + "";
+        }
+        return getAppPackage() + ":" + getAppVersion();
     }
 
     @Override
