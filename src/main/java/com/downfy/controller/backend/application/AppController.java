@@ -284,23 +284,15 @@ public class AppController extends AbstractController {
                 if (apkMeta != null) {
                     fileMeta.setFileVersion(apkMeta.getVersionName());
                     fileMeta.setFilePackage(apkMeta.getPackageName());
-
-                    long creater = appApkService.getCreater(apkMeta.getPackageName());
-                    if (creater == 0) {
-                        if (appUploadedService.isExsit(apkMeta.getPackageName(), apkMeta.getVersionName())) {
-                            fileMeta.setFileStatus(AppCommon.UPLOAD_FILE_EXIST);
+                    AppDomain appDomain = appService.findById(apkMeta.getPackageName());
+                    if (appDomain != null) {
+                        if (appDomain.getCreater() == getMyId()) {
+                            checkFileApkUploaded(apkMeta, fileMeta, appId, mpf, localPath, absolutePath);
                         } else {
-                            //Save info of file uploaded
-                            saveUploadFile(appId, apkMeta.getVersionName(), apkMeta.getPackageName(), mpf.getSize(), localPath, absolutePath, AppCommon.FILE_APK);
-                        }
-                    } else if (getMyId() == creater) {
-                        if (!appApkService.isExsit(apkMeta.getPackageName(), apkMeta.getVersionName())) {
-                            saveUploadFile(appId, apkMeta.getVersionName(), apkMeta.getPackageName(), mpf.getSize(), localPath, absolutePath, AppCommon.FILE_APK);
-                        } else {
-                            fileMeta.setFileStatus(AppCommon.UPLOAD_FILE_EXIST);
+                            fileMeta.setFileStatus(AppCommon.UPLOAD_PACKAGE_AVAILABLE);
                         }
                     } else {
-                        fileMeta.setFileStatus(AppCommon.UPLOAD_PACKAGE_AVAILABLE);
+                        checkFileApkUploaded(apkMeta, fileMeta, appId, mpf, localPath, absolutePath);
                     }
                 } else {
                     fileMeta.setFileStatus(AppCommon.UPLOAD_FILE_NOT_SUPPORT);
@@ -321,6 +313,26 @@ public class AppController extends AbstractController {
         fileMeta.setFileType(mpf.getContentType());
 
         return fileMeta;
+    }
+
+    private void checkFileApkUploaded(ApkMeta apkMeta, AppFileMetaDomain fileMeta, long appId, MultipartFile mpf, String localPath, String absolutePath) {
+        long creater = appApkService.getCreater(apkMeta.getPackageName());
+        if (creater == 0) {
+            if (appUploadedService.isExsit(apkMeta.getPackageName(), apkMeta.getVersionName())) {
+                fileMeta.setFileStatus(AppCommon.UPLOAD_FILE_EXIST);
+            } else {
+                //Save info of file uploaded
+                saveUploadFile(appId, apkMeta.getVersionName(), apkMeta.getPackageName(), mpf.getSize(), localPath, absolutePath, AppCommon.FILE_APK);
+            }
+        } else if (getMyId() == creater) {
+            if (appApkService.isExsit(apkMeta.getPackageName(), apkMeta.getVersionName())) {
+                fileMeta.setFileStatus(AppCommon.UPLOAD_FILE_EXIST);
+            } else {
+                saveUploadFile(appId, apkMeta.getVersionName(), apkMeta.getPackageName(), mpf.getSize(), localPath, absolutePath, AppCommon.FILE_APK);
+            }
+        } else {
+            fileMeta.setFileStatus(AppCommon.UPLOAD_PACKAGE_AVAILABLE);
+        }
     }
 
     @RequestMapping(value = "/upload/{id}/screenshoots", method = RequestMethod.POST)
@@ -378,7 +390,7 @@ public class AppController extends AbstractController {
 
                     //2.4 add to files
                     files.add(fileMeta);
-                } catch (Exception ex) {
+                } catch (IOException ex) {
                     FileUtils.deleteQuietly(f);
                     logger.error("Cannot upload screenshoot application.", ex);
                 }

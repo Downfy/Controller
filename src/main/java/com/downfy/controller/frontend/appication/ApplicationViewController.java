@@ -18,6 +18,8 @@ package com.downfy.controller.frontend.appication;
 
 import com.downfy.controller.AbstractController;
 import com.downfy.controller.MyResourceMessage;
+import com.downfy.persistence.domain.application.AppDomain;
+import com.downfy.service.application.AppService;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,20 +41,28 @@ import org.springframework.web.bind.annotation.RequestMethod;
  *  --------------------------------------------------------
  *  12-Dec-2013     tuanta      Create first time
  */
-@RequestMapping({"/*_{id}"})
 @Controller
 public class ApplicationViewController extends AbstractController {
 
     private final Logger logger = LoggerFactory.getLogger(ApplicationViewController.class);
     @Autowired
     MyResourceMessage resourceMessage;
+    @Autowired
+    AppService appService;
 
-    @RequestMapping(method = RequestMethod.GET)
-    public String app(@PathVariable("id") long id, HttpServletRequest request, Device device, Model model) {
+    @RequestMapping(value = "/app/*/{package}", method = RequestMethod.GET)
+    public String app(@PathVariable("package") String appPackage, HttpServletRequest request, Device device, Model model) {
         try {
-            return view(device, "application/view");
+            logger.info("View app by package " + appPackage);
+            AppDomain appDomain = appService.findById(appPackage);
+            if (appDomain != null) {
+                model.addAttribute("app", appDomain);
+                return view(device, "application/view");
+            } else {
+                return "resourceNotFound";
+            }
         } catch (Exception ex) {
-            logger.error("Cannot view app id " + id, ex);
+            logger.error("Cannot view app id " + appPackage, ex);
         }
         return view(device, "maintenance");
     }

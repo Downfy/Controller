@@ -96,6 +96,15 @@ public class AppService {
         return getCacheObject(appId + "");
     }
 
+    public AppDomain findById(String appPackage) {
+        List<AppDomain> apps = getCacheObjects(appPackage);
+        if (apps.isEmpty()) {
+            return null;
+        } else {
+            return apps.get(0);
+        }
+    }
+
     public List<AppDomain> findByDeveloper(long developerId) {
         List<AppDomain> apps = null;
         try {
@@ -115,10 +124,21 @@ public class AppService {
         return apps;
     }
 
-    public boolean updateApp(AppDomain domain, long developerId) {
+    public boolean updateAppInfo(AppDomain domain, long developerId) {
         try {
             putCacheObject(domain, developerId);
             repository.updateAppInfo(domain);
+            return true;
+        } catch (Exception ex) {
+            this.logger.error("Can't update app " + domain, ex);
+        }
+        return false;
+    }
+
+    public boolean updateAppPackage(AppDomain domain, long developerId) {
+        try {
+            putCacheObject(domain, developerId);
+            repository.updateAppPackage(domain);
             return true;
         } catch (Exception ex) {
             this.logger.error("Can't update app " + domain, ex);
@@ -198,6 +218,10 @@ public class AppService {
         return account != null;
     }
 
+    public boolean isExsit(String appPackage) {
+        return getCacheObjects(appPackage).isEmpty();
+    }
+
     public long count(long developerId) {
         try {
             long count = countCacheObject(developerId);
@@ -245,6 +269,7 @@ public class AppService {
         try {
             this.logger.debug("Put app " + domain + " to cache");
             this.getLongRedisTemplate().opsForSet().add(AppTable.KEY + ":" + developerId, domain.getKey());
+            this.getLongRedisTemplate().opsForSet().add(AppTable.KEY + ":" + domain.getAppPackage(), domain.getKey());
             this.getAppVersionRedisTemplate().opsForHash().put(AppDomain.OBJECT_KEY, domain.getKey(), domain);
         } catch (Exception ex) {
             this.logger.warn("Can't put data to cache", ex);
@@ -300,7 +325,19 @@ public class AppService {
 
     private List<AppDomain> getCacheObjects(long developerId) {
         Collection<Object> keys = getKeys(developerId);
-        logger.debug("All app from developer id " + developerId + " ==> " + keys);
+        List<AppDomain> apps = new ArrayList<AppDomain>();
+        try {
+            for (Object user : this.getAppVersionRedisTemplate().opsForHash().multiGet(AppDomain.OBJECT_KEY, keys)) {
+                apps.add((AppDomain) user);
+            }
+        } catch (Exception ex) {
+            this.logger.warn("Can't get all objects " + AppDomain.OBJECT_KEY + " from Redis", ex);
+        }
+        return apps;
+    }
+
+    private List<AppDomain> getCacheObjects(String appPackage) {
+        Collection<Object> keys = getKeys(appPackage);
         List<AppDomain> apps = new ArrayList<AppDomain>();
         try {
             for (Object user : this.getAppVersionRedisTemplate().opsForHash().multiGet(AppDomain.OBJECT_KEY, keys)) {
@@ -376,6 +413,24 @@ public class AppService {
                 }
             });
             logger.debug("Get keys from developer " + developerId + " ==> " + appIds);
+            keys.addAll(myList);
+        } catch (NullPointerException ex) {
+        }
+        return keys;
+    }
+
+    private Collection<Object> getKeys(String appPackage) {
+        Collection<Object> keys = new ArrayList<Object>();
+        try {
+            Set<String> appIds = this.getLongRedisTemplate().opsForSet().members(AppTable.KEY + ":" + appPackage);
+            List<String> myList = new ArrayList<String>(appIds);
+            Collections.sort(myList, new Comparator<String>() {
+                @Override
+                public int compare(String id01, String id02) {
+                    return id01.compareTo(id02);
+                }
+            });
+            logger.debug("Get keys from package " + appPackage + " ==> " + appIds);
             keys.addAll(myList);
         } catch (NullPointerException ex) {
         }

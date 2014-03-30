@@ -24,8 +24,10 @@ import com.downfy.controller.AbstractController;
 import com.downfy.controller.MyResourceMessage;
 import com.downfy.form.backend.application.AppApkForm;
 import com.downfy.form.validator.backend.application.BackendAppApkValidator;
+import com.downfy.persistence.domain.application.AppDomain;
 import com.downfy.persistence.domain.application.AppUploadedDomain;
 import com.downfy.service.application.AppApkService;
+import com.downfy.service.application.AppService;
 import com.downfy.service.application.AppUploadedService;
 import com.downfy.service.application.AppVersionService;
 import java.util.ArrayList;
@@ -70,6 +72,8 @@ public class AppApkController extends AbstractController {
     AppUploadedService appUploadedService;
     @Autowired
     AppApkService appApkService;
+    @Autowired
+    AppService appService;
     @Autowired
     AppVersionService appVersionService;
     @Autowired
@@ -123,6 +127,9 @@ public class AppApkController extends AbstractController {
         if (uploadedDomain != null) {
             String localPath = Utils.getFolderData(context, "data", uploadedDomain.getAppPath());
             long id = System.currentTimeMillis();
+            AppDomain appDomain = appService.findById(uploadedDomain.getAppId());
+            appDomain.setAppPackage(uploadedDomain.getAppPackage());
+            appService.updateAppPackage(appDomain, getMyId());
             appVersionService.save(domain.toAppVersion(localPath, id, uploadedDomain));
             appApkService.save(domain.toAppApk(localPath, id, uploadedDomain));
             appUploadedService.delete(uploadedDomain.getKey(), domain.getAppId(), AppCommon.FILE_APK);

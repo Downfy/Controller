@@ -114,7 +114,7 @@ public class AppCreateController extends AbstractController {
             appDomain.setUpdater(getMyId());
             appDomain.setUpdated(new Date());
             if (appDomain.getAppId() != 0) {
-                appService.updateApp(appDomain, getMyId());
+                appService.updateAppInfo(appDomain, getMyId());
             } else {
                 appDomain.setCreater(getMyId());
                 appDomain.setCreated(new Date());
