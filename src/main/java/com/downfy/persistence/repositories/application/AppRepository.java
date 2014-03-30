@@ -46,9 +46,7 @@ public interface AppRepository {
 
     public void updateAppInfo(AppDomain domain);
 
-    public void updateAppFile(AppDomain domain);
-
-    public void updateAppScreenShoot(AppDomain domain);
+    public void updateAppPackage(AppDomain domain);
 
     public void updateAppView(AppDomain domain);
 

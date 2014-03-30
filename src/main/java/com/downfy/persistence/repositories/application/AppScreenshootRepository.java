@@ -36,17 +36,11 @@ public interface AppScreenshootRepository {
 
     public AppScreenshootDomain findById(@Param("id") long id);
 
-    public List<AppScreenshootDomain> findByDeveloper(@Param("developerId") long developerId);
-
     public List<AppScreenshootDomain> findByApp(@Param("appId") long developerId);
 
     public long count();
 
-    public long countByDeveloper(@Param("developerId") long developerId);
-
     public long save(AppScreenshootDomain domain);
-
-    public void updateAppVersion(AppScreenshootDomain domain);
 
     public void publish(@Param("id") long id);
 

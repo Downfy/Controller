@@ -123,11 +123,15 @@ public class AppController extends AbstractController {
     public String detail(@PathVariable("id") long appId, HttpServletRequest request, Device device, Model uiModel) {
         try {
             AppDomain appDomain = appService.findById(appId);
-            logger.debug("==> Load app " + appDomain.toString());
-            CategoryDomain categoryDomain = categoryService.findByURL(appDomain.getAppCategory());
-            AppDetailForm form = getAppDetailForm(appId, appDomain, categoryDomain);
-            uiModel.addAttribute("app", form);
-            return view(device, "backend/application/detail");
+            if (appDomain.getCreater() == getMyId()) {
+                logger.debug("==> Load app " + appDomain.toString());
+                CategoryDomain categoryDomain = categoryService.findByURL(appDomain.getAppCategory());
+                AppDetailForm form = getAppDetailForm(appId, appDomain, categoryDomain);
+                uiModel.addAttribute("app", form);
+                return view(device, "backend/application/detail");
+            } else {
+                return "redirect:/backend/application.html";
+            }
         } catch (Exception ex) {
             logger.error("Cannot create detail application.", ex);
         }
@@ -137,25 +141,29 @@ public class AppController extends AbstractController {
     @RequestMapping(value = "/{id}/apk", method = RequestMethod.GET)
     public String apk(@PathVariable("id") long appId, HttpServletRequest request, Device device, Model uiModel) {
         try {
-            logger.info("Load apk of app " + appId);
             AppDomain curentApp = appService.findById(appId);
-            uiModel.addAttribute("app", curentApp);
-            List<AppVersionDownloadForm> apps = new ArrayList<AppVersionDownloadForm>();
-            List<AppVersionDomain> versions = appVersionService.findByApp(appId);
-            for (AppVersionDomain appVersionDomain : versions) {
-                AppApkDomain appDomain_ = appApkService.findById(appVersionDomain.getId());
-                AppVersionDownloadForm appVersionDownloadForm = new AppVersionDownloadForm();
-                appVersionDownloadForm.setAppId(appVersionDomain.getAppId());
-                if (null != appDomain_) {
-                    appVersionDownloadForm.setAppName(appDomain_.getLabel());
+            if (curentApp.getCreater() == getMyId()) {
+                logger.info("Load apk of app " + appId);
+                uiModel.addAttribute("app", curentApp);
+                List<AppVersionDownloadForm> apps = new ArrayList<AppVersionDownloadForm>();
+                List<AppVersionDomain> versions = appVersionService.findByApp(appId);
+                for (AppVersionDomain appVersionDomain : versions) {
+                    AppApkDomain appDomain_ = appApkService.findById(appVersionDomain.getId());
+                    AppVersionDownloadForm appVersionDownloadForm = new AppVersionDownloadForm();
+                    appVersionDownloadForm.setAppId(appVersionDomain.getAppId());
+                    if (null != appDomain_) {
+                        appVersionDownloadForm.setAppName(appDomain_.getLabel());
+                    }
+                    appVersionDownloadForm.fromAppVersionDomain(appVersionDomain);
+                    apps.add(appVersionDownloadForm);
                 }
-                appVersionDownloadForm.fromAppVersionDomain(appVersionDomain);
-                apps.add(appVersionDownloadForm);
+                uiModel.addAttribute("apps", apps);
+                uiModel.addAttribute("apks", appApkService.findByApp(appId));
+                uiModel.addAttribute("files", appUploadedService.findByType(appId, AppCommon.FILE_APK));
+                return view(device, "backend/application/apk");
+            } else {
+                return "redirect:/backend/application.html";
             }
-            uiModel.addAttribute("apps", apps);
-            uiModel.addAttribute("apks", appApkService.findByApp(appId));
-            uiModel.addAttribute("files", appUploadedService.findByType(appId, AppCommon.FILE_APK));
-            return view(device, "backend/application/apk");
         } catch (Exception ex) {
             logger.error("Cannot upload application.", ex);
         }
@@ -165,12 +173,16 @@ public class AppController extends AbstractController {
     @RequestMapping(value = "/{id}/screenshoots", method = RequestMethod.GET)
     public String screenshoots(@PathVariable("id") long appId, HttpServletRequest request, Device device, Model uiModel) {
         try {
-            logger.info("Load screenshoot of app " + appId);
             AppDomain currentApp = appService.findById(appId);
-            uiModel.addAttribute("verifyscreenshoots", appScreenshootService.findByApp(appId));
-            uiModel.addAttribute("app", currentApp);
-            uiModel.addAttribute("screenshoots", appUploadedService.findByType(appId, AppCommon.FILE_SCREENSHOOT));
-            return view(device, "backend/application/screenshoots");
+            if (currentApp.getCreater() == getMyId()) {
+                logger.info("Load screenshoot of app " + appId);
+                uiModel.addAttribute("verifyscreenshoots", appScreenshootService.findByApp(appId));
+                uiModel.addAttribute("app", currentApp);
+                uiModel.addAttribute("screenshoots", appUploadedService.findByType(appId, AppCommon.FILE_SCREENSHOOT));
+                return view(device, "backend/application/screenshoots");
+            } else {
+                return "redirect:/backend/application.html";
+            }
         } catch (Exception ex) {
             logger.error("Cannot upload screenshoot application.", ex);
         }
@@ -180,10 +192,13 @@ public class AppController extends AbstractController {
     @RequestMapping(value = "/{id}/requestpublish", method = RequestMethod.GET)
     public String requestPublish(@PathVariable("id") long appId, HttpServletRequest request, Device device, Model uiModel) {
         try {
-            logger.info("Request publish of app " + appId);
             AppDomain currentApp = appService.findById(appId);
-            currentApp.setStatus(AppCommon.PENDING);
-            appService.updateApp(currentApp, getMyId());
+            if (currentApp.getCreater() == getMyId()) {
+                logger.info("Request publish of app " + appId);
+                if (!appService.approveApp(appId)) {
+                    return view(device, "maintenance");
+                }
+            }
             return "redirect:/backend/application.html";
         } catch (Exception ex) {
             logger.error("Cannot request publish application.", ex);

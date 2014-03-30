@@ -4,32 +4,6 @@
 
 <mapper namespace="com.downfy.persistence.repositories.application.AppScreenshootRepository">
 
-    <select id="findAll" resultType="AppScreenshootDomain">
-        SELECT
-        ID,
-        APP_ID as appId,
-        APP_SCREEN_SHOOT as appScreenShoot,
-        SIZE,
-        STATUS,
-        CREATED,
-        CREATER
-        FROM app_screen_shoots
-        ORDER BY CREATED DESC
-    </select>
-
-    <select id="findByDeveloper" parameterType="long" resultType="AppScreenshootDomain">
-        SELECT
-        ID,
-        APP_ID as appId,
-        APP_SCREEN_SHOOT as appScreenShoot,
-        SIZE,
-        STATUS,
-        CREATED
-        FROM app_screen_shoots
-        WHERE CREATER = #{developerId}
-        AND STATUS > 0
-    </select>
-
     <select id="findByApp" parameterType="long" resultType="AppScreenshootDomain">
         SELECT
         ID,
@@ -43,28 +17,8 @@
         AND STATUS > 0
     </select>
 
-    <select id="findById" parameterType="long" resultType="AppScreenshootDomain">
-        SELECT
-        ID,
-        APP_ID as appId,
-        APP_SCREEN_SHOOT as appScreenShoot,
-        SIZE,
-        STATUS,
-        CREATED,
-        CREATER
-        FROM app_screen_shoots
-        WHERE ID = #{id}
-        LIMIT 0, 1
-    </select>
-
     <select id="count" resultType="long">
         SELECT count(*) FROM app_screen_shoots
-    </select>
-
-    <select id="countByApp" resultType="long">
-        SELECT count(*) FROM app_screen_shoots
-        WHERE CREATER = #{appId}
-        AND STATUS > 0
     </select>
 
     <insert id="save" parameterType="AppScreenshootDomain">

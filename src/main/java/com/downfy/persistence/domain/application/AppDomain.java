@@ -19,7 +19,6 @@ package com.downfy.persistence.domain.application;
 import com.downfy.common.ObjectKey;
 import com.downfy.persistence.domain.DomainObject;
 import java.util.Date;
-import java.util.List;
 
 /*
  * AppDomain.java
@@ -40,10 +39,7 @@ public class AppDomain implements DomainObject {
     private String appCategory;
     private int appView;
     private int appDownload;
-    private String appCurrentVersion;
-    private long appSize;
-    private String appPath;
-    private List<String> appScreenShoot;
+    private String appPackage;
     private String appIcon;
     private int status;
     private Date created;
@@ -99,39 +95,12 @@ public class AppDomain implements DomainObject {
         this.appDownload = appDownload;
     }
 
-    public String getAppCurrentVersion() {
-        if (appCurrentVersion == null) {
-            appCurrentVersion = "1.0.0";
-        }
-        return appCurrentVersion;
+    public String getAppPackage() {
+        return appPackage;
     }
 
-    public void setAppCurrentVersion(String appCurrentVersion) {
-        this.appCurrentVersion = appCurrentVersion;
-    }
-
-    public long getAppSize() {
-        return appSize;
-    }
-
-    public void setAppSize(long appSize) {
-        this.appSize = appSize;
-    }
-
-    public String getAppPath() {
-        return appPath;
-    }
-
-    public void setAppPath(String appPath) {
-        this.appPath = appPath;
-    }
-
-    public List<String> getAppScreenShoot() {
-        return appScreenShoot;
-    }
-
-    public void setAppScreenShoot(List<String> appScreenShoot) {
-        this.appScreenShoot = appScreenShoot;
+    public void setAppPackage(String appPackage) {
+        this.appPackage = appPackage;
     }
 
     public String getAppIcon() {
@@ -188,7 +157,6 @@ public class AppDomain implements DomainObject {
         sb.append("[App:").append(getAppId()).append(",");
         sb.append("Name:").append(getAppName()).append(",");
         sb.append("Description:").append(getAppDescription()).append(",");
-        sb.append("AppPath:").append(getAppPath()).append(",");
         sb.append("AppIcon:").append(getAppIcon()).append(",");
         sb.append("Category:").append(getAppCategory()).append("]");
         return sb.toString();

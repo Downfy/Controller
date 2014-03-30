@@ -4,39 +4,6 @@
 
 <mapper namespace="com.downfy.persistence.repositories.application.AppVersionRepository">
 
-    <select id="findAll" resultType="AppVersionDomain">
-        SELECT
-        ID,
-        APP_ID as appId,
-        APP_PATH as appPath,
-        APP_PACKAGE as appPackage,
-        APP_VERSION as appVersion,
-        APP_SIZE as appSize,
-        STATUS,
-        CREATED,
-        CREATER,
-        UPDATED
-        FROM app_version
-        ORDER BY CREATED DESC
-    </select>
-
-    <select id="findByDeveloper" parameterType="long" resultType="AppVersionDomain">
-        SELECT
-        ID,
-        APP_ID as appId,
-        APP_PATH as appPath,
-        APP_PACKAGE as appPackage,
-        APP_VERSION as appVersion,
-        APP_SIZE as appSize,
-        STATUS,
-        CREATED,
-        CREATER,
-        UPDATED
-        FROM app_version
-        WHERE CREATER = #{developerId}
-        AND STATUS > 0
-    </select>
-
     <select id="findByApp" parameterType="long" resultType="AppVersionDomain">
         SELECT
         ID,
@@ -73,12 +40,6 @@
 
     <select id="count" resultType="long">
         SELECT count(*) FROM app_version
-    </select>
-
-    <select id="countByDeveloper" resultType="long">
-        SELECT count(*) FROM app_version
-        WHERE CREATER = #{developerId}
-        AND STATUS > 0
     </select>
 
     <insert id="save" parameterType="AppVersionDomain">

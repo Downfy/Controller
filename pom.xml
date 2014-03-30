@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.downfy</groupId>
     <artifactId>downfy-controller</artifactId>
-    <version>1.0.0-M5</version>
+    <version>1.0.0-M6</version>
     <packaging>jar</packaging>
 
     <name>Downfy Controller</name>

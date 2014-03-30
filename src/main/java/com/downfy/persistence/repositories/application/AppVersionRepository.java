@@ -36,17 +36,11 @@ public interface AppVersionRepository {
 
     public AppVersionDomain findById(@Param("id") long id);
 
-    public List<AppVersionDomain> findByDeveloper(@Param("developerId") long developerId);
-
     public List<AppVersionDomain> findByApp(@Param("appId") long developerId);
 
     public long count();
 
-    public long countByDeveloper(@Param("developerId") long developerId);
-
     public long save(AppVersionDomain domain);
-
-    public void updateAppVersion(AppVersionDomain domain);
 
     public void publish(@Param("id") long id);
 

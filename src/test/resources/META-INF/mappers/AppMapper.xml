@@ -12,11 +12,8 @@
         APP_CATEGORY as appCategory,
         APP_VIEW as appView,
         APP_DOWNLOAD as appDownload,
-        APP_CURRENT_VERSION as appCurrentVersion,
-        APP_SIZE as appSize,
-        APP_PATH as appPath,
         APP_ICON as appIcon,
-        APP_SCREEN_SHOOT as appScreenShoot,
+        APP_PACKAGE as appPackage,        
         STATUS,
         CREATED,
         UPDATED,
@@ -34,11 +31,8 @@
         APP_CATEGORY as appCategory,
         APP_VIEW as appView,
         APP_DOWNLOAD as appDownload,
-        APP_CURRENT_VERSION as appCurrentVersion,
-        APP_SIZE as appSize,
-        APP_PATH as appPath,
         APP_ICON as appIcon,
-        APP_SCREEN_SHOOT as appScreenShoot,
+        APP_PACKAGE as appPackage,
         STATUS,
         CREATED,
         UPDATED,
@@ -57,11 +51,8 @@
         APP_CATEGORY as appCategory,
         APP_VIEW as appView,
         APP_DOWNLOAD as appDownload,
-        APP_CURRENT_VERSION as appCurrentVersion,
-        APP_SIZE as appSize,
-        APP_PATH as appPath,
         APP_ICON as appIcon,
-        APP_SCREEN_SHOOT as appScreenShoot,
+        APP_PACKAGE as appPackage,
         STATUS,
         CREATED,
         UPDATED,
@@ -95,33 +86,16 @@
         APP_DESCRIPTION = #{appDescription},
         APP_CATEGORY = #{appCategory},
         APP_ICON = #{appIcon},
-        APP_SCREEN_SHOOT = #{appScreenShoot},
-        APP_CURRENT_VERSION = #{appCurrentVersion},
-        APP_PATH = #{appPath},
-        APP_SIZE = #{appSize},
         UPDATER = #{updater},
         UPDATED = now()
         WHERE APP_ID = #{appId}
         AND STATUS > 1
     </update>
     
-    <update id="updateAppFile" parameterType="AppDomain">
+    <update id="updateAppPackage" parameterType="AppDomain">
         UPDATE apps
         SET
-        APP_NAME = #{appName},
-        APP_CURRENT_VERSION = #{appCurrentVersion},
-        APP_PATH = #{appPath},
-        APP_SIZE = #{appSize},
-        UPDATER = #{updater},
-        UPDATED = now()
-        WHERE APP_ID = #{appId}
-        AND STATUS > 1
-    </update>
-    
-    <update id="updateAppScreenShoot" parameterType="AppDomain">
-        UPDATE apps
-        SET
-        APP_SCREEN_SHOOT = #{appScreenShoot},
+        APP_PACKAGE = #{appPackage},
         UPDATER = #{updater},
         UPDATED = now()
         WHERE APP_ID = #{appId}
@@ -132,6 +106,7 @@
         UPDATE apps
         SET
         APP_VIEW = #{appView},
+        UPDATER = #{updater},
         UPDATED = now()
         WHERE APP_ID = #{appId}
         AND STATUS = 3
@@ -141,6 +116,7 @@
         UPDATE apps
         SET
         APP_DOWNLOAD = #{appDownload},
+        UPDATER = #{updater},
         UPDATED = now()
         WHERE APP_ID = #{appId}
         AND STATUS = 3
@@ -150,6 +126,7 @@
         UPDATE apps 
         SET 
         STATUS = 3,
+        UPDATER = #{updater},
         UPDATED = now() 
         WHERE APP_ID = #{appId}
         AND STATUS > 0
@@ -159,6 +136,7 @@
         UPDATE apps 
         SET 
         STATUS = 1,
+        UPDATER = #{updater},
         UPDATED = now() 
         WHERE APP_ID = #{appId}
         AND STATUS > 0
@@ -168,6 +146,7 @@
         UPDATE apps 
         SET 
         STATUS = 0,
+        UPDATER = #{updater},
         UPDATED = now() 
         WHERE APP_ID = #{appId}
         AND STATUS > 0

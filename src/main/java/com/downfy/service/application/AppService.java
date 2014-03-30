@@ -140,14 +140,36 @@ public class AppService {
         try {
             AppDomain app = getCacheObject(key + "");
             if (app != null) {
+                //Step 1
                 app.setStatus(AppCommon.PUBLISHED);
                 putCacheObject(app, app.getCreater());
+                //Step 2
                 this.repository.publish(key);
-                this.logger.info("Publish success app " + key);
+                //Step 3
+                this.logger.info("Request publish success app " + key);
                 return true;
             }
         } catch (Exception ex) {
-            this.logger.error("Can't publish app " + key, ex);
+            this.logger.error("Can't request publish app " + key, ex);
+        }
+        return false;
+    }
+
+    public boolean approveApp(long key) {
+        try {
+            AppDomain app = getCacheObject(key + "");
+            if (app != null) {
+                //Step 1
+                app.setStatus(AppCommon.PENDING);
+                putCacheObject(app, app.getCreater());
+                //Step 2
+                this.repository.publish(key);
+                //Step 3
+                this.logger.info("Request approve success app " + key);
+                return true;
+            }
+        } catch (Exception ex) {
+            this.logger.error("Can't request approve app " + key, ex);
         }
         return false;
     }
@@ -156,9 +178,12 @@ public class AppService {
         try {
             AppDomain app = getCacheObject(key + "");
             if (app != null) {
+                //Step 1
                 app.setStatus(AppCommon.BLOCKED);
                 putCacheObject(app, app.getCreater());
+                //Step 2
                 this.repository.block(key);
+                //Step 3
                 this.logger.info("Block success app " + key);
                 return true;
             }

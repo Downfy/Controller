@@ -141,11 +141,11 @@ public class AppVersionService {
                 app.setStatus(AppCommon.PUBLISHED);
                 putCacheObject(app, app.getAppId());
                 this.repository.publish(key);
-                this.logger.info("Publish success app version " + key);
+                this.logger.info("Request publish success app version " + key);
                 return true;
             }
         } catch (Exception ex) {
-            this.logger.error("Can't publish app version " + key, ex);
+            this.logger.error("Can't Request publish app version " + key, ex);
         }
         return false;
     }
@@ -156,13 +156,12 @@ public class AppVersionService {
             if (app != null) {
                 app.setStatus(AppCommon.PENDING);
                 putCacheObject(app, app.getAppId());
-                this.logger.debug("Approve app version " + key + " to database");
                 this.repository.approve(key);
-                this.logger.info("Approve success app version " + key);
+                this.logger.info("Request approve success app version " + key);
                 return true;
             }
         } catch (Exception ex) {
-            this.logger.error("Can't approve app version " + key, ex);
+            this.logger.error("Can't requets approve app version " + key, ex);
         }
         return false;
     }
