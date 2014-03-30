@@ -17,15 +17,18 @@
 package com.downfy.service.application;
 
 import com.downfy.common.AppCommon;
+import com.downfy.common.Utils;
 import com.downfy.persistence.domain.application.AppVersionDomain;
 import com.downfy.persistence.repositories.application.AppVersionRepository;
 import com.downfy.persistence.table.AppVersionTable;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import javax.servlet.ServletContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +53,8 @@ public class AppVersionService {
     private final Logger logger = LoggerFactory.getLogger(AppVersionService.class);
     @Autowired
     AppVersionRepository repository;
+    @Autowired
+    ServletContext context;
     @Autowired
     private JedisConnectionFactory jedisConnectionFactory;
     private RedisTemplate<String, AppVersionDomain> appVersionRedisTemplate;
@@ -102,10 +107,16 @@ public class AppVersionService {
             apps = getCacheObjects(appId);
             if (apps.isEmpty()) {
                 apps = this.repository.findByApp(appId);
-                if (!apps.isEmpty()) {
-                    setCacheObjects(apps);
+                for (AppVersionDomain appVersionDomain : apps) {
+                    File f = new File(Utils.getFolderData(context, "data", appVersionDomain.getAppPath()));
+                    if (f.exists()) {
+                        setCacheObject(appVersionDomain);
+                    } else {
+                        this.delete(appVersionDomain.getId(), appVersionDomain.getAppId());
+                    }
                 }
             }
+            apps = getCacheObjects();
         } catch (Exception ex) {
             this.logger.error("Find all apapp versionps of app " + appId + " error: " + ex, ex);
         }
@@ -146,7 +157,7 @@ public class AppVersionService {
                 app.setStatus(AppCommon.PENDING);
                 putCacheObject(app, app.getAppId());
                 this.logger.debug("Approve app version " + key + " to database");
-                this.repository.block(key);
+                this.repository.approve(key);
                 this.logger.info("Approve success app version " + key);
                 return true;
             }
@@ -321,6 +332,14 @@ public class AppVersionService {
             for (AppVersionDomain domain : domains) {
                 putCacheObject(domain, domain.getAppId());
             }
+        } catch (Exception ex) {
+            this.logger.warn("Can't set objects " + AppVersionDomain.OBJECT_KEY + " to Redis", ex);
+        }
+    }
+
+    private void setCacheObject(AppVersionDomain domain) {
+        try {
+            putCacheObject(domain, domain.getAppId());
         } catch (Exception ex) {
             this.logger.warn("Can't set objects " + AppVersionDomain.OBJECT_KEY + " to Redis", ex);
         }

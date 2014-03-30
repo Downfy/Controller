@@ -74,8 +74,8 @@ public class AppApkDomain extends ApkMeta implements DomainObject {
         this.creater = creater;
     }
 
-    public AppApkDomain fromAppVersion(AppVersionDomain versionDomain) {
-        ApkMeta apkMeta = Utils.getApkMeta(versionDomain.getAppPath());
+    public AppApkDomain fromAppVersion(String localPath, AppVersionDomain versionDomain) {
+        ApkMeta apkMeta = Utils.getApkMeta(localPath);
         if (apkMeta != null) {
             AppApkDomain apkDomain = new AppApkDomain();
             apkDomain.setAppId(versionDomain.getAppId());

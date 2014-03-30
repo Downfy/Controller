@@ -52,6 +52,11 @@
     </repositories>
     <dependencies>
         <dependency>
+            <groupId>com.twitter</groupId>
+            <artifactId>bijection-core_2.10</artifactId>
+            <version>0.6.2</version>
+        </dependency>
+        <dependency>
             <groupId>net.dongliu.apk-parser</groupId>
             <artifactId>apk-parser</artifactId>
             <version>1.0.1</version>

@@ -223,7 +223,7 @@ public class AppController extends AbstractController {
                 fileMeta.setFileSize(mpf.getSize());
 
                 //Save info of file uploaded
-                saveUploadFile(appId, mpf.getSize(), absolutePath, AppCommon.FILE_ICON);
+                saveUploadFile(appId, mpf.getSize(), localPath, absolutePath, AppCommon.FILE_ICON);
             } else {
                 logger.debug("Don't support format icon content type: " + mpf.getContentType());
                 fileMeta.setFileName("");
@@ -242,11 +242,11 @@ public class AppController extends AbstractController {
     public AppFileMetaDomain apk(@PathVariable("id") long appId, MultipartHttpServletRequest request, Device device, Model uiModel) {
         MultipartFile mpf = request.getFile("appAPKFile");
         AppFileMetaDomain fileMeta = new AppFileMetaDomain();
+        File f = new File(context.getRealPath("/"));
         if (Objects.equal("application/vnd.android.package-archive", mpf.getContentType())
                 || Objects.equal("application/octet-stream", mpf.getContentType())) {
             String appIconName = Utils.toMd5(System.currentTimeMillis() + "");
             // copy file to local disk (make sure the path "e.g. D:/temp/files" exists)
-            File f = new File(context.getRealPath("/"));
             String absolutePath = File.separator + "apk"
                     + File.separator + Utils.folderByCurrentTime()
                     + File.separator + Utils.toMd5(getUsername())
@@ -276,11 +276,11 @@ public class AppController extends AbstractController {
                             fileMeta.setFileStatus(AppCommon.UPLOAD_FILE_EXIST);
                         } else {
                             //Save info of file uploaded
-                            saveUploadFile(appId, apkMeta.getVersionName(), apkMeta.getPackageName(), mpf.getSize(), absolutePath, AppCommon.FILE_APK);
+                            saveUploadFile(appId, apkMeta.getVersionName(), apkMeta.getPackageName(), mpf.getSize(), localPath, absolutePath, AppCommon.FILE_APK);
                         }
                     } else if (getMyId() == creater) {
                         if (!appApkService.isExsit(apkMeta.getPackageName(), apkMeta.getVersionName())) {
-                            saveUploadFile(appId, apkMeta.getVersionName(), apkMeta.getPackageName(), mpf.getSize(), absolutePath, AppCommon.FILE_APK);
+                            saveUploadFile(appId, apkMeta.getVersionName(), apkMeta.getPackageName(), mpf.getSize(), localPath, absolutePath, AppCommon.FILE_APK);
                         } else {
                             fileMeta.setFileStatus(AppCommon.UPLOAD_FILE_EXIST);
                         }
@@ -291,13 +291,16 @@ public class AppController extends AbstractController {
                     fileMeta.setFileStatus(AppCommon.UPLOAD_FILE_NOT_SUPPORT);
                 }
             } catch (IOException ex) {
-                FileUtils.deleteQuietly(f);
                 fileMeta.setFileStatus(AppCommon.UPLOAD_FAILRE);
             }
         } else {
             logger.debug("Don't support format apk content type: " + mpf.getContentType());
             fileMeta.setFileName("");
             fileMeta.setFileSize(0);
+        }
+
+        if (fileMeta.getFileStatus() != AppCommon.UPLOAD_SUCCESS) {
+            FileUtils.deleteQuietly(f);
         }
 
         fileMeta.setFileType(mpf.getContentType());
@@ -356,7 +359,7 @@ public class AppController extends AbstractController {
                             .toFile(localPath);
 
                     //Save info of file uploaded
-                    saveUploadFile(appId, mpf.getSize(), absolutePath, AppCommon.FILE_SCREENSHOOT);
+                    saveUploadFile(appId, mpf.getSize(), localPath, absolutePath, AppCommon.FILE_SCREENSHOOT);
 
                     //2.4 add to files
                     files.add(fileMeta);
@@ -380,11 +383,12 @@ public class AppController extends AbstractController {
         return form;
     }
 
-    private void saveUploadFile(long appId, long size, String absolutePath, int type) {
+    private void saveUploadFile(long appId, long size, String realPath, String absolutePath, int type) {
         AppUploadedDomain appUploadDomain = new AppUploadedDomain();
         appUploadDomain.setId(System.currentTimeMillis());
         appUploadDomain.setAppId(appId);
         appUploadDomain.setAppPath(absolutePath);
+        appUploadDomain.setAppRealPath(realPath);
         appUploadDomain.setCreater(getMyId());
         appUploadDomain.setCreated(new Date());
         appUploadDomain.setType(type);
@@ -393,11 +397,12 @@ public class AppController extends AbstractController {
         appUploadedService.save(appUploadDomain);
     }
 
-    private void saveUploadFile(long appId, String appVersion, String appPackage, long size, String absolutePath, int type) {
+    private void saveUploadFile(long appId, String appVersion, String appPackage, long size, String realPath, String absolutePath, int type) {
         AppUploadedDomain appUploadDomain = new AppUploadedDomain();
         appUploadDomain.setId(System.currentTimeMillis());
         appUploadDomain.setAppId(appId);
         appUploadDomain.setAppPath(absolutePath);
+        appUploadDomain.setAppRealPath(realPath);
         appUploadDomain.setCreater(getMyId());
         appUploadDomain.setCreated(new Date());
         appUploadDomain.setType(type);

@@ -124,7 +124,7 @@ public class AppScreenshootService {
             if (app != null) {
                 app.setStatus(AppCommon.PENDING);
                 putCacheObject(app, app.getAppId());
-                this.repository.publish(key);
+                this.repository.approve(key);
                 this.logger.info("Approve success app screen shoot " + key);
                 return true;
             }

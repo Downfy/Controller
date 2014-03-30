@@ -32,13 +32,13 @@ public final class RegexpUtils {
     private RegexpUtils() {
         throw new UnsupportedOperationException("RegexpUtils is a utility class - don't instantiate it!");
     }
-    private static final LoadingCache<String, Pattern> COMPILED_PATTERNS =
-            CacheBuilder.newBuilder().build(new CacheLoader<String, Pattern>() {
-        @Override
-        public Pattern load(String regexp) throws Exception {
-            return Pattern.compile(regexp);
-        }
-    });
+    private static final LoadingCache<String, Pattern> COMPILED_PATTERNS
+            = CacheBuilder.newBuilder().build(new CacheLoader<String, Pattern>() {
+                @Override
+                public Pattern load(String regexp) throws Exception {
+                    return Pattern.compile(regexp);
+                }
+            });
 
     private static Pattern getPattern(String regexp) {
         try {
@@ -58,7 +58,7 @@ public final class RegexpUtils {
     }
     private static final String EMAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
     private static final String MOBILE_PATTERN = "\\d{10,12}";
-    private static final String USERNAME_PATTERN = "^[a-z0-9_-]{3,50}$";
+    private static final String USERNAME_PATTERN = "^[a-zA-Z0-9_-]{3,50}$";
     private static final String VERSION_PATTERN = "^(\\d+\\.)?(\\d+\\.)?(\\d+)$";
 
     public static boolean validateEmail(String value) {

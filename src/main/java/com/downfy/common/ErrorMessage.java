@@ -18,8 +18,8 @@ package com.downfy.common;
 
 public class ErrorMessage {
 
-    private String fieldName;
-    private String message;
+    private final String fieldName;
+    private final String message;
 
     public ErrorMessage(String fieldName, String message) {
         this.fieldName = fieldName;

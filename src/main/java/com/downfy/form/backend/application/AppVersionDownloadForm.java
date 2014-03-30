@@ -16,7 +16,6 @@
  */
 package com.downfy.form.backend.application;
 
-import com.downfy.persistence.domain.application.AppDomain;
 import com.downfy.persistence.domain.application.AppVersionDomain;
 
 /**
@@ -25,6 +24,7 @@ import com.downfy.persistence.domain.application.AppVersionDomain;
  */
 public class AppVersionDownloadForm {
 
+    private long id;
     private long appId;
     private String appName;
     private long appDownloaded;
@@ -32,6 +32,14 @@ public class AppVersionDownloadForm {
     private String appPackage;
     private String appVersion;
     private int status;
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 
     public long getAppId() {
         return appId;
@@ -89,12 +97,8 @@ public class AppVersionDownloadForm {
         this.status = status;
     }
 
-    public void fromAppDomain(AppDomain domain) {
-        setAppId(domain.getAppId());
-        setAppName(domain.getAppName());
-    }
-
     public void fromAppVersionDomain(AppVersionDomain domain) {
+        setId(domain.getId());
         setAppPath(domain.getAppPath());
         setAppVersion(domain.getAppVersion());
         setStatus(domain.getStatus());

@@ -38,6 +38,7 @@ public class AppUploadedDomain implements DomainObject {
     private long id;
     private long appId;
     private String appPath;
+    private String appRealPath;
     private String appVersion;
     private String appPackage;
     private long size;
@@ -67,6 +68,14 @@ public class AppUploadedDomain implements DomainObject {
 
     public void setAppPath(String appPath) {
         this.appPath = appPath;
+    }
+
+    public String getAppRealPath() {
+        return appRealPath;
+    }
+
+    public void setAppRealPath(String appRealPath) {
+        this.appRealPath = appRealPath;
     }
 
     public String getAppVersion() {

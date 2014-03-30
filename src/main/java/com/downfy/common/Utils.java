@@ -17,13 +17,18 @@
 package com.downfy.common;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
+import javax.servlet.ServletContext;
 import net.dongliu.apk.parser.ApkParser;
 import net.dongliu.apk.parser.bean.ApkMeta;
+import net.dongliu.apk.parser.exception.ParserException;
 import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 
 /*
@@ -44,6 +49,8 @@ import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
  *  13-Feb-2013     tuanta      Add toMd5
  */
 public class Utils {
+
+    private final static Logger logger = LoggerFactory.getLogger(Utils.class);
 
     /**
      * Convert byte to hex string.
@@ -311,13 +318,32 @@ public class Utils {
 
     public static ApkMeta getApkMeta(String localPath) {
         try {
-            ApkParser apkParser = new ApkParser(new File(localPath));
-            ApkMeta meta = apkParser.getApkMeta();
-            apkParser.close();
-            return meta;
-        } catch (Exception ex) {
+            File f = new File(localPath);
+            if (f.exists()) {
+                ApkParser apkParser = new ApkParser(f);
+                ApkMeta meta = apkParser.getApkMeta();
+                apkParser.close();
+                return meta;
+            } else {
+                logger.info("File not found " + localPath);
+            }
+        } catch (ParserException ex) {
+            logger.info("Not support this file format");
+        } catch (IOException ex) {
+            logger.error(ex.getMessage(), ex);
             FileUtils.deleteQuietly(new File(localPath));
         }
         return null;
+    }
+
+    public static String getFolderData(ServletContext context, String data, String absolutePath) {
+        try {
+            File f = new File(context.getRealPath("/"));
+            String localPath = f.getCanonicalPath() + File.separator + Utils.toMd5(data) + absolutePath;
+            return localPath;
+        } catch (IOException ex) {
+            logger.error(ex.getMessage(), ex);
+            return absolutePath;
+        }
     }
 }

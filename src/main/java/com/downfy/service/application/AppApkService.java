@@ -17,9 +17,9 @@
 package com.downfy.service.application;
 
 import com.downfy.common.AppCommon;
+import com.downfy.common.Utils;
 import com.downfy.persistence.domain.application.AppApkDomain;
 import com.downfy.persistence.domain.application.AppVersionDomain;
-import com.downfy.persistence.repositories.application.AppVersionRepository;
 import com.downfy.persistence.table.AppApkTable;
 import java.io.File;
 import java.util.ArrayList;
@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import javax.servlet.ServletContext;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +53,9 @@ public class AppApkService {
 
     private final Logger logger = LoggerFactory.getLogger(AppApkService.class);
     @Autowired
-    AppVersionRepository repository;
+    AppVersionService appVersionService;
+    @Autowired
+    ServletContext context;
     @Autowired
     private JedisConnectionFactory jedisConnectionFactory;
     private RedisTemplate<String, AppApkDomain> appApkRedisTemplate;
@@ -85,22 +88,19 @@ public class AppApkService {
     }
 
     public List<AppApkDomain> findByApp(long appId) {
-        List<AppApkDomain> apps = new ArrayList<AppApkDomain>();
-        try {
-            apps = getCacheObjects(appId);
-            if (apps.isEmpty()) {
-                List<AppVersionDomain> apps_ = this.repository.findByApp(appId);
-                for (AppVersionDomain appVersionDomain : apps_) {
-                    AppApkDomain apkDomain = new AppApkDomain();
-                    apkDomain.fromAppVersion(appVersionDomain);
+        List<AppApkDomain> apps = getCacheObjects(appId);
+        if (apps.isEmpty()) {
+            List<AppVersionDomain> apps_ = this.appVersionService.findByApp(appId);
+            for (AppVersionDomain appVersionDomain : apps_) {
+                AppApkDomain apkDomain = new AppApkDomain();
+                apkDomain = apkDomain.fromAppVersion(Utils.getFolderData(context, "data", appVersionDomain.getAppPath()), appVersionDomain);
+                if (apkDomain != null) {
                     apps.add(apkDomain);
                 }
-                if (!apps.isEmpty()) {
-                    setCacheObjects(apps);
-                }
             }
-        } catch (Exception ex) {
-            this.logger.error("Find all app apk of app " + appId + " error: " + ex, ex);
+            if (!apps.isEmpty()) {
+                setCacheObjects(apps);
+            }
         }
         this.logger.info("Total get " + apps.size() + " app apk of app " + appId + ".");
         return apps;
@@ -122,7 +122,6 @@ public class AppApkService {
             if (app != null) {
                 app.setStatus(AppCommon.PUBLISHED);
                 putCacheObject(app, app.getAppId());
-                this.repository.publish(key);
                 this.logger.info("Publish success app apk " + key);
                 return true;
             }
@@ -138,7 +137,6 @@ public class AppApkService {
             if (app != null) {
                 app.setStatus(AppCommon.PENDING);
                 putCacheObject(app, app.getAppId());
-                this.repository.publish(key);
                 this.logger.info("Approve success app apk " + key);
                 return true;
             }
@@ -154,7 +152,6 @@ public class AppApkService {
             if (app != null) {
                 app.setStatus(AppCommon.BLOCKED);
                 putCacheObject(app, app.getAppId());
-                this.repository.block(key);
                 this.logger.info("Block success app apk " + key);
                 return true;
             }
@@ -212,7 +209,6 @@ public class AppApkService {
     public boolean delete(long key, long appId) {
         try {
             removeCacheObject(key + "", appId);
-            this.repository.delete(key);
             AppApkDomain domain = getCacheObject(key + "");
             if (domain != null) {
                 FileUtils.deleteQuietly(new File(domain.getAppPath()));
@@ -242,9 +238,14 @@ public class AppApkService {
         try {
             domain = (AppApkDomain) this.getAppApkRedisTemplate().opsForHash().get(AppApkDomain.OBJECT_KEY, key);
             if (domain == null) {
+                AppVersionDomain versionDomain = this.appVersionService.findById(Long.valueOf(key));
+                if (versionDomain != null) {
+                    AppApkDomain apkDomain = new AppApkDomain();
+                    return apkDomain.fromAppVersion(Utils.getFolderData(context, "data", versionDomain.getAppPath()), versionDomain);
+                }
                 this.logger.debug("App " + key + " object " + AppApkDomain.OBJECT_KEY + " not found");
             }
-        } catch (NumberFormatException ex) {
+        } catch (Exception ex) {
             this.logger.warn("Can't get from Redis", ex);
         }
         return domain;

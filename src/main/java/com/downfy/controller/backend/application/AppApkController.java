@@ -28,8 +28,6 @@ import com.downfy.persistence.domain.application.AppUploadedDomain;
 import com.downfy.service.application.AppApkService;
 import com.downfy.service.application.AppUploadedService;
 import com.downfy.service.application.AppVersionService;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.ServletContext;
@@ -44,6 +42,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -119,23 +118,16 @@ public class AppApkController extends AbstractController {
     @PreAuthorize("hasRole('ROLE_MANAGER')")
     @RequestMapping(value = "/verify", method = RequestMethod.POST)
     public String verifyApk(@ModelAttribute("appApkForm") AppApkForm domain, Device device, HttpServletRequest request, BindingResult bindingResult, Model uiModel) {
-        try {
-            logger.debug("Verify file apk uploaded " + domain.getAppPackage() + ":" + domain.getAppVersion());
-            AppUploadedDomain uploadedDomain = appUploadedService.findById(domain.getAppPackage(), domain.getAppVersion());
-            if (uploadedDomain != null) {
-                File f = new File(context.getRealPath("/"));
-                String localPath = f.getCanonicalPath() + File.separator + Utils.toMd5("data")
-                        + uploadedDomain.getAppPath();
-                long id = System.currentTimeMillis();
-                appVersionService.save(domain.toAppVersion(localPath, id, uploadedDomain));
-                appApkService.save(domain.toAppApk(localPath, id, uploadedDomain));
-                appUploadedService.delete(uploadedDomain.getKey(), domain.getAppId(), AppCommon.FILE_APK);
-            }
-            return "redirect:/backend/application/" + domain.getAppId() + "/apk.html";
-        } catch (IOException ex) {
-            logger.error("Cannot upload apk application.", ex);
+        logger.debug("Verify file apk uploaded " + domain.getAppPackage() + ":" + domain.getAppVersion());
+        AppUploadedDomain uploadedDomain = appUploadedService.findById(domain.getAppPackage(), domain.getAppVersion());
+        if (uploadedDomain != null) {
+            String localPath = Utils.getFolderData(context, "data", uploadedDomain.getAppPath());
+            long id = System.currentTimeMillis();
+            appVersionService.save(domain.toAppVersion(localPath, id, uploadedDomain));
+            appApkService.save(domain.toAppApk(localPath, id, uploadedDomain));
+            appUploadedService.delete(uploadedDomain.getKey(), domain.getAppId(), AppCommon.FILE_APK);
         }
-        return view(device, "maintenance");
+        return "redirect:/backend/application/" + domain.getAppId() + "/apk.html";
     }
 
     @PreAuthorize("hasRole('ROLE_MANAGER')")
@@ -149,6 +141,19 @@ public class AppApkController extends AbstractController {
             return "redirect:/backend/application/" + domain.getAppId() + "/apk.html";
         } catch (Exception ex) {
             logger.error("Cannot upload apk application.", ex);
+        }
+        return view(device, "maintenance");
+    }
+
+    @PreAuthorize("hasRole('ROLE_MANAGER')")
+    @RequestMapping(value = "/{appId}/requestpublish/{apkId}", method = RequestMethod.GET)
+    public String requestpublish(@PathVariable("appId") long appId, @PathVariable("apkId") long apkId, Device device, Model uiModel) {
+        try {
+            if (appApkService.approve(apkId) && appVersionService.approve(apkId)) {
+                return "redirect:/backend/application/" + appId + "/apk.html";
+            }
+        } catch (Exception ex) {
+            logger.error("Cannot request publish apk application.", ex);
         }
         return view(device, "maintenance");
     }
