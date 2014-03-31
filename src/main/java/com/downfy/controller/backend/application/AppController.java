@@ -22,10 +22,8 @@ import com.downfy.controller.AbstractController;
 import com.downfy.controller.MyResourceMessage;
 import com.downfy.form.backend.application.AppCreateForm;
 import com.downfy.form.backend.application.AppDetailForm;
-import com.downfy.form.backend.application.AppVersionDownloadForm;
 import com.downfy.form.validator.backend.application.BackendAppValidator;
 import com.downfy.persistence.domain.AppFileMetaDomain;
-import com.downfy.persistence.domain.application.AppApkDomain;
 import com.downfy.persistence.domain.application.AppDomain;
 import com.downfy.persistence.domain.application.AppUploadedDomain;
 import com.downfy.persistence.domain.application.AppVersionDomain;
@@ -41,7 +39,6 @@ import com.google.common.io.Files;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -145,19 +142,8 @@ public class AppController extends AbstractController {
             if (curentApp != null && curentApp.getCreater() == getMyId()) {
                 logger.info("Load apk of app " + appId);
                 uiModel.addAttribute("app", curentApp);
-                List<AppVersionDownloadForm> apps = new ArrayList<AppVersionDownloadForm>();
                 List<AppVersionDomain> versions = appVersionService.findByApp(appId);
-                for (AppVersionDomain appVersionDomain : versions) {
-                    AppApkDomain appDomain_ = appApkService.findById(appVersionDomain.getId());
-                    AppVersionDownloadForm appVersionDownloadForm = new AppVersionDownloadForm();
-                    appVersionDownloadForm.setAppId(appVersionDomain.getAppId());
-                    if (null != appDomain_) {
-                        appVersionDownloadForm.setAppName(appDomain_.getLabel());
-                    }
-                    appVersionDownloadForm.fromAppVersionDomain(appVersionDomain);
-                    apps.add(appVersionDownloadForm);
-                }
-                uiModel.addAttribute("apps", apps);
+                uiModel.addAttribute("apps", versions);
                 uiModel.addAttribute("apks", appApkService.findByApp(appId));
                 uiModel.addAttribute("files", appUploadedService.findByType(appId, AppCommon.FILE_APK));
                 return view(device, "backend/application/apk");
