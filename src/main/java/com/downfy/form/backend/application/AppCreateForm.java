@@ -85,13 +85,11 @@ public class AppCreateForm {
         this.appIcon = appIcon;
     }
 
-    public AppDomain toAppDomain() {
-        AppDomain domain = new AppDomain();
-        domain.setAppId(getAppId());
-        domain.setAppName(getAppName());
-        domain.setAppDescription(getAppDescription());
-        domain.setAppCategory(getAppCategory());
-        domain.setAppIcon(getAppIcon());
-        return domain;
+    public AppDomain toAppDomain(AppDomain current) {
+        current.setAppName(getAppName());
+        current.setAppDescription(getAppDescription());
+        current.setAppCategory(getAppCategory());
+        current.setAppIcon(getAppIcon());
+        return current;
     }
 }

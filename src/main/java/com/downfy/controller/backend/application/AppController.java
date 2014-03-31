@@ -211,44 +211,18 @@ public class AppController extends AbstractController {
     public AppFileMetaDomain icon(@PathVariable("id") long appId, MultipartHttpServletRequest request, Device device, Model uiModel) {
         MultipartFile mpf = request.getFile("appIconFile");
         AppFileMetaDomain fileMeta = new AppFileMetaDomain();
-        try {
-            if (Objects.equal("image/gif", mpf.getContentType())
-                    || Objects.equal("image/jpeg", mpf.getContentType())
-                    || Objects.equal("image/pjpeg", mpf.getContentType())
-                    || Objects.equal("image/png", mpf.getContentType())) {
-                String appIconName = Utils.toMd5(System.currentTimeMillis() + "");
-                // copy file to local disk (make sure the path "e.g. D:/temp/files" exists)
-                File f = new File(context.getRealPath("/"));
-                String absolutePath = File.separator + "icon"
-                        + File.separator + Utils.folderByCurrentTime()
-                        + File.separator + Utils.toMd5(getUsername())
-                        + File.separator + appIconName + ".png";
-                String localPath = f.getCanonicalPath() + File.separator + Utils.toMd5("data")
-                        + absolutePath;
-                f = new File(localPath);
-                Files.createParentDirs(f);
-                logger.debug("Create app icon " + localPath);
-                Thumbnails.of(mpf.getInputStream())
-                        .crop(Positions.CENTER)
-                        .size(84, 84)
-                        .outputFormat("png")
-                        .toFile(localPath);
-                //Create new fileMeta
-                fileMeta.setFileName(absolutePath);
-                fileMeta.setFileSize(mpf.getSize());
-
-                //Save info of file uploaded
-                saveUploadFile(appId, mpf.getSize(), localPath, absolutePath, AppCommon.FILE_ICON);
-            } else {
-                logger.debug("Don't support format icon content type: " + mpf.getContentType());
-                fileMeta.setFileName("");
-                fileMeta.setFileSize(0);
-                fileMeta.setFileStatus(AppCommon.UPLOAD_FAILRE);
-            }
-            fileMeta.setFileType(mpf.getContentType());
-        } catch (IOException ex) {
-            logger.error("Cannot upload icon application.", ex);
+        if (Objects.equal("image/gif", mpf.getContentType())
+                || Objects.equal("image/jpeg", mpf.getContentType())
+                || Objects.equal("image/pjpeg", mpf.getContentType())
+                || Objects.equal("image/png", mpf.getContentType())) {
+            storeFileIcon(mpf, fileMeta, appId);
+        } else {
+            logger.debug("Don't support format icon content type: " + mpf.getContentType());
+            fileMeta.setFileName("");
+            fileMeta.setFileSize(0);
+            fileMeta.setFileStatus(AppCommon.UPLOAD_FAILRE);
         }
+        fileMeta.setFileType(mpf.getContentType());
         return fileMeta;
     }
 
@@ -257,65 +231,16 @@ public class AppController extends AbstractController {
     public AppFileMetaDomain apk(@PathVariable("id") long appId, MultipartHttpServletRequest request, Device device, Model uiModel) {
         MultipartFile mpf = request.getFile("appAPKFile");
         AppFileMetaDomain fileMeta = new AppFileMetaDomain();
-        File f = new File(context.getRealPath("/"));
+
         if (Objects.equal("application/vnd.android.package-archive", mpf.getContentType())
                 || Objects.equal("application/octet-stream", mpf.getContentType())) {
-            String appIconName = Utils.toMd5(System.currentTimeMillis() + "");
-            // copy file to local disk (make sure the path "e.g. D:/temp/files" exists)
-            String absolutePath = File.separator + "apk"
-                    + File.separator + Utils.folderByCurrentTime()
-                    + File.separator + Utils.toMd5(getUsername())
-                    + File.separator + appIconName + ".apk";
-
-            //Create new fileMeta
-            fileMeta.setFileName(absolutePath);
-            fileMeta.setFileSize(mpf.getSize());
-
-            try {
-                String localPath = f.getCanonicalPath() + File.separator + Utils.toMd5("data")
-                        + absolutePath;
-                f = new File(localPath);
-                Files.createParentDirs(f);
-
-                logger.debug("Create app apk " + localPath);
-                FileCopyUtils.copy(mpf.getInputStream(), new FileOutputStream(localPath));
-
-                ApkMeta apkMeta = Utils.getApkMeta(localPath);
-                if (apkMeta != null) {
-                    fileMeta.setFileVersion(apkMeta.getVersionName());
-                    fileMeta.setFilePackage(apkMeta.getPackageName());
-                    AppDomain appDomain = appService.findById(apkMeta.getPackageName());
-                    if (appDomain != null) {
-                        if (appDomain.getCreater() == getMyId()) {
-                            if (appDomain.getAppId() != appId) {
-                                checkFileApkUploaded(apkMeta, fileMeta, appId, mpf, localPath, absolutePath);
-                            } else {
-                                fileMeta.setFileStatus(AppCommon.UPLOAD_PACKAGE_AVAILABLE_ANOTHER);
-                            }
-                        } else {
-                            fileMeta.setFileStatus(AppCommon.UPLOAD_PACKAGE_AVAILABLE);
-                        }
-                    } else {
-                        checkFileApkUploaded(apkMeta, fileMeta, appId, mpf, localPath, absolutePath);
-                    }
-                } else {
-                    fileMeta.setFileStatus(AppCommon.UPLOAD_FILE_NOT_SUPPORT);
-                }
-            } catch (IOException ex) {
-                fileMeta.setFileStatus(AppCommon.UPLOAD_FAILRE);
-            }
+            storeFileApk(mpf, fileMeta, appId);
         } else {
             logger.debug("Don't support format apk content type: " + mpf.getContentType());
             fileMeta.setFileName("");
             fileMeta.setFileSize(0);
         }
-
-        if (fileMeta.getFileStatus() != AppCommon.UPLOAD_SUCCESS) {
-            FileUtils.deleteQuietly(f);
-        }
-
         fileMeta.setFileType(mpf.getContentType());
-
         return fileMeta;
     }
 
@@ -346,7 +271,6 @@ public class AppController extends AbstractController {
         Iterator<String> itr = request.getFileNames();
         MultipartFile mpf;
         LinkedList<AppFileMetaDomain> files = new LinkedList<AppFileMetaDomain>();
-        AppFileMetaDomain fileMeta;
 
         //2. get each file
         while (itr.hasNext()) {
@@ -357,47 +281,7 @@ public class AppController extends AbstractController {
                     || Objects.equal("image/jpeg", mpf.getContentType())
                     || Objects.equal("image/pjpeg", mpf.getContentType())
                     || Objects.equal("image/png", mpf.getContentType())) {
-
-                //2.2 if files > 10 remove the first from the list
-                if (files.size() >= 10) {
-                    files.pop();
-                }
-
-                String appIconName = Utils.toMd5(System.currentTimeMillis() + "");
-                // copy file to local disk (make sure the path "e.g. D:/temp/files" exists)
-                File f = new File(context.getRealPath("/"));
-                String absolutePath = File.separator + "screenshoots"
-                        + File.separator + Utils.folderByCurrentTime()
-                        + File.separator + Utils.toMd5(getUsername())
-                        + File.separator + appIconName + ".png";
-
-                //2.3 create new fileMeta
-                fileMeta = new AppFileMetaDomain();
-                fileMeta.setFileName(absolutePath);
-                fileMeta.setFileSize(mpf.getSize());
-                fileMeta.setFileType(mpf.getContentType());
-
-                try {
-                    String localPath = f.getCanonicalPath() + File.separator + Utils.toMd5("data")
-                            + absolutePath;
-                    f = new File(localPath);
-                    Files.createParentDirs(f);
-                    logger.debug("Create app screenshoot " + localPath);
-                    Thumbnails.of(mpf.getInputStream())
-                            .crop(Positions.CENTER)
-                            .size(240, 320)
-                            .outputFormat("png")
-                            .toFile(localPath);
-
-                    //Save info of file uploaded
-                    saveUploadFile(appId, mpf.getSize(), localPath, absolutePath, AppCommon.FILE_SCREENSHOOT);
-
-                    //2.4 add to files
-                    files.add(fileMeta);
-                } catch (IOException ex) {
-                    FileUtils.deleteQuietly(f);
-                    logger.error("Cannot upload screenshoot application.", ex);
-                }
+                storeFileScreenShoots(mpf, appId, files);
             } else {
                 logger.debug("Don't support format screen shoot content type: " + mpf.getContentType());
             }
@@ -442,5 +326,143 @@ public class AppController extends AbstractController {
         appUploadDomain.setAppPackage(appPackage);
 
         appUploadedService.save(appUploadDomain);
+    }
+
+    private String generatorPathStoreApk() {
+        // copy file to local disk (make sure the path "e.g. D:/temp/files" exists)
+        String absolutePath = File.separator + "apk"
+                + File.separator + Utils.folderByCurrentTime()
+                + File.separator + Utils.toMd5(getUsername())
+                + File.separator + Utils.toMd5(System.currentTimeMillis() + "") + ".apk";
+        return absolutePath;
+    }
+
+    private void responseFileApkStatus(String localPath, AppFileMetaDomain fileMeta, long appId, MultipartFile mpf, String absolutePath) {
+        ApkMeta apkMeta = Utils.getApkMeta(localPath);
+        if (apkMeta != null) {
+            fileMeta.setFileVersion(apkMeta.getVersionName());
+            fileMeta.setFilePackage(apkMeta.getPackageName());
+            AppDomain appDomain = appService.findById(apkMeta.getPackageName());
+            if (appDomain != null) {
+                if (appDomain.getCreater() == getMyId()) {
+                    if (appDomain.getAppId() != appId) {
+                        checkFileApkUploaded(apkMeta, fileMeta, appId, mpf, localPath, absolutePath);
+                    } else {
+                        fileMeta.setFileStatus(AppCommon.UPLOAD_PACKAGE_AVAILABLE_ANOTHER);
+                    }
+                } else {
+                    fileMeta.setFileStatus(AppCommon.UPLOAD_PACKAGE_AVAILABLE);
+                }
+            } else {
+                checkFileApkUploaded(apkMeta, fileMeta, appId, mpf, localPath, absolutePath);
+            }
+        } else {
+            fileMeta.setFileStatus(AppCommon.UPLOAD_FILE_NOT_SUPPORT);
+        }
+    }
+
+    private String generatorPathStoreScreenShoots() {
+        // copy file to local disk (make sure the path "e.g. D:/temp/files" exists)
+        String absolutePath = File.separator + "screenshoots"
+                + File.separator + Utils.folderByCurrentTime()
+                + File.separator + Utils.toMd5(getUsername())
+                + File.separator + Utils.toMd5(System.currentTimeMillis() + "") + ".png";
+        return absolutePath;
+    }
+
+    private AppFileMetaDomain createAppFileMetaDomain(String absolutePath, MultipartFile mpf) {
+        AppFileMetaDomain fileMeta;
+        //2.3 create new fileMeta
+        fileMeta = new AppFileMetaDomain();
+        fileMeta.setFileName(absolutePath);
+        fileMeta.setFileSize(mpf.getSize());
+        fileMeta.setFileType(mpf.getContentType());
+        return fileMeta;
+    }
+
+    private void storeFileApk(MultipartFile mpf, AppFileMetaDomain fileMeta, long appId) {
+        File f = new File(context.getRealPath("/"));
+        String absolutePath = generatorPathStoreApk();
+        try {
+            String localPath = f.getCanonicalPath() + File.separator + Utils.toMd5("data")
+                    + absolutePath;
+            f = new File(localPath);
+            Files.createParentDirs(f);
+
+            fileMeta.setFileName(absolutePath);
+            fileMeta.setFileSize(mpf.getSize());
+
+            logger.debug("Create app apk " + localPath);
+            FileCopyUtils.copy(mpf.getInputStream(), new FileOutputStream(localPath));
+            responseFileApkStatus(localPath, fileMeta, appId, mpf, absolutePath);
+        } catch (IOException ex) {
+            fileMeta.setFileStatus(AppCommon.UPLOAD_FAILRE);
+        }
+        if (fileMeta.getFileStatus() != AppCommon.UPLOAD_SUCCESS) {
+            FileUtils.deleteQuietly(f);
+        }
+    }
+
+    private String generatorPathStoreIcon() {
+        String absolutePath = File.separator + "icon"
+                + File.separator + Utils.folderByCurrentTime()
+                + File.separator + Utils.toMd5(getUsername())
+                + File.separator + Utils.toMd5(System.currentTimeMillis() + "") + ".png";
+        return absolutePath;
+    }
+
+    private void storeFileIcon(MultipartFile mpf, AppFileMetaDomain fileMeta, long appId) {
+        try {
+            // copy file to local disk (make sure the path "e.g. D:/temp/files" exists)
+            File f = new File(context.getRealPath("/"));
+            String absolutePath = generatorPathStoreIcon();
+            String localPath = f.getCanonicalPath() + File.separator + Utils.toMd5("data")
+                    + absolutePath;
+            f = new File(localPath);
+            Files.createParentDirs(f);
+            logger.debug("Create app icon " + localPath);
+            Thumbnails.of(mpf.getInputStream())
+                    .crop(Positions.CENTER)
+                    .size(84, 84)
+                    .outputFormat("png")
+                    .toFile(localPath);
+            //Create new fileMeta
+            fileMeta.setFileName(absolutePath);
+            fileMeta.setFileSize(mpf.getSize());
+
+            //Save info of file uploaded
+            saveUploadFile(appId, mpf.getSize(), localPath, absolutePath, AppCommon.FILE_ICON);
+        } catch (Exception ex) {
+            fileMeta.setFileName("");
+            fileMeta.setFileSize(0);
+        }
+    }
+
+    private void storeFileScreenShoots(MultipartFile mpf, long appId, LinkedList<AppFileMetaDomain> files) {
+        AppFileMetaDomain fileMeta;
+        File f = new File(context.getRealPath("/"));
+        String absolutePath = generatorPathStoreScreenShoots();
+        fileMeta = createAppFileMetaDomain(absolutePath, mpf);
+        try {
+            String localPath = f.getCanonicalPath() + File.separator + Utils.toMd5("data")
+                    + absolutePath;
+            f = new File(localPath);
+            Files.createParentDirs(f);
+            logger.debug("Create app screenshoot " + localPath);
+            Thumbnails.of(mpf.getInputStream())
+                    .crop(Positions.CENTER)
+                    .size(240, 320)
+                    .outputFormat("png")
+                    .toFile(localPath);
+
+            //Save info of file uploaded
+            saveUploadFile(appId, mpf.getSize(), localPath, absolutePath, AppCommon.FILE_SCREENSHOOT);
+
+            //2.4 add to files
+            files.add(fileMeta);
+        } catch (IOException ex) {
+            FileUtils.deleteQuietly(f);
+            logger.error("Cannot upload screenshoot application.", ex);
+        }
     }
 }

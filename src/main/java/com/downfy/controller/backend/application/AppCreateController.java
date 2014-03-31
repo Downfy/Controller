@@ -114,12 +114,14 @@ public class AppCreateController extends AbstractController {
             if (domain.getAppId() != 0) {
                 AppDomain appDomain = appService.findById(domain.getAppId());
                 if (appDomain.getCreater() == getMyId()) {
+                    appDomain = domain.toAppDomain(appDomain);
                     appDomain.setUpdater(getMyId());
                     appDomain.setUpdated(new Date());
                     appService.updateAppInfo(appDomain, getMyId());
                 }
             } else {
-                AppDomain appDomain = domain.toAppDomain();
+                AppDomain appDomain = new AppDomain();
+                appDomain = domain.toAppDomain(appDomain);
                 appDomain.setUpdater(getMyId());
                 appDomain.setUpdated(new Date());
                 appDomain.setCreater(getMyId());
