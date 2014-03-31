@@ -381,7 +381,7 @@ public class AppVersionService {
             });
             logger.debug("Get keys from app " + appId + " ==> " + appIds);
             keys.addAll(myList);
-        } catch (NullPointerException ex) {
+        } catch (Exception ex) {
         }
         return keys;
     }

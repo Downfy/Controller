@@ -16,6 +16,7 @@
  */
 package com.downfy.controller.backend.application;
 
+import com.downfy.common.AppCommon;
 import com.downfy.common.ErrorMessage;
 import com.downfy.common.ValidationResponse;
 import com.downfy.controller.AbstractController;
@@ -110,15 +111,21 @@ public class AppCreateController extends AbstractController {
             return view(device, "backend/application/create");
         }
         try {
-            AppDomain appDomain = domain.toAppDomain();
-            appDomain.setUpdater(getMyId());
-            appDomain.setUpdated(new Date());
-            if (appDomain.getAppId() != 0) {
-                appService.updateAppInfo(appDomain, getMyId());
+            if (domain.getAppId() != 0) {
+                AppDomain appDomain = appService.findById(domain.getAppId());
+                if (appDomain.getCreater() == getMyId()) {
+                    appDomain.setUpdater(getMyId());
+                    appDomain.setUpdated(new Date());
+                    appService.updateAppInfo(appDomain, getMyId());
+                }
             } else {
+                AppDomain appDomain = domain.toAppDomain();
+                appDomain.setUpdater(getMyId());
+                appDomain.setUpdated(new Date());
                 appDomain.setCreater(getMyId());
                 appDomain.setCreated(new Date());
                 appDomain.setAppId(System.currentTimeMillis());
+                appDomain.setStatus(AppCommon.CREATED);
                 appService.save(appDomain);
             }
             setApps(uiModel);

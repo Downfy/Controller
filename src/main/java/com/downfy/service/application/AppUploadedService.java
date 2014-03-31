@@ -146,7 +146,7 @@ public class AppUploadedService {
             if (domain == null) {
                 this.logger.debug("App " + key + " object " + AppUploadedDomain.OBJECT_KEY + " not found");
             }
-        } catch (NumberFormatException ex) {
+        } catch (Exception ex) {
             this.logger.warn("Can't get from Redis", ex);
         }
         return domain;
@@ -190,7 +190,7 @@ public class AppUploadedService {
             });
             logger.debug("Get keys from app " + appId + " ==> " + appIds);
             keys.addAll(myList);
-        } catch (NullPointerException ex) {
+        } catch (Exception ex) {
         }
         return keys;
     }

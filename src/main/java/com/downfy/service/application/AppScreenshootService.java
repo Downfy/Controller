@@ -223,7 +223,7 @@ public class AppScreenshootService {
                     this.logger.debug("App " + key + " object " + AppScreenshootDomain.OBJECT_KEY + " not found");
                 }
             }
-        } catch (NumberFormatException ex) {
+        } catch (Exception ex) {
             this.logger.warn("Can't get from Redis", ex);
         }
         return domain;
@@ -319,7 +319,7 @@ public class AppScreenshootService {
             });
             logger.debug("Get keys from app " + appId + " ==> " + appIds);
             keys.addAll(myList);
-        } catch (NullPointerException ex) {
+        } catch (Exception ex) {
         }
         return keys;
     }

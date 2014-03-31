@@ -286,7 +286,7 @@ public class AppService {
                     this.logger.debug("App " + key + " object " + AppDomain.OBJECT_KEY + " not found");
                 }
             }
-        } catch (NumberFormatException ex) {
+        } catch (Exception ex) {
             this.logger.warn("Can't get from Redis", ex);
         }
         return domain;
@@ -414,7 +414,7 @@ public class AppService {
             });
             logger.debug("Get keys from developer " + developerId + " ==> " + appIds);
             keys.addAll(myList);
-        } catch (NullPointerException ex) {
+        } catch (Exception ex) {
         }
         return keys;
     }

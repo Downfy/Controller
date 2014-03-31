@@ -258,7 +258,7 @@ public class AppApkService {
             if (domain == null) {
                 this.logger.debug("App " + appPackage + ":" + appVersion + " object " + AppApkDomain.OBJECT_KEY + " not found");
             }
-        } catch (NumberFormatException ex) {
+        } catch (Exception ex) {
             this.logger.warn("Can't get from Redis", ex);
         }
         return domain;
@@ -354,7 +354,7 @@ public class AppApkService {
             });
             logger.debug("Get keys from app " + appId + " ==> " + appIds);
             keys.addAll(myList);
-        } catch (NullPointerException ex) {
+        } catch (Exception ex) {
         }
         return keys;
     }
@@ -366,7 +366,7 @@ public class AppApkService {
                 List<String> myList = new ArrayList<String>(appIds);
                 return Long.valueOf(myList.get(0));
             }
-        } catch (NumberFormatException ex) {
+        } catch (Exception ex) {
         }
         return 0;
     }

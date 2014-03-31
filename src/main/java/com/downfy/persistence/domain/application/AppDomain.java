@@ -18,6 +18,7 @@ package com.downfy.persistence.domain.application;
 
 import com.downfy.common.ObjectKey;
 import com.downfy.persistence.domain.DomainObject;
+import com.google.common.base.Objects;
 import java.util.Date;
 
 /*
@@ -153,13 +154,13 @@ public class AppDomain implements DomainObject {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("[App:").append(getAppId()).append(",");
-        sb.append("Name:").append(getAppName()).append(",");
-        sb.append("Description:").append(getAppDescription()).append(",");
-        sb.append("AppIcon:").append(getAppIcon()).append(",");
-        sb.append("Category:").append(getAppCategory()).append("]");
-        return sb.toString();
+        return Objects.toStringHelper(this)
+                .add("App", getAppId())
+                .add("Name", getAppName())
+                .add("Description", getAppDescription())
+                .add("Status", getStatus())
+                .add("Category", getAppCategory())
+                .toString();
     }
 
     @Override
