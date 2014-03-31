@@ -35,6 +35,7 @@ public class AppDetailForm {
     private long appId;
     private String appName;
     private String appDescription;
+    private String appAuthor;
     private String appCategory;
     private String appCategoryParent;
     private List<CategorySelectorForm> appCategories;
@@ -62,6 +63,14 @@ public class AppDetailForm {
 
     public void setAppDescription(String appDescription) {
         this.appDescription = appDescription;
+    }
+
+    public String getAppAuthor() {
+        return appAuthor;
+    }
+
+    public void setAppAuthor(String appAuthor) {
+        this.appAuthor = appAuthor;
     }
 
     public String getAppCategory() {
@@ -100,6 +109,7 @@ public class AppDetailForm {
         AppDomain domain = new AppDomain();
         domain.setAppName(getAppName());
         domain.setAppDescription(getAppDescription());
+        domain.setAppAuthor(getAppAuthor());
         domain.setAppCategory(getAppCategory());
         domain.setAppIcon(getAppIcon());
         return domain;
@@ -108,6 +118,7 @@ public class AppDetailForm {
     public void fromAppDomain(AppDomain domain) {
         setAppId(domain.getAppId());
         setAppName(domain.getAppName());
+        setAppAuthor(domain.getAppAuthor());
         setAppDescription(domain.getAppDescription());
         setAppCategory(domain.getAppCategory());
         setAppIcon(domain.getAppIcon());

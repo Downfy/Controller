@@ -27,7 +27,10 @@ DROP TABLE IF EXISTS `apps`;
 CREATE TABLE IF NOT EXISTS `apps` (
   `app_id` bigint(20) unsigned NOT NULL,
   `app_name` varchar(250) NOT NULL,
-  `app_description` text,
+  `app_description` text DEFAULT NULL,
+  `app_review_title` varchar(160) DEFAULT NULL,
+  `app_review_description` text DEFAULT NULL,
+  `app_author` varchar(100) DEFAULT NULL,
   `app_category` varchar(20) DEFAULT NULL,
   `app_view` int(10) unsigned NOT NULL DEFAULT '0',
   `app_download` int(10) unsigned NOT NULL DEFAULT '0',

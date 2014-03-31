@@ -33,6 +33,7 @@ public class AppCreateForm {
     private long appId;
     private String appName;
     private String appDescription;
+    private String appAuthor;
     private String appCategory;
     private String appCategoryParent;
     private String appIcon;
@@ -59,6 +60,14 @@ public class AppCreateForm {
 
     public void setAppDescription(String appDescription) {
         this.appDescription = appDescription;
+    }
+
+    public String getAppAuthor() {
+        return appAuthor;
+    }
+
+    public void setAppAuthor(String appAuthor) {
+        this.appAuthor = appAuthor;
     }
 
     public String getAppCategory() {
@@ -88,6 +97,7 @@ public class AppCreateForm {
     public AppDomain toAppDomain(AppDomain current) {
         current.setAppName(getAppName());
         current.setAppDescription(getAppDescription());
+        current.setAppAuthor(getAppAuthor());
         current.setAppCategory(getAppCategory());
         current.setAppIcon(getAppIcon());
         return current;

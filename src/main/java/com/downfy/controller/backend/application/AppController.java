@@ -135,6 +135,23 @@ public class AppController extends AbstractController {
         return view(device, "maintenance");
     }
 
+    @RequestMapping(value = "/preview/{package}", method = RequestMethod.GET)
+    public String preview(@PathVariable("package") String appPackage, HttpServletRequest request, Device device, Model uiModel) {
+        try {
+            logger.info("View app by package " + appPackage);
+            AppDomain appDomain = appService.findById(appPackage);
+            if (appDomain != null) {
+                uiModel.addAttribute("app", appDomain);
+                return view(device, "application/view");
+            } else {
+                return "resourceNotFound";
+            }
+        } catch (Exception ex) {
+            logger.error("Cannot view app id " + appPackage, ex);
+        }
+        return view(device, "maintenance");
+    }
+
     @RequestMapping(value = "/{id}/apk", method = RequestMethod.GET)
     public String apk(@PathVariable("id") long appId, HttpServletRequest request, Device device, Model uiModel) {
         try {

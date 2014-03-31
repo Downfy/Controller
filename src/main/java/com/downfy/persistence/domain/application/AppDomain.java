@@ -37,6 +37,9 @@ public class AppDomain implements DomainObject {
     private long appId;
     private String appName;
     private String appDescription;
+    private String appReviewTitle;
+    private String appReviewDescription;
+    private String appAuthor;
     private String appCategory;
     private int appView;
     private int appDownload;
@@ -66,6 +69,30 @@ public class AppDomain implements DomainObject {
 
     public void setAppDescription(String appDescription) {
         this.appDescription = appDescription;
+    }
+
+    public String getAppAuthor() {
+        return appAuthor;
+    }
+
+    public void setAppAuthor(String appAuthor) {
+        this.appAuthor = appAuthor;
+    }
+
+    public String getAppReviewTitle() {
+        return appReviewTitle;
+    }
+
+    public void setAppReviewTitle(String appReviewTitle) {
+        this.appReviewTitle = appReviewTitle;
+    }
+
+    public String getAppReviewDescription() {
+        return appReviewDescription;
+    }
+
+    public void setAppReviewDescription(String appReviewDescription) {
+        this.appReviewDescription = appReviewDescription;
     }
 
     public void setAppName(String appName) {
