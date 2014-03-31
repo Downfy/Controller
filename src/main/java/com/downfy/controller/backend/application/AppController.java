@@ -142,7 +142,7 @@ public class AppController extends AbstractController {
     public String apk(@PathVariable("id") long appId, HttpServletRequest request, Device device, Model uiModel) {
         try {
             AppDomain curentApp = appService.findById(appId);
-            if (curentApp.getCreater() == getMyId()) {
+            if (curentApp != null && curentApp.getCreater() == getMyId()) {
                 logger.info("Load apk of app " + appId);
                 uiModel.addAttribute("app", curentApp);
                 List<AppVersionDownloadForm> apps = new ArrayList<AppVersionDownloadForm>();
@@ -287,7 +287,11 @@ public class AppController extends AbstractController {
                     AppDomain appDomain = appService.findById(apkMeta.getPackageName());
                     if (appDomain != null) {
                         if (appDomain.getCreater() == getMyId()) {
-                            checkFileApkUploaded(apkMeta, fileMeta, appId, mpf, localPath, absolutePath);
+                            if (appDomain.getAppId() != appId) {
+                                checkFileApkUploaded(apkMeta, fileMeta, appId, mpf, localPath, absolutePath);
+                            } else {
+                                fileMeta.setFileStatus(AppCommon.UPLOAD_PACKAGE_AVAILABLE_ANOTHER);
+                            }
                         } else {
                             fileMeta.setFileStatus(AppCommon.UPLOAD_PACKAGE_AVAILABLE);
                         }
