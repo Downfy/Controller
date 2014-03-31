@@ -44,6 +44,8 @@ public abstract class AbstractController {
     public long getMyId() {
         if (StringUtils.equals(getUsername(), "admin")) {
             return 1234567899;
+        } else if (StringUtils.equals(getUsername(), "developer")) {
+            return 1234567891;
         } else if (StringUtils.equals(getUsername(), "tuanta")) {
             return 1234567890;
         } else {

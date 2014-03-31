@@ -147,25 +147,6 @@ CREATE TABLE IF NOT EXISTS `app_version` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `app_uploaded`
---
-
-DROP TABLE IF EXISTS `app_uploaded`;
-CREATE TABLE IF NOT EXISTS `app_uploaded` (
-  `id` bigint(20) unsigned NOT NULL,
-  `app_path` varchar(200) DEFAULT NULL,
-  `status` int(1) NOT NULL DEFAULT '0',
-  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `creater` bigint(20) unsigned NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `status` (`status`),
-  KEY `created` (`created`),
-  KEY `creater` (`creater`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `app_view`
 --
 

@@ -116,7 +116,7 @@ public class AppVersionService {
                     }
                 }
             }
-            apps = getCacheObjects();
+            apps = getCacheObjects(appId);
         } catch (Exception ex) {
             this.logger.error("Find all apapp versionps of app " + appId + " error: " + ex, ex);
         }
@@ -267,8 +267,12 @@ public class AppVersionService {
 
     private void removeCacheObject(String key, long appId) {
         try {
-            this.getAppVersionRedisTemplate().opsForHash().delete(AppVersionDomain.OBJECT_KEY, key);
-            this.getLongRedisTemplate().opsForSet().remove(AppVersionTable.KEY + ":" + appId, key);
+            AppVersionDomain versionDomain = getCacheObject(key);
+            if (versionDomain != null) {
+                this.getAppVersionRedisTemplate().opsForHash().delete(AppVersionDomain.OBJECT_KEY, key);
+                this.getLongRedisTemplate().opsForSet().remove(AppVersionTable.KEY + ":" + appId, key);
+                this.getLongRedisTemplate().opsForSet().remove(AppVersionTable.KEY + ":" + appId + ":" + versionDomain.getAppVersion(), key);
+            }
         } catch (Exception ex) {
             this.logger.warn("Can't remove from Redis", ex);
         }
