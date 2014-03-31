@@ -46,6 +46,9 @@ public class BackendAppValidator
         if (Strings.isNullOrEmpty(form.getAppName())) {
             errors.rejectValue("appName", "app.namenotnull");
         }
+        if (Strings.isNullOrEmpty(form.getAppAuthor())) {
+            errors.rejectValue("appAuthor", "app.authornotnull");
+        }
         if (Strings.isNullOrEmpty(form.getAppCategory())) {
             errors.rejectValue("appCategory", "app.categorynotnull");
         }

@@ -19,6 +19,7 @@ package com.downfy.controller.frontend.appication;
 import com.downfy.controller.AbstractController;
 import com.downfy.controller.MyResourceMessage;
 import com.downfy.persistence.domain.application.AppDomain;
+import com.downfy.service.application.AppScreenshootService;
 import com.downfy.service.application.AppService;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -49,18 +50,22 @@ public class ApplicationViewController extends AbstractController {
     MyResourceMessage resourceMessage;
     @Autowired
     AppService appService;
+    @Autowired
+    AppScreenshootService appScreenshootService;
 
     @RequestMapping(value = "/app/*/{package}", method = RequestMethod.GET)
-    public String app(@PathVariable("package") String appPackage, HttpServletRequest request, Device device, Model model) {
+    public String app(@PathVariable("package") String appPackage, HttpServletRequest request, Device device, Model uiModel) {
         try {
             logger.info("View app by package " + appPackage);
             AppDomain appDomain = appService.findById(appPackage);
             if (appDomain != null) {
-                model.addAttribute("app", appDomain);
-                return view(device, "application/view");
-            } else {
-                return "resourceNotFound";
+                if (appDomain.getCreater() == getMyId()) {
+                    uiModel.addAttribute("app", appDomain);
+                    uiModel.addAttribute("screenshoots", appScreenshootService.findByApp(appDomain.getAppId()));
+                    return view(device, "application/view");
+                }
             }
+            return "resourceNotFound";
         } catch (Exception ex) {
             logger.error("Cannot view app id " + appPackage, ex);
         }

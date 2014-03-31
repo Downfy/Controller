@@ -16,6 +16,19 @@
         WHERE APP_ID = #{appId}
         AND STATUS > 0
     </select>
+    
+    <select id="findById" parameterType="long" resultType="AppScreenshootDomain">
+        SELECT
+        ID,
+        APP_ID as appId,
+        APP_SCREEN_SHOOT as appScreenShoot,
+        SIZE,
+        STATUS,
+        CREATED
+        FROM app_screen_shoots
+        WHERE ID = #{id}
+        AND STATUS > 0
+    </select>
 
     <select id="count" resultType="long">
         SELECT count(*) FROM app_screen_shoots
