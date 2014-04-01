@@ -72,6 +72,29 @@
         LIMIT 0, 1
     </select>
 
+    <select id="findByPackage" parameterType="String" resultType="AppDomain">
+        SELECT
+        APP_ID as appId,
+        APP_NAME as appName,
+        APP_DESCRIPTION as appDescription,
+        APP_REVIEW_TITLE as appReviewTitle,
+        APP_REVIEW_DESCRIPTION as appReviewDescription,
+        APP_AUTHOR as appAuthor,
+        APP_CATEGORY as appCategory,
+        APP_VIEW as appView,
+        APP_DOWNLOAD as appDownload,
+        APP_ICON as appIcon,
+        APP_PACKAGE as appPackage,
+        STATUS,
+        CREATED,
+        UPDATED,
+        CREATER,
+        UPDATER
+        FROM apps
+        WHERE APP_PACKAGE = #{package}
+        LIMIT 0, 1
+    </select>
+
     <select id="count" resultType="long">
         SELECT count(*) FROM apps
     </select>

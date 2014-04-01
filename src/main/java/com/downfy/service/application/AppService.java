@@ -96,9 +96,14 @@ public class AppService {
         return getCacheObject(appId + "");
     }
 
-    public AppDomain findById(String appPackage) {
+    public AppDomain findByPackage(String appPackage) {
         List<AppDomain> apps = getCacheObjects(appPackage);
         if (apps.isEmpty()) {
+            try {
+                return this.repository.findByPackage(appPackage);
+            } catch (Exception ex) {
+                this.logger.error("Find all app of package " + appPackage + " error", ex);
+            }
             return null;
         } else {
             return apps.get(0);
@@ -116,7 +121,7 @@ public class AppService {
                 }
             }
         } catch (Exception ex) {
-            this.logger.error("Find all app of developer " + developerId + " error: " + ex, ex);
+            this.logger.error("Find all app of developer " + developerId + " error", ex);
         }
         if (apps != null) {
             this.logger.info("Total get " + apps.size() + " app of developer " + developerId + ".");

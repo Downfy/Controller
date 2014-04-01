@@ -38,6 +38,8 @@ public interface AppRepository {
 
     public List<AppDomain> findByDeveloper(@Param("developerId") long developerId);
 
+    public AppDomain findByPackage(@Param("package") String appPackage);
+
     public long count();
 
     public long countByDeveloper(@Param("developerId") long developerId);

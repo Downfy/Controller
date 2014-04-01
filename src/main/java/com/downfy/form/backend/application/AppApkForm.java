@@ -98,6 +98,7 @@ public class AppApkForm {
             apkDomain.setId(id);
             apkDomain.setAppId(uploadedDomain.getAppId());
             apkDomain.setAppPath(uploadedDomain.getAppPath());
+            apkDomain.setAppSize(uploadedDomain.getSize());
             apkDomain.setStatus(AppCommon.CREATED);
             apkDomain.setGlEsVersion(apkMeta.getGlEsVersion());
             apkDomain.setLabel(apkMeta.getLabel());
@@ -110,6 +111,7 @@ public class AppApkForm {
             apkDomain.setVersionCode(apkMeta.getVersionCode());
             apkDomain.setVersionName(apkMeta.getVersionName());
             apkDomain.setCreater(uploadedDomain.getCreater());
+            apkDomain.setCreated(uploadedDomain.getCreated());
             return apkDomain;
         }
         return null;
@@ -122,6 +124,7 @@ public class AppApkForm {
             versionDomain.setId(id);
             versionDomain.setAppId(uploadedDomain.getAppId());
             versionDomain.setAppPath(uploadedDomain.getAppPath());
+            versionDomain.setAppSize(uploadedDomain.getSize());
             versionDomain.setStatus(AppCommon.CREATED);
             versionDomain.setAppPackage(apkMeta.getPackageName());
             versionDomain.setAppVersion(apkMeta.getVersionName());

@@ -19,6 +19,7 @@ package com.downfy.persistence.domain.application;
 import com.downfy.common.ObjectKey;
 import com.downfy.common.Utils;
 import com.downfy.persistence.domain.DomainObject;
+import java.util.Date;
 import net.dongliu.apk.parser.bean.ApkMeta;
 
 /**
@@ -32,7 +33,9 @@ public class AppApkDomain extends ApkMeta implements DomainObject {
     private long appId;
     private int status;
     private String appPath;
+    private long appSize;
     private long creater;
+    private Date created;
 
     public long getId() {
         return id;
@@ -66,6 +69,14 @@ public class AppApkDomain extends ApkMeta implements DomainObject {
         this.appPath = appPath;
     }
 
+    public long getAppSize() {
+        return appSize;
+    }
+
+    public void setAppSize(long appSize) {
+        this.appSize = appSize;
+    }
+
     public long getCreater() {
         return creater;
     }
@@ -74,12 +85,22 @@ public class AppApkDomain extends ApkMeta implements DomainObject {
         this.creater = creater;
     }
 
+    public Date getCreated() {
+        return created;
+    }
+
+    public void setCreated(Date created) {
+        this.created = created;
+    }
+
     public AppApkDomain fromAppVersion(String localPath, AppVersionDomain versionDomain) {
         ApkMeta apkMeta = Utils.getApkMeta(localPath);
         if (apkMeta != null) {
             AppApkDomain apkDomain = new AppApkDomain();
+            apkDomain.setId(versionDomain.getId());
             apkDomain.setAppId(versionDomain.getAppId());
             apkDomain.setAppPath(versionDomain.getAppPath());
+            apkDomain.setAppSize(versionDomain.getAppSize());
             apkDomain.setStatus(versionDomain.getStatus());
             apkDomain.setGlEsVersion(apkMeta.getGlEsVersion());
             apkDomain.setLabel(apkMeta.getLabel());
@@ -92,6 +113,7 @@ public class AppApkDomain extends ApkMeta implements DomainObject {
             apkDomain.setVersionCode(apkMeta.getVersionCode());
             apkDomain.setVersionName(apkMeta.getVersionName());
             apkDomain.setCreater(versionDomain.getCreater());
+            apkDomain.setCreated(versionDomain.getCreated());
             return apkDomain;
         }
         return null;

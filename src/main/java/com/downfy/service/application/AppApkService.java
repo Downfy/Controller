@@ -87,6 +87,17 @@ public class AppApkService {
         return getCacheObject(appPackage, appVersion);
     }
 
+    public AppApkDomain findNewestApkByAppId(long appId) {
+        List<AppApkDomain> versions = findByApp(appId);
+        if (!versions.isEmpty()) {
+            AppApkDomain appApkDomain = versions.get(0);
+            logger.debug("Newest version of app " + appApkDomain);
+            return appApkDomain;
+        } else {
+            return null;
+        }
+    }
+
     public List<AppApkDomain> findByApp(long appId) {
         List<AppApkDomain> apps = getCacheObjects(appId);
         if (apps.isEmpty()) {
@@ -96,10 +107,8 @@ public class AppApkService {
                 apkDomain = apkDomain.fromAppVersion(Utils.getFolderData(context, "data", appVersionDomain.getAppPath()), appVersionDomain);
                 if (apkDomain != null) {
                     apps.add(apkDomain);
+                    setCacheObject(apkDomain);
                 }
-            }
-            if (!apps.isEmpty()) {
-                setCacheObjects(apps);
             }
         }
         this.logger.info("Total get " + apps.size() + " app apk of app " + appId + ".");
@@ -223,7 +232,7 @@ public class AppApkService {
 
     private void putCacheObject(AppApkDomain domain, long appId) {
         try {
-            this.logger.debug("Put to cache " + domain);
+            this.logger.debug("Put to cache " + domain.getKey() + " ===> " + domain);
             this.getLongRedisTemplate().opsForSet().add(AppApkTable.KEY + ":" + appId, domain.getKey());
             this.getLongRedisTemplate().opsForSet().add(AppApkTable.KEY + ":" + domain.getPackageName(), domain.getCreater() + "");
             this.getAppApkRedisTemplate().opsForHash().put(AppApkDomain.OBJECT_KEY, domain.getPackageName() + ":" + domain.getVersionName(), domain);
@@ -319,11 +328,9 @@ public class AppApkService {
         return 0;
     }
 
-    private void setCacheObjects(List<AppApkDomain> domains) {
+    private void setCacheObject(AppApkDomain domain) {
         try {
-            for (AppApkDomain domain : domains) {
-                putCacheObject(domain, domain.getAppId());
-            }
+            putCacheObject(domain, domain.getAppId());
         } catch (Exception ex) {
             this.logger.warn("Can't set objects " + AppApkDomain.OBJECT_KEY + " to Redis", ex);
         }
@@ -349,7 +356,7 @@ public class AppApkService {
             Collections.sort(myList, new Comparator<String>() {
                 @Override
                 public int compare(String id01, String id02) {
-                    return id01.compareTo(id02);
+                    return id02.compareTo(id01);
                 }
             });
             logger.debug("Get keys from app " + appId + " ==> " + appIds);

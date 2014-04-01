@@ -16,6 +16,7 @@
  */
 package com.downfy.service.application;
 
+import com.downfy.common.AppCommon;
 import com.downfy.persistence.domain.application.AppUploadedDomain;
 import com.downfy.persistence.table.AppUploadedTable;
 import java.io.File;
@@ -93,6 +94,15 @@ public class AppUploadedService {
         return account != null;
     }
 
+    public boolean isExsit(String appPackage, int type) {
+        List<AppUploadedDomain> apps = getCacheObjects(appPackage, type);
+        return apps.isEmpty();
+    }
+
+    public long getCreater(String appPackage, int type) {
+        return getCreaterByPackage(appPackage, type);
+    }
+
     public boolean save(AppUploadedDomain domain) {
         try {
             putCacheObject(domain, domain.getAppId());
@@ -123,6 +133,7 @@ public class AppUploadedService {
         try {
             this.logger.debug("Put to cache " + AppUploadedTable.KEY + ":" + domain.getType() + ":" + appId + " ==> " + domain.getKey());
             this.getLongRedisTemplate().opsForSet().add(AppUploadedTable.KEY + ":" + domain.getType() + ":" + appId, domain.getKey());
+            this.getLongRedisTemplate().opsForSet().add(AppUploadedTable.KEY + ":" + domain.getType() + ":" + domain.getAppPackage(), domain.getCreater() + "");
             this.getAppUploadedRedisTemplate().opsForHash().put(AppUploadedDomain.OBJECT_KEY, domain.getKey(), domain);
         } catch (Exception ex) {
             this.logger.warn("Can't put data to cache", ex);
@@ -131,8 +142,10 @@ public class AppUploadedService {
 
     private void removeCacheObject(String key, long appId, int type) {
         try {
+            AppUploadedDomain uploadedDomain = getCacheObject(key);
             this.logger.debug("Remove key " + key + " object " + AppUploadedDomain.OBJECT_KEY + " in cache");
             this.getLongRedisTemplate().opsForSet().remove(AppUploadedTable.KEY + ":" + type + ":" + appId, key);
+            this.getLongRedisTemplate().opsForSet().remove(AppUploadedTable.KEY + ":" + type + ":" + uploadedDomain.getAppPackage(), uploadedDomain.getCreater() + "");
             this.getAppUploadedRedisTemplate().opsForHash().delete(AppUploadedDomain.OBJECT_KEY, key);
         } catch (Exception ex) {
             this.logger.warn("Can't remove from Redis", ex);
@@ -154,6 +167,19 @@ public class AppUploadedService {
 
     private List<AppUploadedDomain> getCacheObjects(long appId, int type) {
         Collection<Object> keys = getKeys(appId, type);
+        List<AppUploadedDomain> apps = new ArrayList<AppUploadedDomain>();
+        try {
+            for (Object user : this.getAppUploadedRedisTemplate().opsForHash().multiGet(AppUploadedDomain.OBJECT_KEY, keys)) {
+                apps.add((AppUploadedDomain) user);
+            }
+        } catch (Exception ex) {
+            this.logger.warn("Can't get all objects " + AppUploadedDomain.OBJECT_KEY + " from Redis", ex);
+        }
+        return apps;
+    }
+
+    private List<AppUploadedDomain> getCacheObjects(String appPackapge, int type) {
+        Collection<Object> keys = getKeys(appPackapge, type);
         List<AppUploadedDomain> apps = new ArrayList<AppUploadedDomain>();
         try {
             for (Object user : this.getAppUploadedRedisTemplate().opsForHash().multiGet(AppUploadedDomain.OBJECT_KEY, keys)) {
@@ -193,5 +219,36 @@ public class AppUploadedService {
         } catch (Exception ex) {
         }
         return keys;
+    }
+
+    private Collection<Object> getKeys(String appPackage, int type) {
+        Collection<Object> keys = new ArrayList<Object>();
+        try {
+            Set<String> appIds = this.getLongRedisTemplate().opsForSet().members(AppUploadedTable.KEY + ":" + type + ":" + appPackage);
+            List<String> myList = new ArrayList<String>(appIds);
+            Collections.sort(myList, new Comparator<String>() {
+                @Override
+                public int compare(String id01, String id02) {
+                    return id01.compareTo(id02);
+                }
+            });
+            logger.debug("Get keys from package " + appPackage + " ==> " + appIds);
+            keys.addAll(myList);
+        } catch (Exception ex) {
+        }
+        return keys;
+    }
+
+    private long getCreaterByPackage(String appPackage, int type) {
+        try {
+            Set<String> appIds = this.getLongRedisTemplate().opsForSet().members(AppUploadedTable.KEY + ":" + type + ":" + appPackage);
+            logger.debug("Get keys from package " + appPackage + " ==> " + appIds);
+            if (null != appIds && !appIds.isEmpty()) {
+                List<String> myList = new ArrayList<String>(appIds);
+                return Long.valueOf(myList.get(0));
+            }
+        } catch (Exception ex) {
+        }
+        return 0;
     }
 }

@@ -16,9 +16,11 @@
  */
 package com.downfy.controller.frontend.appication;
 
+import com.downfy.common.AppCommon;
 import com.downfy.controller.AbstractController;
 import com.downfy.controller.MyResourceMessage;
 import com.downfy.persistence.domain.application.AppDomain;
+import com.downfy.service.application.AppApkService;
 import com.downfy.service.application.AppScreenshootService;
 import com.downfy.service.application.AppService;
 import javax.servlet.http.HttpServletRequest;
@@ -52,15 +54,20 @@ public class ApplicationViewController extends AbstractController {
     AppService appService;
     @Autowired
     AppScreenshootService appScreenshootService;
+    @Autowired
+    AppApkService appApkService;
 
     @RequestMapping(value = "/app/*/{package}", method = RequestMethod.GET)
     public String app(@PathVariable("package") String appPackage, HttpServletRequest request, Device device, Model uiModel) {
         try {
             logger.info("View app by package " + appPackage);
-            AppDomain appDomain = appService.findById(appPackage);
+            AppDomain appDomain = appService.findByPackage(appPackage);
             if (appDomain != null) {
-                if (appDomain.getCreater() == getMyId()) {
+                if (appDomain.getCreater() == getMyId()
+                        || appDomain.getStatus() == AppCommon.PENDING
+                        || appDomain.getStatus() == AppCommon.PUBLISHED) {
                     uiModel.addAttribute("app", appDomain);
+                    uiModel.addAttribute("apk", appApkService.findNewestApkByAppId(appDomain.getAppId()));
                     uiModel.addAttribute("screenshoots", appScreenshootService.findByApp(appDomain.getAppId()));
                     return view(device, "application/view");
                 }

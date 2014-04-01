@@ -20,6 +20,7 @@ import com.downfy.common.AppCommon;
 import com.downfy.common.Utils;
 import com.downfy.persistence.domain.application.AppVersionDomain;
 import com.downfy.persistence.repositories.application.AppVersionRepository;
+import com.downfy.persistence.table.AppApkTable;
 import com.downfy.persistence.table.AppVersionTable;
 import java.io.File;
 import java.util.ArrayList;
@@ -183,6 +184,10 @@ public class AppVersionService {
         return false;
     }
 
+    public long getCreater(String appPackage) {
+        return getCreaterByPackage(appPackage);
+    }
+
     public boolean isExsit(long appId) {
         AppVersionDomain account = getCacheObject(appId + "");
         return account != null;
@@ -241,6 +246,7 @@ public class AppVersionService {
         try {
             this.logger.debug("Put to cache " + domain);
             this.getLongRedisTemplate().opsForSet().add(AppVersionTable.KEY + ":" + appId, domain.getKey());
+            this.getLongRedisTemplate().opsForSet().add(AppVersionTable.KEY + ":" + domain.getAppPackage(), domain.getCreater() + "");
             this.getLongRedisTemplate().opsForSet().add(AppVersionTable.KEY + ":" + appId + ":" + domain.getAppVersion(), domain.getKey());
             this.getAppVersionRedisTemplate().opsForHash().put(AppVersionDomain.OBJECT_KEY, domain.getKey(), domain);
         } catch (Exception ex) {
@@ -388,5 +394,17 @@ public class AppVersionService {
         } catch (Exception ex) {
         }
         return keys;
+    }
+
+    private long getCreaterByPackage(String appPackage) {
+        try {
+            Set<String> appIds = this.getLongRedisTemplate().opsForSet().members(AppVersionTable.KEY + ":" + appPackage);
+            if (null != appIds && !appIds.isEmpty()) {
+                List<String> myList = new ArrayList<String>(appIds);
+                return Long.valueOf(myList.get(0));
+            }
+        } catch (Exception ex) {
+        }
+        return 0;
     }
 }
