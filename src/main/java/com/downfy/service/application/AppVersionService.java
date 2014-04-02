@@ -22,6 +22,7 @@ import com.downfy.persistence.domain.application.AppVersionDomain;
 import com.downfy.persistence.repositories.application.AppVersionRepository;
 import com.downfy.persistence.table.AppApkTable;
 import com.downfy.persistence.table.AppVersionTable;
+import com.google.api.client.repackaged.com.google.common.base.Objects;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -191,6 +192,15 @@ public class AppVersionService {
     public boolean isExsit(long appId) {
         AppVersionDomain account = getCacheObject(appId + "");
         return account != null;
+    }
+
+    public boolean isExsit(String appPackage, long appId) {
+        List<AppVersionDomain> apks = getCacheObjects(appId);
+        if (apks.isEmpty()) {
+            return false;
+        } else {
+            return Objects.equal(apks.get(0).getAppPackage(), appPackage);
+        }
     }
 
     public boolean isExsit(long appId, String version) {

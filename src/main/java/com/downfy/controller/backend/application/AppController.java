@@ -232,60 +232,48 @@ public class AppController extends AbstractController {
     }
 
     private void checkFileApkUploaded(AppDomain appDomain, ApkMeta apkMeta, AppFileMetaDomain fileMeta, long appId, long size, String localPath, String absolutePath) {
-        logger.debug("===================================> 111");
         long creater = appApkService.getCreater(apkMeta.getPackageName());
         if (creater == 0) {
-            logger.debug("===================================> 121");
             creater = appUploadedService.getCreater(apkMeta.getPackageName(), AppCommon.FILE_APK);
             if (creater == 0) {
-                logger.debug("===================================> 1211");
                 List<AppUploadedDomain> apks = appUploadedService.findByType(appId, AppCommon.FILE_APK);
                 if (apks.isEmpty()) {
-                    logger.debug("===================================> 12111");
                     saveUploadFile(appId, apkMeta.getVersionName(), apkMeta.getPackageName(), size, localPath, absolutePath, AppCommon.FILE_APK);
                 } else {
-                    logger.debug("===================================> 12112");
                     AppUploadedDomain uploadedDomain = apks.get(0);
                     if (Objects.equal(uploadedDomain.getAppPackage(), apkMeta.getPackageName())) {
                         if (appUploadedService.isExsit(apkMeta.getPackageName(), apkMeta.getVersionName())) {
-                            logger.debug("===================================> 11123");
                             fileMeta.setFileStatus(AppCommon.UPLOAD_FILE_EXIST);
                         } else if (appApkService.isExsit(apkMeta.getPackageName(), apkMeta.getVersionName())) {
-                            logger.debug("===================================> 11124");
                             fileMeta.setFileStatus(AppCommon.UPLOAD_FILE_EXIST);
                         } else if (appVersionService.isExsit(appId, apkMeta.getVersionName())) {
-                            logger.debug("===================================> 11125");
                             fileMeta.setFileStatus(AppCommon.UPLOAD_FILE_EXIST);
                         } else {
                             //Save info of file uploaded
-                            logger.debug("===================================> 11122");
                             saveUploadFile(appId, apkMeta.getVersionName(), apkMeta.getPackageName(), size, localPath, absolutePath, AppCommon.FILE_APK);
                         }
                     } else {
-                        logger.debug("===================================> 121123");
                         fileMeta.setFileStatus(AppCommon.UPLOAD_PACKAGE_NOT_MATCH);
                     }
                 }
             } else if (getMyId() == creater) {
-                logger.debug("===================================> 22222222222");
                 if (appUploadedService.isExsit(apkMeta.getPackageName(), apkMeta.getVersionName())) {
-                    logger.debug("===================================> 11123");
-                    fileMeta.setFileStatus(AppCommon.UPLOAD_PACKAGE_AVAILABLE_ANOTHER);
+                    if (appUploadedService.isExsit(apkMeta.getPackageName(), appId)) {
+                        fileMeta.setFileStatus(AppCommon.UPLOAD_FILE_EXIST);
+                    } else {
+                        fileMeta.setFileStatus(AppCommon.UPLOAD_PACKAGE_AVAILABLE_ANOTHER);
+                    }
                 } else if (appApkService.isExsit(apkMeta.getPackageName(), apkMeta.getVersionName())) {
-                    logger.debug("===================================> 11124");
                     fileMeta.setFileStatus(AppCommon.UPLOAD_FILE_EXIST);
                 } else if (appVersionService.isExsit(appId, apkMeta.getVersionName())) {
-                    logger.debug("===================================> 11125");
                     fileMeta.setFileStatus(AppCommon.UPLOAD_FILE_EXIST);
                 } else {
                     fileMeta.setFileStatus(AppCommon.UPLOAD_PACKAGE_AVAILABLE_ANOTHER);
                 }
             } else {
-                logger.debug("===================================> 33333333333");
                 fileMeta.setFileStatus(AppCommon.UPLOAD_PACKAGE_AVAILABLE);
             }
         } else if (getMyId() == creater) {
-            logger.debug("===================================> 112");
             if (appApkService.isExsit(apkMeta.getPackageName(), apkMeta.getVersionName())) {
                 if (appDomain.getAppId() == appId) {
                     fileMeta.setFileStatus(AppCommon.UPLOAD_FILE_EXIST);
@@ -296,7 +284,6 @@ public class AppController extends AbstractController {
                 saveUploadFile(appId, apkMeta.getVersionName(), apkMeta.getPackageName(), size, localPath, absolutePath, AppCommon.FILE_APK);
             }
         } else {
-            logger.debug("===================================> 113");
             fileMeta.setFileStatus(AppCommon.UPLOAD_PACKAGE_AVAILABLE);
         }
     }
@@ -381,18 +368,13 @@ public class AppController extends AbstractController {
             fileMeta.setFilePackage(apkMeta.getPackageName());
             AppDomain appPackageDomain = appService.findByPackage(apkMeta.getPackageName());
             if (appPackageDomain != null) {
-                logger.debug("===================================> 11");
                 if (appPackageDomain.getCreater() == getMyId()) {
-                    logger.debug("===================================> 111");
                     if (appPackageDomain.getAppId() == appId) {
-                        logger.debug("===================================> 1111");
                         checkFileApkUploaded(appPackageDomain, apkMeta, fileMeta, appId, size, localPath, absolutePath);
                     } else {
-                        logger.debug("===================================> 1112");
                         fileMeta.setFileStatus(AppCommon.UPLOAD_PACKAGE_AVAILABLE_ANOTHER);
                     }
                 } else {
-                    logger.debug("===================================> 112");
                     AppVersionDomain appCurrentDomain = appVersionService.findById(appId);
                     if (Objects.equal(appCurrentDomain.getAppPackage(), appPackageDomain.getAppPackage())) {
                         fileMeta.setFileStatus(AppCommon.UPLOAD_FILE_EXIST);
@@ -401,30 +383,21 @@ public class AppController extends AbstractController {
                     }
                 }
             } else {
-                logger.debug("===================================> 02");
                 AppDomain appCurrentDomain = appService.findById(appId);
                 if (Objects.equal(appCurrentDomain.getAppPackage(), apkMeta.getPackageName())) {
-                    logger.debug("===================================> 221");
                     if (appCurrentDomain.getCreater() == getMyId()) {
-                        logger.debug("===================================> 2221");
                         if (appCurrentDomain.getAppId() == appId) {
-                            logger.debug("===================================> 22222");
                             fileMeta.setFileStatus(AppCommon.UPLOAD_PACKAGE_AVAILABLE);
                         } else {
-                            logger.debug("===================================> 2222");
                             checkFileApkUploaded(appPackageDomain, apkMeta, fileMeta, appId, size, localPath, absolutePath);
                         }
                     } else {
-                        logger.debug("===================================> 222");
                         fileMeta.setFileStatus(AppCommon.UPLOAD_PACKAGE_AVAILABLE);
                     }
                 } else {
-                    logger.debug("===================================> 22");
                     if (Strings.isNullOrEmpty(appCurrentDomain.getAppPackage())) {
-                        logger.debug("===================================> 221");
                         checkFileApkUploaded(appPackageDomain, apkMeta, fileMeta, appId, size, localPath, absolutePath);
                     } else {
-                        logger.debug("===================================> 222");
                         fileMeta.setFileStatus(AppCommon.UPLOAD_PACKAGE_NOT_MATCH);
                     }
                 }
@@ -468,7 +441,7 @@ public class AppController extends AbstractController {
             logger.debug("Create app apk " + localPath);
             FileCopyUtils.copy(mpf.getInputStream(), new FileOutputStream(localPath));
             responseFileApkStatus(localPath, fileMeta, appId, mpf.getSize(), absolutePath);
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             fileMeta.setFileStatus(AppCommon.UPLOAD_FAILRE);
         }
         if (fileMeta.getFileStatus() != AppCommon.UPLOAD_SUCCESS) {

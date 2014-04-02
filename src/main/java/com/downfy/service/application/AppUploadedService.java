@@ -19,6 +19,7 @@ package com.downfy.service.application;
 import com.downfy.common.AppCommon;
 import com.downfy.persistence.domain.application.AppUploadedDomain;
 import com.downfy.persistence.table.AppUploadedTable;
+import com.google.api.client.repackaged.com.google.common.base.Objects;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -87,6 +88,15 @@ public class AppUploadedService {
     public boolean isExsit(long appId) {
         AppUploadedDomain account = getCacheObject(appId + "");
         return account != null;
+    }
+
+    public boolean isExsit(String appPackage, long appId) {
+        List<AppUploadedDomain> apks = findByType(appId, AppCommon.FILE_APK);
+        if (apks.isEmpty()) {
+            return false;
+        } else {
+            return Objects.equal(apks.get(0).getAppPackage(), appPackage);
+        }
     }
 
     public boolean isExsit(String appPackage, String appVersion) {
