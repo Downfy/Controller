@@ -20,7 +20,6 @@ import com.downfy.common.AppCommon;
 import com.downfy.common.Utils;
 import com.downfy.persistence.domain.application.AppVersionDomain;
 import com.downfy.persistence.repositories.application.AppVersionRepository;
-import com.downfy.persistence.table.AppApkTable;
 import com.downfy.persistence.table.AppVersionTable;
 import com.google.api.client.repackaged.com.google.common.base.Objects;
 import java.io.File;

@@ -81,22 +81,28 @@ public class AppApkService {
     }
 
     public AppApkDomain findById(long appId) {
-        return getCacheObject(appId + "");
+        return findApkByVersion(getCacheObject(appId + ""));
     }
 
     public AppApkDomain findById(String appPackage, String appVersion) {
-        return getCacheObject(appPackage, appVersion);
+        return findApkByVersion(getCacheObject(appPackage, appVersion));
     }
 
     public AppApkDomain findNewestApkByAppId(long appId) {
         List<AppApkDomain> versions = findByApp(appId);
         if (!versions.isEmpty()) {
             AppApkDomain appApkDomain = versions.get(0);
-            logger.debug("Newest version of app " + appApkDomain);
-            return appApkDomain;
+            return findApkByVersion(appApkDomain);
         } else {
             return null;
         }
+    }
+
+    private AppApkDomain findApkByVersion(AppApkDomain appApkDomain) {
+        AppVersionDomain appVersionDomain = this.appVersionService.findById(appApkDomain.getId());
+        appApkDomain = appApkDomain.fromAppVersion(Utils.getFolderData(context, "data", appVersionDomain.getAppPath()), appVersionDomain);
+        logger.debug("Newest version of app " + appApkDomain.getId() + "=====> " + appApkDomain);
+        return appApkDomain;
     }
 
     public List<AppApkDomain> findByApp(long appId) {
@@ -285,9 +291,17 @@ public class AppApkService {
 
     private void removeCacheObject(String key, long appId) {
         try {
-            this.logger.debug("Remove key " + key + " object " + AppApkDomain.OBJECT_KEY + " in cache");
-            this.getAppApkRedisTemplate().opsForHash().delete(AppApkDomain.OBJECT_KEY, key);
-            this.getLongRedisTemplate().opsForSet().remove(AppApkTable.KEY + ":" + appId, key);
+            AppApkDomain domain = getCacheObject(key);
+            if (domain != null) {
+                this.logger.debug("Remove key " + key + " object " + AppApkDomain.OBJECT_KEY + " in cache");
+                this.getAppApkRedisTemplate().opsForHash().delete(AppApkDomain.OBJECT_KEY, domain.getPackageName() + ":" + domain.getVersionName());
+                this.getAppApkRedisTemplate().opsForHash().delete(AppApkDomain.OBJECT_KEY, key);
+                this.getLongRedisTemplate().opsForSet().remove(AppApkTable.KEY + ":" + appId, key);
+                List<AppApkDomain> apks = findByApp(appId);
+                if (apks.isEmpty()) {
+                    this.getLongRedisTemplate().opsForSet().remove(AppApkTable.KEY + ":" + domain.getPackageName(), domain.getCreater() + "");
+                }
+            }
         } catch (Exception ex) {
             this.logger.warn("Can't remove from Redis", ex);
         }
@@ -384,6 +398,7 @@ public class AppApkService {
                 return Long.valueOf(myList.get(0));
             }
         } catch (Exception ex) {
+            logger.error(ex.getMessage(), ex);
         }
         return 0;
     }
