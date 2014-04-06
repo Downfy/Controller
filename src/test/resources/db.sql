@@ -233,9 +233,12 @@ CREATE TABLE IF NOT EXISTS `logs` (
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE IF NOT EXISTS `users` (
   `id` bigint(20) NOT NULL,
+  `username` varchar(200) NOT NULL,
   `password` varchar(200) NOT NULL,
   `enabled` tinyint(1) NOT NULL DEFAULT '0',
   `email` varchar(50) NOT NULL,
+  `firstName` varchar(200) NOT NULL,
+  `lastName` varchar(200) NOT NULL,
   `expiration_date` timestamp NULL DEFAULT NULL,
   `active_key` varchar(500) DEFAULT NULL,
   `failed_login_count` int(11) NOT NULL DEFAULT '0',
@@ -249,3 +252,32 @@ CREATE TABLE IF NOT EXISTS `users` (
   KEY `enabled` (`enabled`),
   KEY `created` (`created`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `accounts`;
+CREATE TABLE IF NOT EXISTS `accounts` (
+  `username` varchar(200) NOT NULL,
+  `password` varchar(200) NOT NULL,
+  `firstName` varchar(200) NOT NULL,
+  `lastName` varchar(200) NOT NULL,
+  PRIMARY KEY (`username`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `UserConnection`;
+CREATE TABLE IF NOT EXISTS `UserConnection` (
+    `userId` varchar(255) not null,
+    `providerId` varchar(255) not null,
+    `providerUserId` varchar(255),
+    `rank` int not null,  
+    `displayName` varchar(255),
+    `profileUrl` varchar(512),
+    `imageUrl` varchar(512),
+    `accessToken` varchar(255) not null,
+    `secret` varchar(255),
+    `refreshToken` varchar(255),
+    `expireTime` bigint,
+  PRIMARY KEY (`userId`, `providerId`, `providerUserId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+create unique index UserConnectionRank on UserConnection(userId, providerId, rank);

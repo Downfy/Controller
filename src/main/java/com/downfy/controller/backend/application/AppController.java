@@ -376,7 +376,9 @@ public class AppController extends AbstractController {
                     }
                 } else {
                     AppVersionDomain appCurrentDomain = appVersionService.findById(appId);
-                    if (Objects.equal(appCurrentDomain.getAppPackage(), appPackageDomain.getAppPackage())) {
+                    if (appCurrentDomain == null) {
+                        checkFileApkUploaded(appPackageDomain, apkMeta, fileMeta, appId, size, localPath, absolutePath);
+                    } else if (Objects.equal(appCurrentDomain.getAppPackage(), appPackageDomain.getAppPackage())) {
                         fileMeta.setFileStatus(AppCommon.UPLOAD_FILE_EXIST);
                     } else {
                         fileMeta.setFileStatus(AppCommon.UPLOAD_PACKAGE_NOT_MATCH);
@@ -442,6 +444,7 @@ public class AppController extends AbstractController {
             FileCopyUtils.copy(mpf.getInputStream(), new FileOutputStream(localPath));
             responseFileApkStatus(localPath, fileMeta, appId, mpf.getSize(), absolutePath);
         } catch (Exception ex) {
+            logger.error(ex.getMessage(), ex);
             fileMeta.setFileStatus(AppCommon.UPLOAD_FAILRE);
         }
         if (fileMeta.getFileStatus() != AppCommon.UPLOAD_SUCCESS) {

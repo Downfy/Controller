@@ -62,7 +62,6 @@ public class AccountServiceTest {
     @Test
     @DatabaseSetup("userDB.xml")
     public void testFindAll() {
-        service.clearCache();
         List<AccountDomain> accounts = service.findAll();
         Assert.assertEquals(2, accounts.size());
     }
@@ -71,7 +70,6 @@ public class AccountServiceTest {
     @DatabaseSetup("userDB.xml")
     @ExpectedDatabase(value = "userDB-add-expected.xml", assertionMode = DatabaseAssertionMode.NON_STRICT)
     public void testSave() {
-        service.clearCache();
         List<AccountDomain> accounts = service.findAll();
         Assert.assertEquals(2, accounts.size());
         AccountDomain account = new AccountDomain();
@@ -95,20 +93,6 @@ public class AccountServiceTest {
 
     @Test
     @DatabaseSetup("userDB.xml")
-    @ExpectedDatabase(value = "userDB-changepassword-expected.xml", assertionMode = DatabaseAssertionMode.NON_STRICT)
-    public void testChangePassword() {
-        Assert.assertTrue(service.changePassword("test@test.com", "fa820cc1ad39a4e99283e9fa555035ec"));
-    }
-
-    @Test
-    @DatabaseSetup("userDB.xml")
-    public void testFindByEmailAndPassword() {
-        service.clearCache();
-        Assert.assertNotNull(service.findByEmailAndPassword("test@test.com", "098f6bcd4621d373cade4e832627b4f6"));
-    }
-
-    @Test
-    @DatabaseSetup("userDB.xml")
     @ExpectedDatabase(value = "userDB.xml", assertionMode = DatabaseAssertionMode.NON_STRICT)
     public void testActive() {
         AccountDomain domain = service.findByEmail("test@test.com");
@@ -121,13 +105,6 @@ public class AccountServiceTest {
     public void testBlock() {
         AccountDomain domain = service.findByEmail("test@test.com");
         service.block(domain);
-    }
-
-    @Test
-    @DatabaseSetup("userDB.xml")
-    @ExpectedDatabase(value = "userDB-expected.xml", assertionMode = DatabaseAssertionMode.NON_STRICT)
-    public void testDelete() {
-        service.delete("test@test.com");
     }
 
     @Test

@@ -16,10 +16,19 @@
  */
 package com.downfy.controller.member;
 
+import com.downfy.common.ErrorMessage;
+import com.downfy.common.ValidationResponse;
+import com.downfy.controller.AbstractController;
+import com.downfy.controller.MyResourceMessage;
+import com.downfy.form.member.ChangePasswordForm;
+import com.downfy.form.validator.member.ChangePasswordValidator;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mobile.device.Device;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,16 +37,6 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import com.downfy.common.ErrorMessage;
-import com.downfy.common.Utils;
-import com.downfy.common.ValidationResponse;
-import com.downfy.controller.AbstractController;
-import com.downfy.controller.MyResourceMessage;
-import com.downfy.form.member.ChangePasswordForm;
-import com.downfy.form.validator.member.ChangePasswordValidator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.mobile.device.Device;
 
 /*
  * ChangePasswordController.java
@@ -88,7 +87,7 @@ public class ChangePasswordController extends AbstractController {
             return view(device, "member/changepassword");
         }
         try {
-            this.accountService.changePassword(getUsername(), Utils.toMd5(form.getNewPassword()));
+//            this.accountService.changePassword(getUsername(), Utils.toMd5(form.getNewPassword()));
             return view(device, "member/successchangepassword");
         } catch (Exception ex) {
             logger.error("Change password for user " + getUsername() + " error.", ex);

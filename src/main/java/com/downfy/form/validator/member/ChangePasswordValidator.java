@@ -17,8 +17,9 @@
 package com.downfy.form.validator.member;
 
 import com.downfy.common.Utils;
-import com.downfy.persistence.domain.AccountDomain;
+import com.downfy.form.member.ChangePasswordForm;
 import com.downfy.service.AccountService;
+import com.google.common.base.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,8 +27,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
-import com.downfy.form.member.ChangePasswordForm;
-import com.google.common.base.Strings;
 
 /*
  * ChangePasswordValidator.java
@@ -70,10 +69,10 @@ public class ChangePasswordValidator
             String oldPassword = form.getOldPassword();
             String encryptPassword = Utils.toMd5(oldPassword);
             try {
-                AccountDomain accountDomain = this.accountService.findByEmailAndPassword(getUsername(), encryptPassword);
-                if (accountDomain == null) {
-                    errors.rejectValue("oldPassword", "changepassword.invalidpassword");
-                }
+//                AccountDomain accountDomain = this.accountService.findByEmailAndPassword(getUsername(), encryptPassword);
+//                if (accountDomain == null) {
+//                    errors.rejectValue("oldPassword", "changepassword.invalidpassword");
+//                }
             } catch (Exception e) {
                 errors.rejectValue("oldPassword", "changepassword.invalidpassword");
             }

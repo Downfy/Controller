@@ -24,44 +24,6 @@
         ORDER BY CREATED DESC
     </select>
 
-    <select id="findByLimit" resultType="AccountDomain">
-        SELECT
-        ID,
-        PASSWORD,
-        EMAIL,
-        ENABLED,
-        FAILED_LOGIN_COUNT as failedLoginCount,
-        LAST_FAILED_LOGIN_TIME as lastFailedLoginTime,
-        LAST_HOST_ADDRESS as lastHostAddress,
-        LAST_LOGIN_TIME as lastLoginTime,
-        LAST_PASSWORD_CHANGE_TIME as lastPasswordChangeTime,
-        EXPIRATION_DATE as expirationDate,
-        CREATED
-        FROM users
-        ORDER BY #{orderBy}
-        LIMIT #{start}, #{end}
-    </select>
-
-    <select id="findByEmailAndPassword" parameterType="string" resultType="AccountDomain">
-        SELECT
-        ID,
-        PASSWORD,
-        EMAIL,
-        ENABLED,
-        FAILED_LOGIN_COUNT as failedLoginCount,
-        LAST_FAILED_LOGIN_TIME as lastFailedLoginTime,
-        LAST_HOST_ADDRESS as lastHostAddress,
-        LAST_LOGIN_TIME as lastLoginTime,
-        LAST_PASSWORD_CHANGE_TIME as lastPasswordChangeTime,
-        EXPIRATION_DATE as expirationDate,
-        CREATED
-        FROM users
-        WHERE EMAIL = #{username}
-        AND PASSWORD = #{password}
-        AND ENABLED = 1
-        LIMIT 0, 1
-    </select>
-
     <select id="findByEmail" parameterType="String" resultType="AccountDomain">
         SELECT
         ID,
@@ -98,25 +60,6 @@
         LIMIT 0, 1
     </select>
 
-    <select id="findByEnable" parameterType="boolean" resultType="AccountDomain">
-        SELECT
-        ID,
-        PASSWORD,
-        EMAIL,
-        ENABLED,
-        FAILED_LOGIN_COUNT as failedLoginCount,
-        LAST_FAILED_LOGIN_TIME as lastFailedLoginTime,
-        LAST_HOST_ADDRESS as lastHostAddress,
-        LAST_LOGIN_TIME as lastLoginTime,
-        LAST_PASSWORD_CHANGE_TIME as lastPasswordChangeTime,
-        EXPIRATION_DATE as expirationDate,
-        CREATED
-        FROM users
-        WHERE ENABLED = #{enabled}
-        ORDER BY CREATED
-        LIMIT #{start}, #{end}
-    </select>
-
     <select id="count" resultType="long">
         SELECT count(*) FROM users
     </select>
@@ -135,24 +78,4 @@
     <update id="block" parameterType="long">
         UPDATE users SET ENABLED = 0 WHERE ID = #{id}
     </update>
-
-    <update id="login" parameterType="AccountDomain">
-        UPDATE users
-        SET
-        LAST_HOST_ADDRESS = #{lastHostAddress},
-        LAST_LOGIN_TIME = #{lastLoginTime}
-        WHERE ID = #{id}
-    </update>
-
-    <update id="changePassword" parameterType="AccountDomain">
-        UPDATE users
-        SET
-        PASSWORD = #{password},
-        LAST_PASSWORD_CHANGE_TIME = #{lastPasswordChangeTime}
-        WHERE ID = #{id}
-    </update>
-
-    <delete id="delete" parameterType="long">
-        DELETE FROM users WHERE ID = #{id}
-    </delete>
 </mapper>
