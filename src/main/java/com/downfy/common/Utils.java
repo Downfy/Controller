@@ -277,7 +277,7 @@ public class Utils {
         value = value.replaceAll("[^a-zA-Z0-9\\-]+", "");
         value = value.replaceAll("---", "-");
         value = value.replaceAll("--", "-");
-        return value;
+        return value.toLowerCase();
     }
 
     /**
