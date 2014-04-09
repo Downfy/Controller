@@ -18,9 +18,13 @@ package com.downfy.social;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.WebAttributes;
+import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.social.connect.Connection;
@@ -35,6 +39,9 @@ public class SimpleSignInAdapter implements SignInAdapter {
 
     private final RequestCache requestCache;
 
+    @Autowired
+    RememberMeServices rememberMeServices;
+
     @Inject
     public SimpleSignInAdapter(RequestCache requestCache) {
         this.requestCache = requestCache;
@@ -43,6 +50,15 @@ public class SimpleSignInAdapter implements SignInAdapter {
     @Override
     public String signIn(String localUserId, Connection<?> connection, NativeWebRequest request) {
         SignInUtils.signin(localUserId);
+
+        HttpServletRequestWrapper wrapper = new HttpServletRequestWrapper(request.getNativeRequest(HttpServletRequest.class)) {
+            @Override
+            public String getParameter(String name) {
+                return "true";
+            }
+        };
+
+        rememberMeServices.loginSuccess(wrapper, request.getNativeResponse(HttpServletResponse.class), SecurityContextHolder.getContext().getAuthentication());
         return extractOriginalUrl(request);
     }
 

@@ -213,6 +213,26 @@ public class AppController extends AbstractController {
         return fileMeta;
     }
 
+    @RequestMapping(value = "/upload/{id}/landingpage", method = RequestMethod.POST)
+    @ResponseBody
+    public AppFileMetaDomain landingPage(@PathVariable("id") long appId, MultipartHttpServletRequest request, Device device, Model uiModel) {
+        MultipartFile mpf = request.getFile("appIconFile");
+        AppFileMetaDomain fileMeta = new AppFileMetaDomain();
+        if (Objects.equal("image/gif", mpf.getContentType())
+                || Objects.equal("image/jpeg", mpf.getContentType())
+                || Objects.equal("image/pjpeg", mpf.getContentType())
+                || Objects.equal("image/png", mpf.getContentType())) {
+            storeFileLandingPageImage(mpf, fileMeta, appId);
+        } else {
+            logger.debug("Don't support format icon content type: " + mpf.getContentType());
+            fileMeta.setFileName("");
+            fileMeta.setFileSize(0);
+            fileMeta.setFileStatus(AppCommon.UPLOAD_FAILRE);
+        }
+        fileMeta.setFileType(mpf.getContentType());
+        return fileMeta;
+    }
+
     @RequestMapping(value = "/upload/{id}/apk", method = RequestMethod.POST)
     @ResponseBody
     public AppFileMetaDomain apk(@PathVariable("id") long appId, MultipartHttpServletRequest request, Device device, Model uiModel) {
@@ -472,8 +492,35 @@ public class AppController extends AbstractController {
             logger.debug("Create app icon " + localPath);
             Thumbnails.of(mpf.getInputStream())
                     .crop(Positions.CENTER)
-                    .size(84, 84)
-                    .outputFormat("png")
+                    .size(AppCommon.ICON_WIDTH, AppCommon.ICON_HEIGHT)
+                    .outputFormat(AppCommon.IMAGE_FORMAT_PNG)
+                    .toFile(localPath);
+            //Create new fileMeta
+            fileMeta.setFileName(absolutePath);
+            fileMeta.setFileSize(mpf.getSize());
+
+            //Save info of file uploaded
+            saveUploadFile(appId, mpf.getSize(), localPath, absolutePath, AppCommon.FILE_ICON);
+        } catch (Exception ex) {
+            fileMeta.setFileName("");
+            fileMeta.setFileSize(0);
+        }
+    }
+
+    private void storeFileLandingPageImage(MultipartFile mpf, AppFileMetaDomain fileMeta, long appId) {
+        try {
+            // copy file to local disk (make sure the path "e.g. D:/temp/files" exists)
+            File f = new File(context.getRealPath("/"));
+            String absolutePath = generatorPathStoreIcon();
+            String localPath = f.getCanonicalPath() + File.separator + Utils.toMd5("data")
+                    + absolutePath;
+            f = new File(localPath);
+            Files.createParentDirs(f);
+            logger.debug("Create app landing page image " + localPath);
+            Thumbnails.of(mpf.getInputStream())
+                    .crop(Positions.CENTER)
+                    .size(AppCommon.LANDING_PAGE_WIDTH, AppCommon.LANDING_PAGE_HEIGHT)
+                    .outputFormat(AppCommon.IMAGE_FORMAT_PNG)
                     .toFile(localPath);
             //Create new fileMeta
             fileMeta.setFileName(absolutePath);
@@ -500,8 +547,8 @@ public class AppController extends AbstractController {
             logger.debug("Create app screenshoot " + localPath);
             Thumbnails.of(mpf.getInputStream())
                     .crop(Positions.CENTER)
-                    .size(240, 320)
-                    .outputFormat("png")
+                    .size(AppCommon.SCREENSHOOT_WIDTH, AppCommon.SCREENSHOOT_HEIGHT)
+                    .outputFormat(AppCommon.IMAGE_FORMAT_PNG)
                     .toFile(localPath);
 
             //Save info of file uploaded

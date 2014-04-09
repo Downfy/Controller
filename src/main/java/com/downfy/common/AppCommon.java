@@ -22,6 +22,17 @@ package com.downfy.common;
  */
 public class AppCommon {
 
+    //Imaages
+    public static final String IMAGE_FORMAT_PNG = "png";
+    //Icon size
+    public static final int ICON_WIDTH = 124;
+    public static final int ICON_HEIGHT = 124;
+    //Screen shoot
+    public static final int SCREENSHOOT_WIDTH = 240;
+    public static final int SCREENSHOOT_HEIGHT = 320;
+    //Landing page image
+    public static final int LANDING_PAGE_WIDTH = 480;
+    public static final int LANDING_PAGE_HEIGHT = 320;
     //App status
     public static final byte DELETED = 0;
     public static final byte BLOCKED = 1;
