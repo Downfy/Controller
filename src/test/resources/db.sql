@@ -233,7 +233,6 @@ CREATE TABLE IF NOT EXISTS `logs` (
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE IF NOT EXISTS `users` (
   `id` bigint(20) NOT NULL,
-  `username` varchar(200) NOT NULL,
   `password` varchar(200) NOT NULL,
   `enabled` tinyint(1) NOT NULL DEFAULT '0',
   `email` varchar(50) NOT NULL,
@@ -252,17 +251,6 @@ CREATE TABLE IF NOT EXISTS `users` (
   KEY `enabled` (`enabled`),
   KEY `created` (`created`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-
-DROP TABLE IF EXISTS `accounts`;
-CREATE TABLE IF NOT EXISTS `accounts` (
-  `username` varchar(200) NOT NULL,
-  `password` varchar(200) NOT NULL,
-  `firstName` varchar(200) NOT NULL,
-  `lastName` varchar(200) NOT NULL,
-  PRIMARY KEY (`username`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 
 DROP TABLE IF EXISTS `UserConnection`;
 CREATE TABLE IF NOT EXISTS `UserConnection` (
