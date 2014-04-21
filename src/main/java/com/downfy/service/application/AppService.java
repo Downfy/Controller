@@ -258,9 +258,9 @@ public class AppService {
         return false;
     }
 
-    public boolean delete(long key, long developerId) {
+    public boolean delete(long key) {
         try {
-            removeCacheObject(key + "", developerId);
+            removeCacheObject(key + "");
             this.repository.delete(key);
             this.logger.info("Delete success app " + key);
         } catch (Exception ex) {
@@ -297,20 +297,14 @@ public class AppService {
         return domain;
     }
 
-    private void removeCacheObject(String key, long developerId) {
-        try {
-            this.logger.debug("Remove key " + key + " object " + AppDomain.OBJECT_KEY + " in cache");
-            this.getAppVersionRedisTemplate().opsForHash().delete(AppDomain.OBJECT_KEY, key);
-            this.getLongRedisTemplate().opsForSet().remove(AppTable.KEY + ":" + developerId, key);
-        } catch (Exception ex) {
-            this.logger.warn("Can't remove from Redis", ex);
-        }
-    }
-
     private void removeCacheObject(String key) {
         try {
-            this.logger.debug("Remove key " + key + " object " + AppDomain.OBJECT_KEY + " in cache");
-            this.getAppVersionRedisTemplate().opsForHash().delete(AppDomain.OBJECT_KEY, key);
+            AppDomain domain = getCacheObject(key);
+            if (domain != null) {
+                this.logger.debug("Remove key " + key + " object " + AppDomain.OBJECT_KEY + " in cache");
+                this.getAppVersionRedisTemplate().opsForHash().delete(AppDomain.OBJECT_KEY, key);
+                this.getLongRedisTemplate().opsForSet().remove(AppTable.KEY + ":" + domain.getCreater(), key);
+            }
         } catch (Exception ex) {
             this.logger.warn("Can't remove from Redis", ex);
         }
@@ -387,7 +381,7 @@ public class AppService {
             this.logger.debug("Clear objects " + AppDomain.OBJECT_KEY + " in cache");
             List<AppDomain> objects = getCacheObjects();
             for (AppDomain appVersionDomain : objects) {
-                removeCacheObject(appVersionDomain.getKey(), developerId);
+                removeCacheObject(appVersionDomain.getKey());
             }
         } catch (Exception ex) {
             this.logger.warn("Can't count objects " + AppDomain.OBJECT_KEY + " from Redis", ex);

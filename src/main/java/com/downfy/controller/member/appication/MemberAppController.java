@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.downfy.controller.backend.application;
+package com.downfy.controller.member.appication;
 
 import com.downfy.common.AppCommon;
 import com.downfy.common.Utils;
@@ -75,12 +75,12 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
  *  --------------------------------------------------------
  *  26-Dec-2013     tuanta      Create first time
  */
-@PreAuthorize("hasRole('ROLE_MANAGER')")
-@RequestMapping("/backend/application")
+@PreAuthorize("isAuthenticated()")
+@RequestMapping("/member/application")
 @Controller
-public class AppController extends AbstractController {
+public class MemberAppController extends AbstractController {
 
-    private final Logger logger = LoggerFactory.getLogger(AppController.class);
+    private final Logger logger = LoggerFactory.getLogger(MemberAppController.class);
     @Autowired
     MyResourceMessage resourceMessage;
     @Autowired
@@ -110,7 +110,7 @@ public class AppController extends AbstractController {
         try {
             uiModel.addAttribute("applicationForm", new AppCreateForm());
             setApps(uiModel);
-            return view(device, "backend/application");
+            return view(device, "member/application");
         } catch (Exception ex) {
             logger.error("Cannot create application.", ex);
         }
@@ -126,9 +126,9 @@ public class AppController extends AbstractController {
                 CategoryDomain categoryDomain = categoryService.findByURL(appDomain.getAppCategory());
                 AppDetailForm form = getAppDetailForm(appId, appDomain, categoryDomain);
                 uiModel.addAttribute("app", form);
-                return view(device, "backend/application/detail");
+                return view(device, "member/application/detail");
             } else {
-                return "redirect:/backend/application.html";
+                return "redirect:/member/application.html";
             }
         } catch (Exception ex) {
             logger.error("Cannot create detail application.", ex);
@@ -147,9 +147,9 @@ public class AppController extends AbstractController {
                 uiModel.addAttribute("apps", versions);
                 uiModel.addAttribute("apks", appApkService.findByApp(appId));
                 uiModel.addAttribute("files", appUploadedService.findByType(appId, AppCommon.FILE_APK));
-                return view(device, "backend/application/apk");
+                return view(device, "member/application/apk");
             } else {
-                return "redirect:/backend/application.html";
+                return "redirect:/member/application.html";
             }
         } catch (Exception ex) {
             logger.error("Cannot upload application.", ex);
@@ -166,9 +166,9 @@ public class AppController extends AbstractController {
                 uiModel.addAttribute("verifyscreenshoots", appScreenshootService.findByApp(appId));
                 uiModel.addAttribute("app", currentApp);
                 uiModel.addAttribute("screenshoots", appUploadedService.findByType(appId, AppCommon.FILE_SCREENSHOOT));
-                return view(device, "backend/application/screenshoots");
+                return view(device, "member/application/screenshoots");
             } else {
-                return "redirect:/backend/application.html";
+                return "redirect:/member/application.html";
             }
         } catch (Exception ex) {
             logger.error("Cannot upload screenshoot application.", ex);
@@ -186,7 +186,7 @@ public class AppController extends AbstractController {
                     return view(device, "maintenance");
                 }
             }
-            return "redirect:/backend/application.html";
+            return "redirect:/member/application.html";
         } catch (Exception ex) {
             logger.error("Cannot request publish application.", ex);
         }

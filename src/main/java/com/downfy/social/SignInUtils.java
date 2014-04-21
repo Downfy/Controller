@@ -34,7 +34,7 @@ public class SignInUtils {
      * @param localUserId
      */
     public static void signin(String localUserId) {
-        logger.debug("Auto sign in " + localUserId);
+        logger.info("Auto sign in " + localUserId);
         List<GrantedAuthority> granterdAuthorities = new ArrayList();
         granterdAuthorities.add(new SimpleGrantedAuthority("ROLE_USER"));
 

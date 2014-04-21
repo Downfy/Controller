@@ -22,6 +22,9 @@ import com.downfy.social.SignInUtils;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.RememberMeServices;
@@ -37,6 +40,8 @@ import org.springframework.web.context.request.WebRequest;
 @RequestMapping("/autosignup")
 public class SignupController {
 
+    private final Logger logger = LoggerFactory.getLogger(SignupController.class);
+
     @Autowired
     RememberMeServices rememberMeServices;
 
@@ -48,27 +53,32 @@ public class SignupController {
         ProviderSignInUtils providerSignInUtils = new ProviderSignInUtils();
         Connection<?> connection = providerSignInUtils.getConnectionFromSession(webRequest);
         if (connection != null) {
-            SignInUtils.signin(connection.fetchUserProfile().getEmail());
-            providerSignInUtils.doPostSignUp(connection.fetchUserProfile().getEmail(), webRequest);
-            AccountDomain account = accountService.findByEmail(connection.fetchUserProfile().getEmail());
-            if (account == null) {
-                account = new AccountDomain();
-                account.setId(System.currentTimeMillis());
-                account.setPassword(Utils.toMd5(connection.fetchUserProfile().getUsername() + ":" + connection.fetchUserProfile().getEmail()));
-                account.setEmail(connection.fetchUserProfile().getEmail());
-                account.setEnabled(true);
-                accountService.save(account);
-            }
-
-            HttpServletRequestWrapper wrapper = new HttpServletRequestWrapper(request.getNativeRequest(HttpServletRequest.class)) {
-                @Override
-                public String getParameter(String name) {
-                    return "true";
+            String email = connection.fetchUserProfile().getEmail();
+            if (!StringUtils.isBlank(email)) {
+                SignInUtils.signin(email);
+                providerSignInUtils.doPostSignUp(email, webRequest);
+                AccountDomain account = accountService.findByEmail(email);
+                if (account == null) {
+                    logger.info("Auto signin create account with email " + email);
+                    account = new AccountDomain();
+                    account.setId(System.currentTimeMillis());
+                    account.setPassword(Utils.toMd5(connection.fetchUserProfile().getUsername() + ":" + email));
+                    account.setEmail(email);
+                    account.setEnabled(true);
+                    accountService.save(account);
                 }
-            };
 
-            rememberMeServices.loginSuccess(wrapper, request.getNativeResponse(HttpServletResponse.class), SecurityContextHolder.getContext().getAuthentication());
-            return "redirect:/member.html";
+                HttpServletRequestWrapper wrapper = new HttpServletRequestWrapper(request.getNativeRequest(HttpServletRequest.class)) {
+                    @Override
+                    public String getParameter(String name) {
+                        return "true";
+                    }
+                };
+                rememberMeServices.loginSuccess(wrapper, request.getNativeResponse(HttpServletResponse.class), SecurityContextHolder.getContext().getAuthentication());
+                return "redirect:/member.html";
+            } else {
+                logger.info("Auto signin failure. Email not found");
+            }
         }
         return "redirect:/login.html";
     }

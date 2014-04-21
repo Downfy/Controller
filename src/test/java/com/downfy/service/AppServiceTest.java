@@ -15,8 +15,8 @@
  */
 package com.downfy.service;
 
-import com.downfy.service.application.AppService;
 import com.downfy.persistence.domain.application.AppDomain;
+import com.downfy.service.application.AppService;
 import java.util.Date;
 import java.util.List;
 import org.junit.Assert;
@@ -78,7 +78,7 @@ public class AppServiceTest {
         apps = service.findByDeveloper(1234567890);
         Assert.assertTrue(!apps.isEmpty());
         for (AppDomain appDomain : apps) {
-            Assert.assertTrue(service.delete(appDomain.getAppId(), 1234567890));
+            Assert.assertTrue(service.delete(appDomain.getAppId()));
         }
         apps = service.findByDeveloper(1234567890);
         Assert.assertTrue(apps.isEmpty());
@@ -101,6 +101,6 @@ public class AppServiceTest {
 
     @Test
     public void testDelete() {
-        Assert.assertEquals(true, service.delete(1234567890l, 1234567890));
+        Assert.assertEquals(true, service.delete(1234567890l));
     }
 }

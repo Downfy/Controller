@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.downfy.controller.backend.application;
+package com.downfy.controller.member.appication;
 
 import com.downfy.common.AppCommon;
 import com.downfy.common.ErrorMessage;
@@ -53,11 +53,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
  *  --------------------------------------------------------
  *  26-Dec-2013     tuanta      Create first time
  */
-@RequestMapping("/backend/application/create")
+@PreAuthorize("isAuthenticated()")
+@RequestMapping("/member/application/create")
 @Controller
-public class AppCreateController extends AbstractController {
+public class MemberAppCreateController extends AbstractController {
 
-    private final Logger logger = LoggerFactory.getLogger(AppCreateController.class);
+    private final Logger logger = LoggerFactory.getLogger(MemberAppCreateController.class);
     @Autowired
     MyResourceMessage resourceMessage;
     @Autowired
@@ -75,7 +76,7 @@ public class AppCreateController extends AbstractController {
     public String index(HttpServletRequest request, Device device, Model uiModel) {
         try {
             uiModel.addAttribute("applicationForm", new AppCreateForm());
-            return view(device, "backend/application/create");
+            return view(device, "member/application/create");
         } catch (Exception ex) {
             logger.error("Cannot create application.", ex);
         }
@@ -108,7 +109,7 @@ public class AppCreateController extends AbstractController {
         this.validator.validate(domain, bindingResult);
         if (bindingResult.hasErrors()) {
             uiModel.addAttribute("applicationForm", domain);
-            return view(device, "backend/application/create");
+            return view(device, "member/application/create");
         }
         try {
             if (domain.getAppId() != 0) {
@@ -131,12 +132,12 @@ public class AppCreateController extends AbstractController {
                 appService.save(appDomain);
             }
             setApps(uiModel);
-            return "redirect:/backend/application.html";
+            return "redirect:/member/application.html";
         } catch (Exception ex) {
             logger.error("Create application error.", ex);
             bindingResult.reject("app.error");
             uiModel.addAttribute("applicationForm", domain);
         }
-        return view(device, "backend/application/create");
+        return view(device, "member/application/create");
     }
 }

@@ -17,44 +17,41 @@
 package com.downfy.controller.member.appication;
 
 import com.downfy.controller.AbstractController;
-import com.downfy.controller.MyResourceMessage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.downfy.form.CategorySelectorForm;
+import com.downfy.service.category.CategoryService;
+import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mobile.device.Device;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /*
- * ApplicationCreateController.java
+ * BackendCategoryController.java
  *
- * Application create controller
+ * Admin category create controller
  *
  * Modification Logs:
  *  DATE            AUTHOR      DESCRIPTION
  *  --------------------------------------------------------
- *  3-Dec-2013     tuanta      Create first time
+ *  26-Dec-2013     tuanta      Create first time
  */
-@RequestMapping({"/member/application"})
+@PreAuthorize("isAuthenticated()")
+@RequestMapping("/member/category")
 @Controller
-public class ApplicationCreateController extends AbstractController {
+public class MemberCategoryController extends AbstractController {
 
-    private final Logger logger = LoggerFactory.getLogger(ApplicationCreateController.class);
     @Autowired
-    MyResourceMessage resourceMessage;
+    CategoryService categoryService;
 
-    @PreAuthorize("isAuthenticated()")
-    @RequestMapping(method = RequestMethod.GET)
-    public String index(Device device, Model model) {
-        try {
-
-            return view(device, "member/application");
-        } catch (Exception ex) {
-            logger.error("Cannot create app.", ex);
-        }
-        return view(device, "maintenance");
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    @ResponseBody
+    public List<CategorySelectorForm> getCategoryList(@PathVariable("id") String id, HttpServletRequest request, Device device, Model uiModel) {
+        return categoryService.findBySelectorParent(id);
     }
 }
