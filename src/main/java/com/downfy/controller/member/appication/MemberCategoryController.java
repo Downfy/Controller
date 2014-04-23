@@ -32,9 +32,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /*
- * BackendCategoryController.java
+ * MemberCategoryController.java
  *
- * Admin category create controller
+ * Member category create controller
  *
  * Modification Logs:
  *  DATE            AUTHOR      DESCRIPTION

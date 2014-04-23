@@ -22,7 +22,7 @@ package com.downfy.common;
  */
 public class AppCommon {
 
-    //Imaages
+    //Images
     public static final String IMAGE_FORMAT_PNG = "png";
     //Icon size
     public static final int ICON_WIDTH = 124;

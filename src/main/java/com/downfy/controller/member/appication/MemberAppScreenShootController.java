@@ -44,9 +44,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /*
- * AppScreenShootController.java
+ * MemberAppScreenShootController.java
  *
- * Admin application screen shoot controller
+ * Member application screen shoot controller
  *
  * Modification Logs:
  *  DATE            AUTHOR      DESCRIPTION
