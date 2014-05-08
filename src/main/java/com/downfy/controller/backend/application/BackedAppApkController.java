@@ -22,7 +22,7 @@ import com.downfy.common.Utils;
 import com.downfy.common.ValidationResponse;
 import com.downfy.controller.AbstractController;
 import com.downfy.controller.MyResourceMessage;
-import com.downfy.form.backend.application.AppApkForm;
+import com.downfy.form.application.AppApkForm;
 import com.downfy.form.validator.backend.application.BackendAppApkValidator;
 import com.downfy.persistence.domain.application.AppDomain;
 import com.downfy.persistence.domain.application.AppUploadedDomain;

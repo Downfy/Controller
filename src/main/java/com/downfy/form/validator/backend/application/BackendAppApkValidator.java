@@ -15,7 +15,7 @@
  */
 package com.downfy.form.validator.backend.application;
 
-import com.downfy.form.backend.application.AppApkForm;
+import com.downfy.form.application.AppApkForm;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;

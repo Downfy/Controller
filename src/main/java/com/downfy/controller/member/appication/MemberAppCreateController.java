@@ -21,7 +21,7 @@ import com.downfy.common.ErrorMessage;
 import com.downfy.common.ValidationResponse;
 import com.downfy.controller.AbstractController;
 import com.downfy.controller.MyResourceMessage;
-import com.downfy.form.backend.application.AppCreateForm;
+import com.downfy.form.application.AppCreateForm;
 import com.downfy.form.validator.backend.application.BackendAppValidator;
 import com.downfy.persistence.domain.application.AppDomain;
 import com.downfy.service.application.AppService;

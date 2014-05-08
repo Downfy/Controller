@@ -16,7 +16,7 @@
 package com.downfy.form.validator.backend.application;
 
 import com.downfy.common.RegexpUtils;
-import com.downfy.form.backend.application.AppApkForm;
+import com.downfy.form.application.AppApkForm;
 import com.downfy.service.application.AppVersionService;
 import com.google.common.base.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
