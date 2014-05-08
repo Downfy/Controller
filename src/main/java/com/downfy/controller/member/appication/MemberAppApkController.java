@@ -50,9 +50,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /*
- * AppApkController.java
+ * MemberAppApkController.java
  *
- * Admin application apk controller
+ * Member application apk controller
  *
  * Modification Logs:
  *  DATE            AUTHOR      DESCRIPTION

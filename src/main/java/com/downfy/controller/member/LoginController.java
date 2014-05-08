@@ -28,9 +28,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 /*
- * MobileLoginController.java
+ * LoginController.java
  *
- * Mobile login controller
+ * Login controller
  *
  * Modification Logs:
  *  DATE            AUTHOR      DESCRIPTION

@@ -66,9 +66,9 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 /*
- * AppController.java
+ * MemberAppController.java
  *
- * App controller
+ * Member app controller
  *
  * Modification Logs:
  *  DATE            AUTHOR      DESCRIPTION

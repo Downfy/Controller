@@ -44,9 +44,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /*
- * BackendCategoryController.java
+ * MemberAppCreateController.java
  *
- * Admin application create controller
+ * Member application create controller
  *
  * Modification Logs:
  *  DATE            AUTHOR      DESCRIPTION

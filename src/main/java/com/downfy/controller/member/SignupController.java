@@ -36,15 +36,23 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.WebRequest;
 
+/*
+ * SignupController.java
+ *
+ * Signup controller
+ *
+ * Modification Logs:
+ *  DATE            AUTHOR      DESCRIPTION
+ *  --------------------------------------------------------
+ *  28-Nov-2013     tuanta      Create first time
+ */
 @Controller
 @RequestMapping("/autosignup")
 public class SignupController {
 
     private final Logger logger = LoggerFactory.getLogger(SignupController.class);
-
     @Autowired
     RememberMeServices rememberMeServices;
-
     @Autowired
     AccountService accountService;
 

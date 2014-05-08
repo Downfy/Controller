@@ -66,7 +66,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 /*
- * AppController.java
+ * BackedAppController.java
  *
  * App controller
  *
