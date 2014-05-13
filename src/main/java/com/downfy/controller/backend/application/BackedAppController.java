@@ -96,7 +96,7 @@ public class BackedAppController extends AbstractController {
     @Autowired
     AppApkService appApkService;
     @Autowired
-    CategoryService categoryService;
+    CategoryService categoryServicce;
     @Autowired
     ServletContext context;
 
@@ -123,7 +123,7 @@ public class BackedAppController extends AbstractController {
             AppDomain appDomain = appService.findById(appId);
             if (appDomain.getCreater() == getMyId()) {
                 logger.debug("==> Load app " + appDomain.toString());
-                CategoryDomain categoryDomain = categoryService.findByURL(appDomain.getAppCategory());
+                CategoryDomain categoryDomain = categoryServicce.findByURL(appDomain.getAppCategory());
                 AppDetailForm form = getAppDetailForm(appId, appDomain, categoryDomain);
                 uiModel.addAttribute("app", form);
                 return view(device, "backend/application/detail");
@@ -338,7 +338,7 @@ public class BackedAppController extends AbstractController {
         form.setAppId(appId);
         form.fromAppDomain(appDomain);
         form.setAppCategoryParent(categoryDomain.getParent());
-        form.setAppCategories(categoryService.findBySelectorParent(categoryDomain.getParent()));
+        form.setAppCategories(categoryServicce.findBySelectorParent(categoryDomain.getParent()));
         return form;
     }
 

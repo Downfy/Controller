@@ -32,6 +32,7 @@ public class ObjectKey {
     public static final String APP_CATEGORY = "APP-CATEGORY";
     public static final String APP_HOT = "APP-HOT";
     public static final String APP_NEW = "APP-NEW";
+    public static final String APP_NEWS = "APP-NEWS";
     public static final String APP_DOWNLOAD = "APP-DOWNLOAD";
     public static final String APP_UPLOADED = "APP-UPLOADED";
     public static final String APP_VERSION = "APP-VERSION";

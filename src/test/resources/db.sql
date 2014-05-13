@@ -252,12 +252,56 @@ CREATE TABLE IF NOT EXISTS `users` (
   KEY `created` (`created`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `news`
+--
+
+DROP TABLE IF EXISTS `news`;
+CREATE TABLE IF NOT EXISTS `news` (
+  `id` bigint(20) NOT NULL,
+  `app_id` bigint(20) NULL,
+  `title` varchar(200) NOT NULL,
+  `description` tinyint(1) NOT NULL DEFAULT '0',
+  `icon` varchar(200) NOT NULL,
+  `status` int(1) NOT NULL DEFAULT '0',
+  `type` int(1) NOT NULL DEFAULT '0',
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated` timestamp NULL DEFAULT NULL,
+  `creater` bigint(20) unsigned NOT NULL,
+  `updater` bigint(20) unsigned DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `app_id` (`app_id`),
+  KEY `created` (`created`),
+  KEY `updated` (`updated`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `new_compare`
+--
+
+DROP TABLE IF EXISTS `new_compare`;
+CREATE TABLE IF NOT EXISTS `new_compare` (
+  `news_id` bigint(20) NOT NULL,
+  `app_id` varchar(200) NOT NULL,
+  PRIMARY KEY (`news_id`, `app_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `UserConnection`
+--
+
 DROP TABLE IF EXISTS `UserConnection`;
 CREATE TABLE IF NOT EXISTS `UserConnection` (
     `userId` varchar(255) not null,
     `providerId` varchar(255) not null,
     `providerUserId` varchar(255),
-    `rank` int not null,  
+    `rank` int not null,
     `displayName` varchar(255),
     `profileUrl` varchar(512),
     `imageUrl` varchar(512),
