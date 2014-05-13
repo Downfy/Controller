@@ -43,9 +43,9 @@ import org.springframework.stereotype.Service;
  *  20-Dec-2013     tuanta      Add Developer<->App Version
  */
 @Service
-public class AppReviewService {
+public class AppNewsService {
 
-    private final Logger logger = LoggerFactory.getLogger(AppReviewService.class);
+    private final Logger logger = LoggerFactory.getLogger(AppNewsService.class);
     @Autowired
     AppNewsRepository repository;
     @Autowired

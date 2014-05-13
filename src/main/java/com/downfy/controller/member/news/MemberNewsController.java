@@ -14,15 +14,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.downfy.controller.member.review;
+package com.downfy.controller.member.news;
 
 import com.downfy.controller.AbstractController;
 import com.downfy.controller.MyResourceMessage;
 import com.downfy.form.validator.backend.application.BackendAppApkValidator;
-import com.downfy.service.application.AppApkService;
-import com.downfy.service.application.AppService;
-import com.downfy.service.application.AppUploadedService;
-import com.downfy.service.application.AppVersionService;
+import com.downfy.service.application.news.AppNewsService;
 import javax.servlet.ServletContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,32 +36,26 @@ import org.springframework.web.bind.annotation.RequestMethod;
  * @author Tran Anh Tuan <tk1cntt@gmail.com>
  */
 @PreAuthorize("isAuthenticated()")
-@RequestMapping("/member/reviews")
+@RequestMapping("/member/news")
 @Controller
-public class MemberReviewController extends AbstractController {
+public class MemberNewsController extends AbstractController {
 
-    private final Logger logger = LoggerFactory.getLogger(MemberReviewController.class);
+    private final Logger logger = LoggerFactory.getLogger(MemberNewsController.class);
     @Autowired
     MyResourceMessage resourceMessage;
     @Autowired
     BackendAppApkValidator validator;
     @Autowired
-    AppUploadedService appUploadedService;
-    @Autowired
-    AppApkService appApkService;
-    @Autowired
-    AppService appService;
-    @Autowired
-    AppVersionService appVersionService;
+    AppNewsService appNewsService;
     @Autowired
     ServletContext context;
 
     @RequestMapping(method = RequestMethod.GET)
     public String index(Device device, Model uiModel) {
         try {
-            return view(device, "member/reviews/index");
+            return view(device, "member/news/index");
         } catch (Exception ex) {
-            logger.error("Cannot view list reviews.", ex);
+            logger.error("Cannot view list news.", ex);
         }
         return view(device, "maintenance");
     }
