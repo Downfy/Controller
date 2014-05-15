@@ -18,7 +18,6 @@ package com.downfy.persistence.domain.news;
 
 import com.downfy.common.ObjectKey;
 import com.downfy.persistence.domain.DomainObject;
-import static com.downfy.persistence.domain.category.AppCategoryDomain.OBJECT_KEY;
 import java.util.Date;
 
 /**
@@ -33,6 +32,7 @@ public class AppNewsDomain implements DomainObject {
     private float appPoint;
     private String appTitle;
     private String appDescription;
+    private String appThumbnail;
     private int type;
     private int status;
     private long creater;
@@ -76,6 +76,14 @@ public class AppNewsDomain implements DomainObject {
 
     public void setAppDescription(String appDescription) {
         this.appDescription = appDescription;
+    }
+
+    public String getAppThumbnail() {
+        return appThumbnail;
+    }
+
+    public void setAppThumbnail(String appThumbnail) {
+        this.appThumbnail = appThumbnail;
     }
 
     public int getType() {

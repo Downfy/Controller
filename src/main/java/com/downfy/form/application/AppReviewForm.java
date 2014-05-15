@@ -22,9 +22,22 @@ package com.downfy.form.application;
  */
 public class AppReviewForm {
 
+    private long id;
     private long appId;
-    private String appReviewDescription;
-    private float appReviewPoint;
+    private float appPoint;
+    private String appTitle;
+    private String appDescription;
+    private String appThumbnail;
+    private int type;
+    private int status;
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 
     public long getAppId() {
         return appId;
@@ -34,20 +47,51 @@ public class AppReviewForm {
         this.appId = appId;
     }
 
-    public String getAppReviewDescription() {
-        return appReviewDescription;
+    public float getAppPoint() {
+        return appPoint;
     }
 
-    public void setAppReviewDescription(String appReviewDescription) {
-        this.appReviewDescription = appReviewDescription;
+    public void setAppPoint(float appPoint) {
+        this.appPoint = appPoint;
     }
 
-    public float getAppReviewPoint() {
-        return appReviewPoint;
+    public String getAppTitle() {
+        return appTitle;
     }
 
-    public void setAppReviewPoint(float appReviewPoint) {
-        this.appReviewPoint = appReviewPoint;
+    public void setAppTitle(String appTitle) {
+        this.appTitle = appTitle;
     }
 
+    public String getAppDescription() {
+        return appDescription;
+    }
+
+    public void setAppDescription(String appDescription) {
+        this.appDescription = appDescription;
+    }
+
+    public String getAppThumbnail() {
+        return appThumbnail;
+    }
+
+    public void setAppThumbnail(String appThumbnail) {
+        this.appThumbnail = appThumbnail;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
 }

@@ -27,6 +27,9 @@ public class AppCommon {
     //Icon size
     public static final int ICON_WIDTH = 124;
     public static final int ICON_HEIGHT = 124;
+    //Icon size
+    public static final int ARTICLE_WIDTH = 124;
+    public static final int ARTICLE_HEIGHT = 124;
     //Screen shoot
     public static final int SCREENSHOOT_WIDTH = 240;
     public static final int SCREENSHOOT_HEIGHT = 320;
@@ -40,6 +43,7 @@ public class AppCommon {
     public static final byte PENDING = 3;
     public static final byte PUBLISHED = 4;
     //File upload type
+    public static final byte FILE_ARTICLE = 3;
     public static final byte FILE_APK = 1;
     public static final byte FILE_SCREENSHOOT = 2;
     public static final byte FILE_ICON = 0;
