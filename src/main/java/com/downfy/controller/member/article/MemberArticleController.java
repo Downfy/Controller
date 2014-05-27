@@ -18,8 +18,9 @@ package com.downfy.controller.member.article;
 
 import com.downfy.controller.AbstractController;
 import com.downfy.controller.MyResourceMessage;
-import com.downfy.form.application.AppReviewForm;
+import com.downfy.form.application.AppArticleForm;
 import com.downfy.form.validator.backend.application.BackendAppApkValidator;
+import com.downfy.form.validator.member.MemberArticleValidator;
 import com.downfy.service.application.news.AppNewsService;
 import javax.servlet.ServletContext;
 import org.slf4j.Logger;
@@ -28,6 +29,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mobile.device.Device;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -44,50 +47,56 @@ public class MemberArticleController extends AbstractController {
     @Autowired
     MyResourceMessage resourceMessage;
     @Autowired
-    BackendAppApkValidator validator;
+    MemberArticleValidator validator;
     @Autowired
     AppNewsService appNewsService;
     @Autowired
     ServletContext context;
 
-    @RequestMapping(value = "/news", method = RequestMethod.GET)
+    @RequestMapping(method = RequestMethod.GET)
     public String viewNews(Device device, Model uiModel) {
         try {
-            return view(device, "member/news/index");
+            return view(device, "member/article/index");
         } catch (Exception ex) {
-            logger.error("Cannot view list news.", ex);
+            logger.error("Cannot view list article.", ex);
         }
         return view(device, "maintenance");
     }
 
-    @RequestMapping(value = "/news/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public String viewNewsItem(Device device, Model uiModel) {
         try {
-            return view(device, "member/news/view");
+            return view(device, "member/article/view");
         } catch (Exception ex) {
             logger.error("Cannot view ", ex);
         }
         return view(device, "maintenance");
     }
 
-    @RequestMapping(value = "/news/create", method = RequestMethod.GET)
+    @RequestMapping(value = "/create", method = RequestMethod.GET)
     public String createNewsForm(Device device, Model uiModel) {
         try {
-            uiModel.addAttribute("articleForm", new AppReviewForm());
-            return view(device, "member/news/create");
+            AppArticleForm articleForm = new AppArticleForm();
+            articleForm.setId(System.currentTimeMillis());
+            uiModel.addAttribute("articleForm", articleForm);
+            return view(device, "member/article/create");
         } catch (Exception ex) {
-            logger.error("Cannot create news.", ex);
+            logger.error("Cannot create article.", ex);
         }
         return view(device, "maintenance");
     }
 
-    @RequestMapping(value = "/news/create", method = RequestMethod.POST)
-    public String createNews(Device device, Model uiModel) {
-        try {
-            return view(device, "member/news/create");
-        } catch (Exception ex) {
-            logger.error("Cannot create news.", ex);
+    @RequestMapping(value = "/create", method = RequestMethod.POST)
+    public String createNews(@ModelAttribute("articleForm") AppArticleForm form, BindingResult bindingResult, Device device, Model uiModel) {
+        validator.validate(form, bindingResult);
+        if (bindingResult.hasErrors()) {
+            uiModel.addAttribute("articleForm", form);
+            return view(device, "member/article/create");
         }
-        return "redirect:/member/news.html";
+        try {
+        } catch (Exception ex) {
+            logger.error("Cannot create article.", ex);
+        }
+        return "redirect:/member/article.html";
     }
 }

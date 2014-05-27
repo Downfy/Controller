@@ -36,7 +36,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
  * @author Tran Anh Tuan <tk1cntt@gmail.com>
  */
 //@PreAuthorize("isAuthenticated()")
-@RequestMapping("/member/reviews")
+@RequestMapping("/member/review")
 @Controller
 public class MemberReviewController extends AbstractController {
 
@@ -53,9 +53,19 @@ public class MemberReviewController extends AbstractController {
     @RequestMapping(method = RequestMethod.GET)
     public String index(Device device, Model uiModel) {
         try {
-            return view(device, "member/reviews/create");
+            return view(device, "member/review/index");
         } catch (Exception ex) {
-            logger.error("Cannot view list reviews.", ex);
+            logger.error("Cannot view list review.", ex);
+        }
+        return view(device, "maintenance");
+    }
+
+    @RequestMapping(value = "/create", method = RequestMethod.GET)
+    public String createReview(Device device, Model uiModel) {
+        try {
+            return view(device, "member/review/create");
+        } catch (Exception ex) {
+            logger.error("Cannot create form review.", ex);
         }
         return view(device, "maintenance");
     }

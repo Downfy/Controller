@@ -75,7 +75,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
  *  --------------------------------------------------------
  *  26-Dec-2013     tuanta      Create first time
  */
-@PreAuthorize("isAuthenticated()")
+//@PreAuthorize("isAuthenticated()")
 @RequestMapping("/member/application")
 @Controller
 public class MemberAppController extends AbstractController {
@@ -213,16 +213,16 @@ public class MemberAppController extends AbstractController {
         return fileMeta;
     }
 
-    @RequestMapping(value = "/upload/{id}/article", method = RequestMethod.POST)
+    @RequestMapping(value = "/upload/article", method = RequestMethod.POST)
     @ResponseBody
-    public AppFileMetaDomain article(@PathVariable("id") long appId, MultipartHttpServletRequest request, Device device, Model uiModel) {
+    public AppFileMetaDomain article(MultipartHttpServletRequest request, Device device, Model uiModel) {
         MultipartFile mpf = request.getFile("appArticleFile");
         AppFileMetaDomain fileMeta = new AppFileMetaDomain();
         if (Objects.equal("image/gif", mpf.getContentType())
                 || Objects.equal("image/jpeg", mpf.getContentType())
                 || Objects.equal("image/pjpeg", mpf.getContentType())
                 || Objects.equal("image/png", mpf.getContentType())) {
-            storeFileArticle(mpf, fileMeta, appId);
+            storeFileArticle(mpf, fileMeta, 1234567890);
         } else {
             logger.debug("Don't support format article icon content type: " + mpf.getContentType());
             fileMeta.setFileName("");
