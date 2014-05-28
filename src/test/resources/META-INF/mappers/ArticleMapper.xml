@@ -50,6 +50,37 @@
         WHERE CREATER = #{creater}
     </select>
 
+    <select id="findByType" parameterType="long" resultType="ArticleDomain">
+        SELECT
+        ID,
+        TITLE as appTitlte,
+        DESCRIPTION as appDescription,
+        THUMBNAIL as appThumbnail,
+        POINT as appPoint,
+        STATUS,
+        TYPE,
+        CREATER,
+        CREATED
+        FROM articles
+        WHERE TYPE = #{type}
+    </select>
+
+    <select id="findByCreaterAndType" parameterType="long" resultType="ArticleDomain">
+        SELECT
+        ID,
+        TITLE as appTitlte,
+        DESCRIPTION as appDescription,
+        THUMBNAIL as appThumbnail,
+        POINT as appPoint,
+        STATUS,
+        TYPE,
+        CREATER,
+        CREATED
+        FROM articles
+        WHERE CREATER = #{creater}
+        AND TYPE = #{type}
+    </select>
+
     <select id="count" resultType="long">
         SELECT count(*) FROM articles
     </select>

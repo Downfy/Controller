@@ -36,6 +36,10 @@ public interface ArticleRepository {
 
     public List<ArticleDomain> findByCreater(@Param("creater") long creater);
 
+    public List<ArticleDomain> findByType(@Param("type") int type);
+
+    public List<ArticleDomain> findByCreaterAndType(@Param("creater") long creater, @Param("type") int type);
+
     public ArticleDomain findById(@Param("id") long id);
 
     public long count();

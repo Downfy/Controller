@@ -79,22 +79,22 @@ public class ArticleService {
     }
 
     public List<ArticleDomain> findAll() {
-        List<ArticleDomain> apps = null;
+        List<ArticleDomain> articles = null;
         try {
-            apps = this.getCacheObjects();
-            if (apps.isEmpty()) {
-                apps = this.repository.findAll();
-                if (!apps.isEmpty()) {
-                    this.setCacheObjects(apps);
+            articles = this.getCacheObjects();
+            if (articles.isEmpty()) {
+                articles = this.repository.findAll();
+                if (!articles.isEmpty()) {
+                    this.setCacheObjects(articles);
                 }
             }
         } catch (Exception ex) {
             this.logger.error("Find all article error: " + ex, ex);
         }
-        if (apps != null) {
-            this.logger.debug("Total get " + apps.size() + " apps.");
+        if (articles != null) {
+            this.logger.debug("Total get " + articles.size() + " articles.");
         }
-        return apps;
+        return articles;
     }
 
     public ArticleDomain findById(long id) {
@@ -102,7 +102,60 @@ public class ArticleService {
     }
 
     public List<ArticleDomain> findByCreater(long creater) {
-        return getCacheObjects(creater);
+        List<ArticleDomain> articles = null;
+        try {
+            articles = getCacheObjectsByCreater(creater);
+            if (articles.isEmpty()) {
+                articles = this.repository.findByCreater(creater);
+                if (!articles.isEmpty()) {
+                    this.setCacheObjects(articles);
+                }
+            }
+        } catch (Exception ex) {
+            this.logger.error("Find by creater " + creater + " article error: " + ex, ex);
+        }
+        if (articles != null) {
+            this.logger.debug("Total get " + articles.size() + " articles.");
+        }
+        return articles;
+    }
+
+    public List<ArticleDomain> findByType(int type) {
+        List<ArticleDomain> articles = null;
+        try {
+            articles = getCacheObjectsByType(type);
+            if (articles.isEmpty()) {
+                articles = this.repository.findByType(type);
+                if (!articles.isEmpty()) {
+                    this.setCacheObjects(articles);
+                }
+            }
+        } catch (Exception ex) {
+            this.logger.error("Find by type " + type + " article error: " + ex, ex);
+        }
+        if (articles != null) {
+            this.logger.debug("Total get " + articles.size() + " articles.");
+        }
+        return articles;
+    }
+
+    public List<ArticleDomain> findByCreaterAndType(long creater, int type) {
+        List<ArticleDomain> articles = null;
+        try {
+            articles = getCacheObjectsByCreaterAndType(creater, type);
+            if (articles.isEmpty()) {
+                articles = this.repository.findByCreaterAndType(creater, type);
+                if (!articles.isEmpty()) {
+                    this.setCacheObjects(articles);
+                }
+            }
+        } catch (Exception ex) {
+            this.logger.error("Find by creater " + creater + " and type " + type + " article error: " + ex, ex);
+        }
+        if (articles != null) {
+            this.logger.debug("Total get " + articles.size() + " articles.");
+        }
+        return articles;
     }
 
     /**
@@ -218,6 +271,8 @@ public class ArticleService {
             this.logger.debug("Put to cache " + domain);
             this.getArticleRedisTemplate().opsForHash().put(ArticleDomain.OBJECT_KEY, domain.getKey(), domain);
             this.getLongRedisTemplate().opsForSet().add(ArticleTable.KEY + ":" + domain.getCreater(), domain.getKey());
+            this.getLongRedisTemplate().opsForSet().add(ArticleTable.KEY + ":" + domain.getType(), domain.getKey());
+            this.getLongRedisTemplate().opsForSet().add(ArticleTable.KEY + ":" + domain.getCreater() + ":" + domain.getType(), domain.getKey());
         } catch (Exception ex) {
             this.logger.warn("Can't put data to cache", ex);
         }
@@ -249,28 +304,54 @@ public class ArticleService {
     }
 
     private List<ArticleDomain> getCacheObjects() {
-        List<ArticleDomain> apps = new ArrayList<ArticleDomain>();
+        List<ArticleDomain> articles = new ArrayList<ArticleDomain>();
         try {
             for (Object user : this.getArticleRedisTemplate().opsForHash().values(ArticleDomain.OBJECT_KEY)) {
-                apps.add((ArticleDomain) user);
+                articles.add((ArticleDomain) user);
             }
         } catch (Exception ex) {
             this.logger.warn("Can't get all objects " + ArticleDomain.OBJECT_KEY + " from Redis", ex);
         }
-        return apps;
+        return articles;
     }
 
-    private List<ArticleDomain> getCacheObjects(long creater) {
-        Collection<Object> keys = getKeys(creater);
-        List<ArticleDomain> apps = new ArrayList<ArticleDomain>();
+    private List<ArticleDomain> getCacheObjectsByCreater(long creater) {
+        Collection<Object> keys = getKeysByCreater(creater);
+        List<ArticleDomain> articles = new ArrayList<ArticleDomain>();
         try {
             for (Object user : this.getArticleRedisTemplate().opsForHash().multiGet(ArticleDomain.OBJECT_KEY, keys)) {
-                apps.add((ArticleDomain) user);
+                articles.add((ArticleDomain) user);
             }
         } catch (Exception ex) {
             this.logger.warn("Can't get all objects " + ArticleDomain.OBJECT_KEY + " from Redis", ex);
         }
-        return apps;
+        return articles;
+    }
+
+    private List<ArticleDomain> getCacheObjectsByType(int type) {
+        Collection<Object> keys = getKeysByType(type);
+        List<ArticleDomain> articles = new ArrayList<ArticleDomain>();
+        try {
+            for (Object user : this.getArticleRedisTemplate().opsForHash().multiGet(ArticleDomain.OBJECT_KEY, keys)) {
+                articles.add((ArticleDomain) user);
+            }
+        } catch (Exception ex) {
+            this.logger.warn("Can't get all objects " + ArticleDomain.OBJECT_KEY + " from Redis", ex);
+        }
+        return articles;
+    }
+
+    private List<ArticleDomain> getCacheObjectsByCreaterAndType(long creater, int type) {
+        Collection<Object> keys = getKeysByCreaterAndType(creater, type);
+        List<ArticleDomain> articles = new ArrayList<ArticleDomain>();
+        try {
+            for (Object user : this.getArticleRedisTemplate().opsForHash().multiGet(ArticleDomain.OBJECT_KEY, keys)) {
+                articles.add((ArticleDomain) user);
+            }
+        } catch (Exception ex) {
+            this.logger.warn("Can't get all objects " + ArticleDomain.OBJECT_KEY + " from Redis", ex);
+        }
+        return articles;
     }
 
     private long countCacheObject() {
@@ -314,10 +395,46 @@ public class ArticleService {
         }
     }
 
-    private Collection<Object> getKeys(long creater) {
+    private Collection<Object> getKeysByCreater(long creater) {
         Collection<Object> keys = new ArrayList<Object>();
         try {
             Set<String> appIds = this.getLongRedisTemplate().opsForSet().members(ArticleTable.KEY + ":" + creater);
+            List<String> myList = new ArrayList<String>(appIds);
+            Collections.sort(myList, new Comparator<String>() {
+                @Override
+                public int compare(String id01, String id02) {
+                    return id01.compareTo(id02);
+                }
+            });
+            logger.debug("Get keys from app " + creater + " ==> " + appIds);
+            keys.addAll(myList);
+        } catch (Exception ex) {
+        }
+        return keys;
+    }
+
+    private Collection<Object> getKeysByType(int type) {
+        Collection<Object> keys = new ArrayList<Object>();
+        try {
+            Set<String> appIds = this.getLongRedisTemplate().opsForSet().members(ArticleTable.KEY + ":" + type);
+            List<String> myList = new ArrayList<String>(appIds);
+            Collections.sort(myList, new Comparator<String>() {
+                @Override
+                public int compare(String id01, String id02) {
+                    return id01.compareTo(id02);
+                }
+            });
+            logger.debug("Get keys from app " + type + " ==> " + appIds);
+            keys.addAll(myList);
+        } catch (Exception ex) {
+        }
+        return keys;
+    }
+
+    private Collection<Object> getKeysByCreaterAndType(long creater, int type) {
+        Collection<Object> keys = new ArrayList<Object>();
+        try {
+            Set<String> appIds = this.getLongRedisTemplate().opsForSet().members(ArticleTable.KEY + ":" + creater + ":" + type);
             List<String> myList = new ArrayList<String>(appIds);
             Collections.sort(myList, new Comparator<String>() {
                 @Override

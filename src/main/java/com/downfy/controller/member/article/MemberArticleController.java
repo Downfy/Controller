@@ -33,6 +33,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -58,7 +59,7 @@ public class MemberArticleController extends AbstractController {
     @RequestMapping(method = RequestMethod.GET)
     public String viewNews(Device device, Model uiModel) {
         try {
-            List<ArticleDomain> articles = articleService.findByCreater(getMyId());
+            List<ArticleDomain> articles = articleService.findByCreaterAndType(getMyId(), AppCommon.ARTICLE_DEFAULT);
             uiModel.addAttribute("articles", articles);
             return view(device, "member/article/index");
         } catch (Exception ex) {
@@ -68,8 +69,9 @@ public class MemberArticleController extends AbstractController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public String viewNewsItem(Device device, Model uiModel) {
+    public String viewNewsItem(@PathVariable("id") long id, Device device, Model uiModel) {
         try {
+            uiModel.addAttribute("article", articleService.findById(id));
             return view(device, "member/article/view");
         } catch (Exception ex) {
             logger.error("Cannot view ", ex);
