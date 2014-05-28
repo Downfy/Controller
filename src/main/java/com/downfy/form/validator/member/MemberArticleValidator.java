@@ -16,7 +16,7 @@
  */
 package com.downfy.form.validator.member;
 
-import com.downfy.form.application.AppArticleForm;
+import com.downfy.form.application.article.ArticleForm;
 import com.downfy.persistence.domain.category.CategoryDomain;
 import com.google.common.base.Strings;
 import org.springframework.stereotype.Service;
@@ -37,7 +37,7 @@ public class MemberArticleValidator implements Validator {
 
     @Override
     public void validate(Object target, Errors errors) {
-        AppArticleForm form = (AppArticleForm) target;
+        ArticleForm form = (ArticleForm) target;
         if (Strings.isNullOrEmpty(form.getAppTitle())) {
             errors.rejectValue("appTitle", "article.titlenotnull");
         }

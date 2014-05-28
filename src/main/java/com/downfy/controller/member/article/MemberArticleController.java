@@ -16,12 +16,14 @@
  */
 package com.downfy.controller.member.article;
 
+import com.downfy.common.AppCommon;
 import com.downfy.controller.AbstractController;
 import com.downfy.controller.MyResourceMessage;
-import com.downfy.form.application.AppArticleForm;
-import com.downfy.form.validator.backend.application.BackendAppApkValidator;
+import com.downfy.form.application.article.ArticleForm;
 import com.downfy.form.validator.member.MemberArticleValidator;
-import com.downfy.service.application.news.AppNewsService;
+import com.downfy.persistence.domain.article.ArticleDomain;
+import com.downfy.service.application.article.ArticleService;
+import java.util.List;
 import javax.servlet.ServletContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,13 +51,15 @@ public class MemberArticleController extends AbstractController {
     @Autowired
     MemberArticleValidator validator;
     @Autowired
-    AppNewsService appNewsService;
+    ArticleService articleService;
     @Autowired
     ServletContext context;
 
     @RequestMapping(method = RequestMethod.GET)
     public String viewNews(Device device, Model uiModel) {
         try {
+            List<ArticleDomain> articles = articleService.findByCreater(getMyId());
+            uiModel.addAttribute("articles", articles);
             return view(device, "member/article/index");
         } catch (Exception ex) {
             logger.error("Cannot view list article.", ex);
@@ -76,7 +80,7 @@ public class MemberArticleController extends AbstractController {
     @RequestMapping(value = "/create", method = RequestMethod.GET)
     public String createNewsForm(Device device, Model uiModel) {
         try {
-            AppArticleForm articleForm = new AppArticleForm();
+            ArticleForm articleForm = new ArticleForm();
             articleForm.setId(System.currentTimeMillis());
             uiModel.addAttribute("articleForm", articleForm);
             return view(device, "member/article/create");
@@ -87,13 +91,17 @@ public class MemberArticleController extends AbstractController {
     }
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
-    public String createNews(@ModelAttribute("articleForm") AppArticleForm form, BindingResult bindingResult, Device device, Model uiModel) {
-        validator.validate(form, bindingResult);
+    public String createNews(@ModelAttribute("articleForm") ArticleForm form, BindingResult bindingResult, Device device, Model uiModel) {
+        this.validator.validate(form, bindingResult);
         if (bindingResult.hasErrors()) {
             uiModel.addAttribute("articleForm", form);
             return view(device, "member/article/create");
         }
         try {
+            ArticleDomain domain = form.toArticle();
+            domain.setType(AppCommon.ARTICLE_DEFAULT);
+            domain.setCreater(getMyId());
+            articleService.save(domain);
         } catch (Exception ex) {
             logger.error("Cannot create article.", ex);
         }

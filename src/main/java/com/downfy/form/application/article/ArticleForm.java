@@ -14,13 +14,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.downfy.form.application;
+package com.downfy.form.application.article;
+
+import com.downfy.persistence.domain.article.ArticleDomain;
 
 /**
  *
  * @author Tran Anh Tuan <tk1cntt@gmail.com>
  */
-public class AppArticleForm {
+public class ArticleForm {
 
     private long id;
     private float appPoint;
@@ -84,5 +86,17 @@ public class AppArticleForm {
 
     public void setStatus(int status) {
         this.status = status;
+    }
+
+    public ArticleDomain toArticle() {
+        ArticleDomain domain = new ArticleDomain();
+        domain.setId(getId());
+        domain.setAppDescription(getAppDescription());
+        domain.setAppPoint(getAppPoint());
+        domain.setAppThumbnail(getAppThumbnail());
+        domain.setAppTitle(getAppTitle());
+        domain.setStatus(getStatus());
+        domain.setType(getType());
+        return domain;
     }
 }

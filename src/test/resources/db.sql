@@ -258,21 +258,20 @@ CREATE TABLE IF NOT EXISTS `users` (
 -- Table structure for table `news`
 --
 
-DROP TABLE IF EXISTS `news`;
-CREATE TABLE IF NOT EXISTS `news` (
+DROP TABLE IF EXISTS `articles`;
+CREATE TABLE IF NOT EXISTS `articles` (
   `id` bigint(20) NOT NULL,
-  `app_id` bigint(20) NULL,
   `title` varchar(200) NOT NULL,
-  `description` tinyint(1) NOT NULL DEFAULT '0',
-  `icon` varchar(200) NOT NULL,
-  `status` int(1) NOT NULL DEFAULT '0',
+  `description` text NOT NULL DEFAULT '',
+  `thumbnail` varchar(200) NOT NULL,
+  `point` float(1,1) NOT NULL DEFAULT '0',
+  `status` int(1) NOT NULL DEFAULT '1',
   `type` int(1) NOT NULL DEFAULT '0',
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated` timestamp NULL DEFAULT NULL,
-  `creater` bigint(20) unsigned NOT NULL,
-  `updater` bigint(20) unsigned DEFAULT NULL,
+  `creater` bigint(20) NOT NULL,
+  `updater` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `app_id` (`app_id`),
   KEY `created` (`created`),
   KEY `updated` (`updated`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -280,14 +279,19 @@ CREATE TABLE IF NOT EXISTS `news` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `new_compare`
+-- Table structure for table `app_compare`
 --
 
-DROP TABLE IF EXISTS `new_compare`;
-CREATE TABLE IF NOT EXISTS `new_compare` (
-  `news_id` bigint(20) NOT NULL,
-  `app_id` varchar(200) NOT NULL,
-  PRIMARY KEY (`news_id`, `app_id`)
+DROP TABLE IF EXISTS `app_compare`;
+CREATE TABLE IF NOT EXISTS `app_compare` (
+  `article_id` bigint(20) NOT NULL,
+  `app_id` bigint(20) NOT NULL,
+  `description` varchar(2000) NOT NULL,
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated` timestamp NULL DEFAULT NULL,
+  `creater` bigint(20) NOT NULL,
+  `updater` bigint(20) DEFAULT NULL,
+  PRIMARY KEY (`article_id`, `app_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------

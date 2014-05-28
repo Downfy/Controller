@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.downfy.persistence.repositories.article.ArticleRepository">
+
+    <select id="findAll" resultType="ArticleDomain">
+        SELECT
+        ID,
+        TITLE as appTitlte,
+        DESCRIPTION as appDescription,
+        THUMBNAIL as appThumbnail,
+        POINT as appPoint,
+        STATUS,
+        TYPE,
+        CREATER,
+        CREATED
+        FROM articles
+        ORDER BY CREATED DESC
+    </select>
+
+    <select id="findById" parameterType="long" resultType="ArticleDomain">
+        SELECT
+        ID,
+        TITLE as appTitlte,
+        DESCRIPTION as appDescription,
+        THUMBNAIL as appThumbnail,
+        POINT as appPoint,
+        STATUS,
+        TYPE,
+        CREATER,
+        CREATED
+        FROM articles
+        WHERE ID = #{id}
+        LIMIT 0, 1
+    </select>
+
+    <select id="findByCreater" parameterType="long" resultType="ArticleDomain">
+        SELECT
+        ID,
+        TITLE as appTitlte,
+        DESCRIPTION as appDescription,
+        THUMBNAIL as appThumbnail,
+        POINT as appPoint,
+        STATUS,
+        TYPE,
+        CREATER,
+        CREATED
+        FROM articles
+        WHERE CREATER = #{creater}
+    </select>
+
+    <select id="count" resultType="long">
+        SELECT count(*) FROM articles
+    </select>
+
+    <insert id="save" parameterType="ArticleDomain">
+        INSERT INTO articles
+        (ID, TITLE, DESCRIPTION, THUMBNAIL, POINT, STATUS, TYPE, CREATER)
+        VALUES
+        (#{id}, #{appTitle}, #{appDescription}, #{appThumbnail}, #{appPoint}, #{status}, #{type}, #{creater})
+    </insert>
+
+    <update id="active" parameterType="long">
+        UPDATE articles SET ENABLED = 2 WHERE ID = #{id}
+    </update>
+
+    <update id="block" parameterType="long">
+        UPDATE users SET ENABLED = 0 WHERE ID = #{id}
+    </update>
+</mapper>

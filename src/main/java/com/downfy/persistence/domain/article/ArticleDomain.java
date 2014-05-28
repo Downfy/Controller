@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.downfy.persistence.domain.news;
+package com.downfy.persistence.domain.article;
 
 import com.downfy.common.ObjectKey;
 import com.downfy.persistence.domain.DomainObject;
@@ -24,11 +24,10 @@ import java.util.Date;
  *
  * @author Tran Anh Tuan <tk1cntt@gmail.com>
  */
-public class AppNewsDomain implements DomainObject {
+public class ArticleDomain implements DomainObject {
 
     public static final String OBJECT_KEY = ObjectKey.APP_NEWS;
     private long id;
-    private long appId;
     private float appPoint;
     private String appTitle;
     private String appDescription;
@@ -44,14 +43,6 @@ public class AppNewsDomain implements DomainObject {
 
     public void setId(long id) {
         this.id = id;
-    }
-
-    public long getAppId() {
-        return appId;
-    }
-
-    public void setAppId(long appId) {
-        this.appId = appId;
     }
 
     public float getAppPoint() {

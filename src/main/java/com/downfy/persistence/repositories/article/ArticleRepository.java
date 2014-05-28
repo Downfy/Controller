@@ -14,31 +14,33 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.downfy.persistence.repositories.news;
+package com.downfy.persistence.repositories.article;
 
-import com.downfy.persistence.domain.news.AppNewsDomain;
+import com.downfy.persistence.domain.article.ArticleDomain;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 /*
- * AppVersionRepository.java
+ * ArticleRepository.java
  *
- * App version repository
+ * App article repository
  *
  * Modification Logs:
  *  DATE            AUTHOR      DESCRIPTION
  *  --------------------------------------------------------
  *  1-Dec-2013     tuanta      Create first time
  */
-public interface AppNewsRepository {
+public interface ArticleRepository {
 
-    public List<AppNewsDomain> findAll();
+    public List<ArticleDomain> findAll();
 
-    public AppNewsDomain findById(@Param("id") long id);
+    public List<ArticleDomain> findByCreater(@Param("creater") long creater);
+
+    public ArticleDomain findById(@Param("id") long id);
 
     public long count();
 
-    public long save(AppNewsDomain domain);
+    public long save(ArticleDomain domain);
 
     public void publish(@Param("id") long id);
 

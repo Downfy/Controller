@@ -42,6 +42,10 @@ public class AppCommon {
     public static final byte CREATED = 2;
     public static final byte PENDING = 3;
     public static final byte PUBLISHED = 4;
+    //Article status
+    public static final byte ARTICLE_DEFAULT = 0;
+    public static final byte ARTICLE_COMPARE = 1;
+    public static final byte ARTICLE_REVIEW = 2;
     //File upload type
     public static final byte FILE_ARTICLE = 3;
     public static final byte FILE_APK = 1;
