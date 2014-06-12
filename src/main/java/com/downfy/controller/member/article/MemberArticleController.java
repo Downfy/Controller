@@ -104,9 +104,12 @@ public class MemberArticleController extends AbstractController {
             domain.setType(AppCommon.ARTICLE_DEFAULT);
             domain.setCreater(getMyId());
             articleService.save(domain);
+            return "redirect:/member/article.html";
         } catch (Exception ex) {
             logger.error("Cannot create article.", ex);
         }
-        return "redirect:/member/article.html";
+        bindingResult.reject("create.article.error");
+        uiModel.addAttribute("articleForm", form);
+        return view(device, "member/article/create");
     }
 }

@@ -27,6 +27,7 @@ import net.dongliu.apk.parser.ApkParser;
 import net.dongliu.apk.parser.bean.ApkMeta;
 import net.dongliu.apk.parser.exception.ParserException;
 import org.apache.commons.io.FileUtils;
+import org.pegdown.PegDownProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
@@ -294,6 +295,14 @@ public class Utils {
      */
     public static String encodeURL(String url) {
         return URLEncoder.encode(url);
+    }
+
+    /**
+     * Markdown document
+     */
+    public static String decodeMarkdown(String markdown) {
+        PegDownProcessor mp = new PegDownProcessor();
+        return mp.markdownToHtml(markdown);
     }
 
     /**
