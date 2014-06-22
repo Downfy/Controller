@@ -263,7 +263,7 @@ CREATE TABLE IF NOT EXISTS `articles` (
   `id` bigint(20) NOT NULL,
   `title` varchar(200) NOT NULL,
   `description` text NOT NULL DEFAULT '',
-  `thumbnail` varchar(200) NOT NULL,
+  `thumbnail` varchar(200) NULL,
   `point` float(1,1) NOT NULL DEFAULT '0',
   `status` int(1) NOT NULL DEFAULT '1',
   `type` int(1) NOT NULL DEFAULT '0',

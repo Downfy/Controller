@@ -17,7 +17,6 @@
 package com.downfy.form.validator.member;
 
 import com.downfy.form.application.article.ArticleForm;
-import com.downfy.persistence.domain.category.CategoryDomain;
 import com.google.common.base.Strings;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
@@ -43,9 +42,6 @@ public class MemberArticleValidator implements Validator {
         }
         if (Strings.isNullOrEmpty(form.getAppDescription())) {
             errors.rejectValue("appDescription", "article.descriptionnotnull");
-        }
-        if (Strings.isNullOrEmpty(form.getAppThumbnail())) {
-            errors.rejectValue("appThumbnail", "article.thumbnailnotnull");
         }
         if (form.getId() == 0) {
             errors.rejectValue("id", "article.idnotnull");
