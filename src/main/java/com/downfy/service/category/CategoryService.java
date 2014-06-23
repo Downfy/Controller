@@ -150,6 +150,21 @@ public class CategoryService implements CacheService<CategoryDomain> {
         }
         return false;
     }
+    
+    public boolean update(CategoryDomain domain) {
+        try {
+            this.logger.debug("Update category " + domain.toString() + " to database");
+            this.repository.update(domain);
+            putCacheObject(domain);
+            this.logger.debug("Update category " + domain.toString() + " to cache");
+            return true;
+        } catch (DuplicateKeyException dkex) {
+            this.logger.warn("Category " + domain.toString() + " duplicate.");
+        } catch (Exception ex) {
+            this.logger.error("Can't save category " + domain.toString(), ex);
+        }
+        return false;
+    }
 
     public boolean delete(String key) {
         try {

@@ -49,5 +49,8 @@ public class BackendCategoryValidator
         if (Strings.isNullOrEmpty(form.getUrl())) {
             errors.rejectValue("url", "category.urlnotnull");
         }
+        if (Strings.isNullOrEmpty(form.getParent())) {
+            errors.rejectValue("parent", "category.parentnotnull");
+        }
     }
 }

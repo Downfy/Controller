@@ -25,6 +25,9 @@ import com.downfy.form.validator.backend.category.BackendCategoryValidator;
 import com.downfy.persistence.domain.category.CategoryDomain;
 import com.downfy.service.category.CategoryService;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -66,8 +69,30 @@ public class BackendCategoryController extends AbstractController {
     CategoryService categoryService;
 
     private void setCategories(Model uiModel) {
-        List<CategoryDomain> cats = categoryService.findAll();
-        uiModel.addAttribute("cats", cats);
+        List<CategoryDomain> apps = categoryService.findByParent("APPLICATIONS");
+        List<CategoryDomain> games = categoryService.findByParent("GAMES");
+        List<CategoryDomain> article = categoryService.findByParent("ARTICLE");
+        Collections.sort(apps, new Comparator<CategoryDomain>() {
+            @Override
+            public int compare(CategoryDomain o1, CategoryDomain o2) {
+                return o1.getUrl().compareTo(o2.getUrl());
+            }
+        });
+        Collections.sort(games, new Comparator<CategoryDomain>() {
+            @Override
+            public int compare(CategoryDomain o1, CategoryDomain o2) {
+                return o1.getUrl().compareTo(o2.getUrl());
+            }
+        });
+        Collections.sort(article, new Comparator<CategoryDomain>() {
+            @Override
+            public int compare(CategoryDomain o1, CategoryDomain o2) {
+                return o1.getUrl().compareTo(o2.getUrl());
+            }
+        });
+        uiModel.addAttribute("apps", apps);
+        uiModel.addAttribute("games", games);
+        uiModel.addAttribute("article", article);
     }
 
     @RequestMapping(method = RequestMethod.GET)
@@ -82,7 +107,19 @@ public class BackendCategoryController extends AbstractController {
         return view(device, "maintenance");
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/{url}", method = RequestMethod.GET)
+    public String getCategory(@PathVariable("url") String url, HttpServletRequest request, Device device, Model uiModel) {
+        try {
+            uiModel.addAttribute("categoryForm", categoryService.findByURL(url));
+            setCategories(uiModel);
+            return view(device, "backend/category");
+        } catch (Exception ex) {
+            logger.error("Cannot create category group.", ex);
+        }
+        return view(device, "maintenance");
+    }
+
+    @RequestMapping(value = "/parent/{id}", method = RequestMethod.GET)
     @ResponseBody
     public List<CategorySelectorForm> getCategoryList(@PathVariable("id") String id, HttpServletRequest request, Device device, Model uiModel) {
         return categoryService.findBySelectorParent(id);
@@ -115,14 +152,32 @@ public class BackendCategoryController extends AbstractController {
             return view(device, "backend/category");
         }
         try {
-            categoryService.save(domain);
-            setCategories(uiModel);
-            return "redirect:/backend/category.html";
+            CategoryDomain current = categoryService.findByURL(domain.getUrl());
+            if (current != null) {
+                if (categoryService.update(domain)) {
+                    setCategories(uiModel);
+                    return "redirect:/backend/category.html";
+                } else {
+                    bindingResult.reject("category.updateerror");
+                    uiModel.addAttribute("categoryForm", domain);
+                    return view(device, "backend/category");
+                }
+            } else {
+                if (categoryService.save(domain)) {
+                    setCategories(uiModel);
+                    return "redirect:/backend/category.html";
+                } else {
+                    bindingResult.reject("category.saveerror");
+                    uiModel.addAttribute("categoryForm", domain);
+                    return view(device, "backend/category");
+                }
+            }
+
         } catch (Exception ex) {
             logger.error("Create category error.", ex);
-            bindingResult.reject("category.error");
-            uiModel.addAttribute("categoryForm", domain);
         }
+        bindingResult.reject("category.error");
+        uiModel.addAttribute("categoryForm", domain);
         return view(device, "backend/category");
     }
 }

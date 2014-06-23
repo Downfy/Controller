@@ -29,6 +29,7 @@ public class ArticleForm {
     private String appTitle;
     private String appDescription;
     private String appThumbnail;
+    private String category;
     private int type;
     private int status;
 
@@ -70,6 +71,14 @@ public class ArticleForm {
 
     public void setAppThumbnail(String appThumbnail) {
         this.appThumbnail = appThumbnail;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     public int getType() {

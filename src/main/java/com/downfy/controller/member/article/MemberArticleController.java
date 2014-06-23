@@ -22,7 +22,9 @@ import com.downfy.controller.MyResourceMessage;
 import com.downfy.form.application.article.ArticleForm;
 import com.downfy.form.validator.member.MemberArticleValidator;
 import com.downfy.persistence.domain.article.ArticleDomain;
+import com.downfy.persistence.domain.category.CategoryDomain;
 import com.downfy.service.application.article.ArticleService;
+import com.downfy.service.category.CategoryService;
 import java.util.List;
 import javax.servlet.ServletContext;
 import org.slf4j.Logger;
@@ -54,6 +56,8 @@ public class MemberArticleController extends AbstractController {
     @Autowired
     ArticleService articleService;
     @Autowired
+    CategoryService categoryService;
+    @Autowired
     ServletContext context;
 
     @RequestMapping(method = RequestMethod.GET)
@@ -71,6 +75,8 @@ public class MemberArticleController extends AbstractController {
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public String viewNewsItem(@PathVariable("id") long id, Device device, Model uiModel) {
         try {
+            List<CategoryDomain> categories = categoryService.findByParent("ARTICLE");
+            uiModel.addAttribute("categories", categories);
             uiModel.addAttribute("articleForm", articleService.findById(id));
             return view(device, "member/article/create");
         } catch (Exception ex) {
@@ -82,6 +88,8 @@ public class MemberArticleController extends AbstractController {
     @RequestMapping(value = "/create", method = RequestMethod.GET)
     public String createNewsForm(Device device, Model uiModel) {
         try {
+            List<CategoryDomain> categories = categoryService.findByParent("ARTICLE");
+            uiModel.addAttribute("categories", categories);
             ArticleForm articleForm = new ArticleForm();
             articleForm.setId(System.currentTimeMillis());
             uiModel.addAttribute("articleForm", articleForm);
@@ -100,13 +108,16 @@ public class MemberArticleController extends AbstractController {
             return view(device, "member/article/create");
         }
         try {
-            ArticleDomain domain = form.toArticle();
-            if (articleService.isExsit(domain.getId())) {
-                domain = articleService.findById(domain.getId());
+            if (articleService.isExsit(form.getId())) {
+                ArticleDomain domain = articleService.findById(form.getId());
+                domain.setAppTitle(form.getAppTitle());
+                domain.setAppDescription(form.getAppDescription());
+                domain.setAppThumbnail(form.getAppThumbnail());
                 if (articleService.update(domain)) {
                     return "redirect:/member/article.html";
                 }
             } else {
+                ArticleDomain domain = form.toArticle();
                 domain.setType(AppCommon.ARTICLE_DEFAULT);
                 domain.setCreater(getMyId());
                 if (articleService.save(domain)) {
