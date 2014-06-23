@@ -253,6 +253,18 @@ public class ArticleService {
 
         return false;
     }
+    
+    public boolean update(ArticleDomain domain) {
+        try {
+            this.repository.update(domain);
+            putCacheObject(domain);
+            return true;
+        } catch (Exception ex) {
+            this.logger.error("Can't update article " + domain, ex);
+        }
+
+        return false;
+    }
 
     public boolean delete(long key) {
         try {
@@ -289,7 +301,7 @@ public class ArticleService {
                     this.logger.debug("App " + key + " object " + ArticleDomain.OBJECT_KEY + " not found");
                 }
             }
-        } catch (NumberFormatException ex) {
+        } catch (Exception ex) {
             this.logger.warn("Can't get from Redis", ex);
         }
         return domain;

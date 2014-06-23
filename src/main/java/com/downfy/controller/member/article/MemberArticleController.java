@@ -71,8 +71,8 @@ public class MemberArticleController extends AbstractController {
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public String viewNewsItem(@PathVariable("id") long id, Device device, Model uiModel) {
         try {
-            uiModel.addAttribute("article", articleService.findById(id));
-            return view(device, "member/article/view");
+            uiModel.addAttribute("articleForm", articleService.findById(id));
+            return view(device, "member/article/create");
         } catch (Exception ex) {
             logger.error("Cannot view ", ex);
         }
@@ -101,10 +101,18 @@ public class MemberArticleController extends AbstractController {
         }
         try {
             ArticleDomain domain = form.toArticle();
-            domain.setType(AppCommon.ARTICLE_DEFAULT);
-            domain.setCreater(getMyId());
-            articleService.save(domain);
-            return "redirect:/member/article.html";
+            if (articleService.isExsit(domain.getId())) {
+                domain = articleService.findById(domain.getId());
+                if (articleService.update(domain)) {
+                    return "redirect:/member/article.html";
+                }
+            } else {
+                domain.setType(AppCommon.ARTICLE_DEFAULT);
+                domain.setCreater(getMyId());
+                if (articleService.save(domain)) {
+                    return "redirect:/member/article.html";
+                }
+            }
         } catch (Exception ex) {
             logger.error("Cannot create article.", ex);
         }

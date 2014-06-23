@@ -45,6 +45,8 @@ public interface ArticleRepository {
     public long count();
 
     public long save(ArticleDomain domain);
+    
+    public long update(ArticleDomain domain);
 
     public void publish(@Param("id") long id);
 

@@ -232,7 +232,7 @@ public class MemberAppController extends AbstractController {
         fileMeta.setFileType(mpf.getContentType());
         return fileMeta;
     }
-
+    
     @RequestMapping(value = "/upload/{id}/landingpage", method = RequestMethod.POST)
     @ResponseBody
     public AppFileMetaDomain landingPage(@PathVariable("id") long appId, MultipartHttpServletRequest request, Device device, Model uiModel) {

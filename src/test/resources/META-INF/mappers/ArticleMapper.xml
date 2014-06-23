@@ -92,6 +92,16 @@
         (#{id}, #{appTitle}, #{appDescription}, #{appThumbnail}, #{appPoint}, #{status}, #{type}, #{creater})
     </insert>
 
+    <update id="update" parameterType="ArticleDomain">
+        UPDATE articles 
+        SET
+        TITLE = #{appTitle},
+        DESCRIPTION = #{appDescription},
+        THUMBNAIL = #{appThumbnail},
+        POINT = #{appPoint}
+        WHERE ID = #{id}
+    </update>
+
     <update id="active" parameterType="long">
         UPDATE articles SET ENABLED = 2 WHERE ID = #{id}
     </update>

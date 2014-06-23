@@ -274,7 +274,7 @@ public class AppVersionService {
                     this.logger.debug("App " + key + " object " + AppVersionDomain.OBJECT_KEY + " not found");
                 }
             }
-        } catch (NumberFormatException ex) {
+        } catch (Exception ex) {
             this.logger.warn("Can't get from Redis", ex);
         }
         return domain;
